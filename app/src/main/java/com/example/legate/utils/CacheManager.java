@@ -1,9 +1,6 @@
 package com.example.legate.utils;
 
 import android.content.Context;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -26,18 +23,15 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
-import java.nio.file.Path;
-import java.util.concurrent.ExecutionException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
-public class UpdateLocalCache {
+public class CacheManager {
 
-    private static final String TAG = "UpdateCache";
-
-    private DownloadTask downloadTask = new DownloadTask();
-    private final Object lock = new Object();
-    private Handler uiHandler;
+    private static final String TAG = "CacheManager";
 
     private int progress = 0;
     private boolean isCancelled = false;
@@ -46,109 +40,82 @@ public class UpdateLocalCache {
     private TextView progressText;
     private File localCache;
 
-    public UpdateLocalCache(Context mainContext, View mainView) {
+    public CacheManager(Context mainContext, View mainView) {
         Log.d(TAG, "Creating cache class instance");
         view = mainView;
         context = mainContext;
-        uiHandler = new Handler(Looper.getMainLooper()) {
-            @Override
-            public void handleMessage(Message inputMessage) {
 
-            }
-        };
-
-        localCache = new File(context.getCacheDir(), "cache");
-        if (!localCache.exists()){
-            boolean result = localCache.mkdir();
-        }
+        localCache = context.getCacheDir();
     }
 
-    public int update() {
+    public int updateLocalCache() {
         Log.d(TAG, "Update called");
-        final String[] legislatorsRaw = new String[1];
-
-        // Check if the file already exists -> exit
-        File file = new File(context.getCacheDir(),
-                context.getResources().getString(R.string.current_legislators_path)
-        );
-        /*
-        if (file.exists()) {
-            // Check for update - last-modified header
-            view.findViewById(R.id.progress_overlay).setVisibility(View.GONE);
-            Log.d(TAG, "File found");
-            return 0;
-        }
-        */
-        // Start update process
-        Log.d(TAG, "Starting update");
 
         // Set progress overlay to visible and get the view for text updates
         final View overlay = view.findViewById(R.id.progress_overlay);
         overlay.setVisibility(View.VISIBLE);
         progressText = view.findViewById(R.id.progress_text);
 
-        final String cachePath = new File(
-                context.getCacheDir(),
-                context.getResources().getString(R.string.current_legislators_path)
-        ).getAbsolutePath();
-
-        // Thread to read an populate cache file, start first to ensure waiting
-        Thread readCacheThread = new Thread(new Runnable() {
+        // Thread to download, read, and populate cache file
+        Thread updateCacheThread = new Thread(new Runnable() {
             @Override
             public void run() {
-                File cacheFile = new File(cachePath);
-
-                synchronized(lock) {
-                    try {
-                        Log.d(TAG, "Waiting for download to complete");
-                        lock.wait();
-                        Log.d(TAG, "Wait released");
-                    } catch (InterruptedException e) {
-                        Log.e(TAG, "Wait failed: " + e.toString());
-                    }
-                }
-                Log.d(TAG, "Reading cached file");
-                String legislatorsRaw = readCache(cachePath);
-                Log.d(TAG, "Finished reading cached file");
-
                 try {
-                    JSONArray legislatorsJSON = new JSONArray(legislatorsRaw);
-                    Log.d(TAG, "Populating legislators");
-                    int result = populateLocal(legislatorsJSON);
-                    Log.d(TAG, "Finished populating legislators");
-
-                } catch (JSONException e) {
-                    Log.e(TAG, "JSON Error: " + e.toString());
-                    //return 1;
-                }
-                overlay.post(new Runnable() {
-                    @Override
-                    public void run() {
-                        overlay.setVisibility(View.GONE);
-                    }
-                });
-            }
-        });
-        readCacheThread.start();
-
-
-
-        // Thread to download cache file
-        Thread downloadThread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (lock) {
-                    Log.d(TAG, "Starting download");
-                    downloadFile(
-                            context.getResources().getString(R.string.current_legislators_url),
-                            cachePath
+                    File cacheFile = new File(
+                            localCache,
+                            context.getResources().getString(R.string.current_legislators_path)
                     );
-                    Log.d(TAG, "Download complete");
-                    lock.notify();
+                    Date lastModified = null;
+                    int result;
+
+                    if (cacheFile.exists()) {
+                        Log.d(TAG, "File found");
+                        lastModified = new Date(cacheFile.lastModified());
+                        Log.d(TAG, "Cache last modified: " + lastModified.toString());
+                    }
+
+                    Log.d(TAG, "Starting download");
+                    result = downloadFile(
+                            context.getResources().getString(R.string.current_legislators_url),
+                            cacheFile.getAbsolutePath(),
+                            lastModified
+                    );
+                    if (result == 0) Log.d(TAG, "Download complete");
+                    else {
+                        Log.e(TAG, "Download failed");
+                        return;
+                    }
+
+                    //TODO: Check if state files exist and are populated
+                    Log.d(TAG, "Reading cached file");
+                    String legislatorsRaw = readCache(cacheFile.getAbsolutePath());
+                    Log.d(TAG, "Finished reading cached file");
+
+                    try {
+                        JSONArray legislatorsJSON = new JSONArray(legislatorsRaw);
+                        Log.d(TAG, "Populating legislators");
+                        result = populateLocal(legislatorsJSON);
+                        if (0 == result) Log.d(TAG, "Finished populating legislators");
+                        else {
+                            Log.e(TAG, "populateLocal(...) failed");
+                        }
+
+                    } catch (JSONException e) {
+                        Log.e(TAG, "JSON Error: " + e.toString());
+                    }
+                }
+                finally {
+                    Log.d(TAG, "Removing progress overlay");
+                    overlay.post(new Runnable() {
+                        @Override
+                        public void run() {
+                            overlay.setVisibility(View.GONE);
+                        }
+                    });
                 }
             }
         });
-        downloadThread.start();
+        updateCacheThread.start();
 
         return 0;
     }
@@ -195,7 +162,7 @@ public class UpdateLocalCache {
             fileName = fileName.concat("S-");
         }
 
-        fileName = fileName.concat(currentTerm.getString("party").substring(0, 0) + "-");
+        fileName = fileName.concat(currentTerm.getString("party").substring(0, 1) + "-");
         JSONObject legislatorName = legislator.getJSONObject("name");
         fileName = fileName.concat(legislatorName.getString("first") + "-");
         fileName = fileName.concat(legislatorName.getString("last"));
@@ -214,13 +181,19 @@ public class UpdateLocalCache {
         // check/create state folder
         File statePath = new File(localCache, legislatorState);
         if (!statePath.exists()) {
-            boolean success = statePath.mkdir();
+            if (!statePath.mkdir()) {
+                Log.e(TAG, "Failed to create directory: " + statePath);
+                return 1;
+            }
         }
         // Create directory for legislator ex: S-R-First Last, R-12-D-First Last
         String legislatorDirName = getLegislatorDir(legislator, currentTerm);
         File legislatorDir = new File(statePath, legislatorDirName);
         if (!legislatorDir.exists()) {
-            boolean success = legislatorDir.mkdir();
+            if (!legislatorDir.mkdir()) {
+                Log.e(TAG, "Failed to create directory: " + legislatorDir);
+                return 1;
+            }
         }
 
         return writeLegislatorFile(legislatorDir, legislator, currentTerm);
@@ -242,6 +215,9 @@ public class UpdateLocalCache {
         for (int i = 0; i < total; i++){
             JSONObject currentLegislator = legislators.getJSONObject(i);
             int result = createLegislator(currentLegislator);
+            if (0 != result) {
+                Log.e(TAG, "Failed to create legislator: " + i);
+            }
 
             progress = i * 100 / total;
             updateProgress("Populating Cache: ");
@@ -249,7 +225,7 @@ public class UpdateLocalCache {
         return 0;
     }
 
-    private String downloadFile(String fileUrl, String filePath) {
+    private int downloadFile(String fileUrl, String filePath, Date cacheLastModified) {
         InputStream input = null;
         OutputStream output = null;
         HttpsURLConnection connection = null;
@@ -259,31 +235,76 @@ public class UpdateLocalCache {
             connection = (HttpsURLConnection) url.openConnection();
             connection.connect();
 
+            /*
+                {null=[HTTP/1.1 200 OK], Accept-Ranges=[bytes], Access-Control-Allow-Origin=[*],
+                Age=[331], Cache-Control=[max-age=600], Connection=[keep-alive],
+                Content-Type=[application/json; charset=utf-8],
+                Date=[Thu, 09 Apr 2020 19:58:20 GMT], ETag=[W/"5e85ca0f-154469"],
+                Expires=[Thu, 09 Apr 2020 19:56:00 GMT],
+                Last-Modified=[Thu, 02 Apr 2020 11:18:39 GMT], Server=[GitHub.com],
+                Vary=[Accept-Encoding], Via=[1.1 varnish], X-Android-Received-Millis=[1586462291090],
+                X-Android-Response-Source=[NETWORK 200], X-Android-Selected-Protocol=[http/1.1],
+                X-Android-Sent-Millis=[1586462291061], X-Cache=[HIT], X-Cache-Hits=[1],
+                X-Fastly-Request-ID=[71d03a863191d7f48032cbcb76207606fa34d72f],
+                X-GitHub-Request-Id=[9AC4:4BE5:44AB26:568A37:5E8F7B78], X-Proxy-Cache=[MISS],
+                X-Served-By=[cache-ewr18145-EWR], X-Timer=[S1586462301.625007,VS0,VE1]}
+             */
+            Log.d(TAG, "Headers: \n" + connection.getHeaderFields());
+
             // expect HTTP 200 OK, so we don't mistakenly save error report
             // instead of the file
             if (connection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
                 Log.e(TAG, "Server returned HTTP " + connection.getResponseCode()
                         + " " + connection.getResponseMessage()
                 );
+                return 1;
             }
+            Log.d(TAG, "Connection established");
+
+            // Get the last-modified header and compare with last_modified date if not null
+            if (null != cacheLastModified) {
+                String urlModified = connection.getHeaderField("last-modified");
+                if (null != urlModified) {
+                    // Example date: Thu, 02 Apr 2020 11:18:39 GMT
+                    Log.d(TAG, "Raw URL modified string: " + urlModified);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+                    Date urlModifiedDate = dateFormat.parse(urlModified);
+                    assert urlModifiedDate != null;
+                    Log.d(TAG, "URL Updated: " + urlModifiedDate.toString());
+                    if (urlModifiedDate.before(cacheLastModified)) {
+                        Log.d(TAG, "Cache file up to date, exiting download");
+                        return 0;
+                    }
+                }
+                else Log.d(TAG, "Failed to get last-modified form header, continuing");
+            }
+            else Log.d(TAG, "Cache last modified date == null, continuing");
 
             // this will be useful to display download percentage
             // might be -1: server did not report the length
             int fileLength = connection.getContentLength();
+            // If server did not report the length, try to get it from the header
+            if (-1 == fileLength) {
+                String headerFileLength = connection.getHeaderField("content-length");
+                if (null != headerFileLength) {
+                    Log.d(TAG, "Raw file length string from header: " + headerFileLength);
+                    fileLength = Integer.parseInt(headerFileLength);
+                }
+            }
 
             // download the file
             input = connection.getInputStream();
             Log.d(TAG, "Downloading file to: " + filePath);
             output = new FileOutputStream(filePath);
 
-            byte data[] = new byte[4096];
+            byte[] data = new byte[4096];
             long total = 0;
             int count;
             while ((count = input.read(data)) != -1) {
                 // allow canceling with back button
                 if (isCancelled) {
                     input.close();
-                    return null;
+                    return 1;
                 }
                 total += count;
                 // publishing the progress....
@@ -292,11 +313,12 @@ public class UpdateLocalCache {
                     updateProgress("Downloading: ");
                 output.write(data, 0, count);
             }
-            Log.d(TAG, "File length: " + Integer.toString(fileLength));
-            Log.d(TAG, "Bytes downloaded: " + Long.toString(total));
+            Log.d(TAG, "File length: " + fileLength);
+            Log.d(TAG, "Bytes downloaded: " + total);
         } catch (Exception e) {
             Log.e(TAG, e.toString());
         } finally {
+            Log.d(TAG, "Closing HTTPS connection and output stream");
             try {
                 if (output != null)
                     output.close();
@@ -308,7 +330,7 @@ public class UpdateLocalCache {
             if (connection != null)
                 connection.disconnect();
         }
-        return null;
+        return 0;
     }
 
     private String readCache(String cacheFilePath) {
@@ -318,26 +340,28 @@ public class UpdateLocalCache {
         try {
             FileInputStream fileInputStream = new FileInputStream(new File(cacheFilePath));
 
-            if ( fileInputStream != null ) {
-                InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-                BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-                String receiveString = "";
-                StringBuilder stringBuilder = new StringBuilder();
+            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
+            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
+            String receiveString;
+            StringBuilder stringBuilder = new StringBuilder();
 
-                while ( (receiveString = bufferedReader.readLine()) != null ) {
-                    stringBuilder.append("\n").append(receiveString);
-                }
-
-                fileInputStream.close();
-                ret = stringBuilder.toString();
+            while ( (receiveString = bufferedReader.readLine()) != null ) {
+                stringBuilder.append("\n").append(receiveString);
             }
+
+            fileInputStream.close();
+            ret = stringBuilder.toString();
         }
         catch (FileNotFoundException e) {
-            Log.e(TAG, "File not found: " + e.toString());
+            Log.e(TAG, "File not found: " + cacheFilePath + " - " + e.toString());
         } catch (IOException e) {
-            Log.e(TAG, "Can not read file: " + e.toString());
+            Log.e(TAG, "Can not read file: " + cacheFilePath + " - " + e.toString());
         }
 
         return ret;
+    }
+
+    public void cancel() {
+        isCancelled = true;
     }
 }

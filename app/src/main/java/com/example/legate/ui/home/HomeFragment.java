@@ -16,7 +16,7 @@ import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 
 import com.example.legate.R;
-import com.example.legate.utils.UpdateLocalCache;
+import com.example.legate.utils.CacheManager;
 
 
 public class HomeFragment extends Fragment implements AdapterView.OnItemSelectedListener, View.OnClickListener {
@@ -38,7 +38,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         root = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Initialize State selection drop-down menu
-        stateSpinner = (Spinner) root.findViewById(R.id.stateSpinner);
+        stateSpinner = root.findViewById(R.id.stateSpinner);
         assert context != null;
         ArrayAdapter<CharSequence> stateAdapter = ArrayAdapter.createFromResource(context,
                 R.array.states_array, android.R.layout.simple_spinner_item);
@@ -53,8 +53,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         // Update Local Cache
         if (!updated) {
             updated = true;
-            UpdateLocalCache cacheManager = new UpdateLocalCache(context, root);
-            int result = cacheManager.update();
+            CacheManager cacheManager = new CacheManager(context, root);
+            int result = cacheManager.updateLocalCache();
             //root.findViewById(R.id.progress_overlay).setVisibility(View.GONE);
         }
         return root;

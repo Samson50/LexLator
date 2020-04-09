@@ -1,10 +1,8 @@
 package com.example.legate;
 
 import android.os.Bundle;
-import android.view.View;
 import android.view.Menu;
 
-import com.example.legate.utils.UpdateLocalCache;
 import com.google.android.material.navigation.NavigationView;
 
 import androidx.navigation.NavController;
