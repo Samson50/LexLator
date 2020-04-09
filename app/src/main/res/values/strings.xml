@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">legate</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+
+    <string name="state_list">State List</string>
+
+    <string name="congress">Congress</string>
+    <string name="senate">Senate</string>
+    <string name="house">House of Representatives</string>
+    <string name="bills">Bills</string>
+
+    <string name="state">State</string>
+
+    <string name="go_state">Go to Legislators</string>
+
+    <string-array name="states_array">
+        <item>Select state…</item>
+        <item>Alabama</item>
+        <item>Alaska</item>
+        <item>Arizona</item>
+        <item>Arkansas</item>
+        <item>California</item>
+        <item>Colorado</item>
+        <item>Connecticut</item>
+        <item>Delaware</item>
+        <item>Florida</item>
+        <item>Georgia</item>
+    </string-array>
+
+    <string name="senators">Senators</string>
+    <string name="representatives">Representatives</string>
+
+    <string name="current_legislators_url">https://theunitedstates.io/congress-legislators/legislators-current.json</string>
+    <string name="current_legislators_path">current_legislators.json</string>
+    <string name="current_progress">Current Progress</string>
+
+</resources>
