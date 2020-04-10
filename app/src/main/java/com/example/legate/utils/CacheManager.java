@@ -86,7 +86,11 @@ public class CacheManager {
                         return;
                     }
 
-                    //TODO: Check if state files exist and are populated
+                    Log.d(TAG, "Checking if state files are already populated");
+                    if (stateFilesPopulated()) {
+                        Log.d(TAG, "State files found, returning");
+                        return;
+                    }
                     Log.d(TAG, "Reading cached file");
                     String legislatorsRaw = readCache(cacheFile.getAbsolutePath());
                     Log.d(TAG, "Finished reading cached file");
@@ -118,6 +122,18 @@ public class CacheManager {
         updateCacheThread.start();
 
         return 0;
+    }
+
+    private boolean stateFilesPopulated() {
+
+        File[] files = context.getCacheDir().listFiles();
+
+        if (null == files) {
+            Log.e(TAG, "stateFilesPopulated(): Failed to list files");
+            return false;
+        }
+
+        return files.length >= 50;
     }
 
     private int writeLegislatorFile(File legislatorDir, JSONObject legislator, JSONObject term) throws JSONException {

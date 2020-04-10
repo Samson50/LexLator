@@ -10,16 +10,11 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.legate.R;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.example.legate.utils.StateHelper;
 
 import java.io.File;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAdapter.LegislatorsListViewHolder> {
 
@@ -29,6 +24,8 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
     private static final int DISTRICT = 3;
 
     private static final String TAG = "LegislatorListAdapter";
+
+    private StateHelper stateHelper = new StateHelper();
 
     private List<String[]> legislatorsList;
 
@@ -56,24 +53,34 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
         for (File legislatorFile: legislatorsFileArray) {
             // ex: S-R-First Last, R-12-D-First Last
             String[] fileSplit = legislatorFile.getName().split("-");
-            String[] newLeg = {"", "", "", ""};
+            String[] newLegislator = {"", "", "", ""};
+
+            String legislatorName = fileSplit[fileSplit.length - 2] + " " + fileSplit[fileSplit.length - 1];
 
             if (fileSplit[0].equals("R")) {
-                newLeg[TITLE] = "Rep. " + fileSplit[fileSplit.length - 1];
-                newLeg[DISTRICT] = fileSplit[1];
-                newLeg[PARTY] = fileSplit[2];
+                newLegislator[TITLE] = "Rep. " + legislatorName;
+                newLegislator[DISTRICT] = fileSplit[1];
+                newLegislator[PARTY] = fileSplit[2];
             }
             else {
-                newLeg[TITLE] = "Sen. " + fileSplit[fileSplit.length - 1];
-                newLeg[PARTY] = fileSplit[1];
+                newLegislator[TITLE] = "Sen. " + legislatorName;
+                newLegislator[PARTY] = fileSplit[1];
             }
 
-            newLeg[STATE] = legislatorFile.getParentFile().getName();
+            File parentFile = legislatorFile.getParentFile();
+            if (parentFile == null) return;
+            String shortState = parentFile.getName();
+            String fullState = stateHelper.shortToFull(shortState);
 
-            Log.d(TAG, newLeg.toString());
-            legislatorsList.add(newLeg.clone());
+            newLegislator[STATE] = fullState;
+
+            Log.d(TAG,
+                    String.format("newLeg: %s, %s, %s, %s",
+                            newLegislator[0], newLegislator[1], newLegislator[2], newLegislator[3]
+                    )
+            );
+            legislatorsList.add(newLegislator.clone());
         }
-        // Populate legislatorsJSON with data
     }
 
     @NonNull

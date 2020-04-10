@@ -14,8 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.legate.R;
 import com.example.legate.utils.ConfigManager;
-
-import org.json.JSONObject;
+import com.example.legate.utils.StateHelper;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -27,22 +26,7 @@ public class StateListFragment extends Fragment {
 
     private final static String TAG = "StateListFragment";
 
-    private final String[] FULL_STATES = {
-            "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut",
-            "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa",
-            "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts","Michigan",
-            "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada",
-            "New Hampshire", "New Jersey", "New Mexico", "New York", "North Carolina",
-            "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
-            "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia",
-            "Washington", "West Virginia", "Wisconsin", "Wyoming"
-    };
-    private final String[] SHORT_STATES = {
-            "AL", "AK", "AZ", "AR", "CA", "CO", "CT", "DE", "FL", "GA", "HI", "ID", "IL", "IN",
-            "IA", "KS", "KY", "LA", "ME", "MD", "MA", "MI", "MN", "MS", "MO", "MT", "NE", "NV",
-            "NH", "NJ", "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC", "SD", "TN",
-            "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY"
-    };
+    private StateHelper stateHelper = new StateHelper();
 
     private View root;
     private RecyclerView senatorsRecyclerView;
@@ -51,6 +35,20 @@ public class StateListFragment extends Fragment {
     private RecyclerView.Adapter representativesAdapter;
     private RecyclerView.LayoutManager senatorsManager;
     private RecyclerView.LayoutManager representativesManager;
+
+    private FileFilter repFilter = new FileFilter() {
+        @Override
+        public boolean accept(File pathname) {
+            return pathname.getName().startsWith("R-");
+        }
+    };
+    private FileFilter senFilter = new FileFilter() {
+        @Override
+        public boolean accept(File pathname) {
+            Log.d(TAG, pathname.getName());
+            return pathname.getName().startsWith("S-");
+        }
+    };
 
     private File[] senatorFilesArray;
     private File[] representativeFilesArray;
@@ -87,16 +85,14 @@ public class StateListFragment extends Fragment {
         ConfigManager configManager = new ConfigManager(context);
 
         // Get the selected state
-        String state = null;
+        String state;
         String configValue = configManager.getValue("state");
         if (null != configValue) {
             state = configValue;
-            // TODO: Make this better/implement state map or something
-            for (int i = 0; i < 50; i++) {
-                if (FULL_STATES[i].equals(state)) {
-                    state = SHORT_STATES[i];
-                    break;
-                }
+            state = stateHelper.fullToShort(state);
+            if (null == state) {
+                Log.e(TAG, "Failed to convert state fullToShort");
+                return;
             }
         }
         else {
@@ -106,24 +102,10 @@ public class StateListFragment extends Fragment {
 
         // Populate array from files in state directory
         File stateCacheFile = new File(context.getCacheDir(), state);
-        FileFilter repFilter = new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                return pathname.getName().startsWith("R-");
-            }
-        };
-        FileFilter senFilter = new FileFilter() {
-            @Override
-            public boolean accept(File pathname) {
-                Log.d(TAG, pathname.getName());
-                return pathname.getName().startsWith("S-");
-            }
-        };
         senatorFilesArray = stateCacheFile.listFiles(senFilter);
         representativeFilesArray = stateCacheFile.listFiles(repFilter);
         if (null == senatorFilesArray || null == representativeFilesArray) {
             Log.e(TAG, "Failed to get contents of " + stateCacheFile.getAbsolutePath());
-            return;
         }
     }
 }
