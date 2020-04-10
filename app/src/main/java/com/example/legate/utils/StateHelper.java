@@ -29,7 +29,6 @@ public class StateHelper {
 
     public String fullToShort(String fullState) {
 
-        // TODO: Make this better/implement state map or something
         for (int i = 0; i < 50; i++) {
             if (FULL_STATES[i].equals(fullState)) {
                 return SHORT_STATES[i];
@@ -41,7 +40,6 @@ public class StateHelper {
 
     public String shortToFull(String shortState) {
 
-        // TODO: Make this better/implement state map or something
         for (int i = 0; i < 50; i++) {
             if (SHORT_STATES[i].equals(shortState)) {
                 return FULL_STATES[i];

@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -29,6 +30,8 @@ public class StateListFragment extends Fragment {
     private StateHelper stateHelper = new StateHelper();
 
     private View root;
+    private TextView senatorsText;
+    private TextView representativesText;
     private RecyclerView senatorsRecyclerView;
     private RecyclerView representativesRecyclerView;
     private RecyclerView.Adapter senatorsAdapter;
@@ -62,6 +65,7 @@ public class StateListFragment extends Fragment {
             Log.e(TAG, "Context was null");
             return root;
         }
+
         senatorsRecyclerView = root.findViewById(R.id.senatorsRecyclerView);
         representativesRecyclerView = root.findViewById(R.id.representativesRecyclerView);
 
@@ -78,7 +82,28 @@ public class StateListFragment extends Fragment {
         representativesAdapter = new LegislatorListAdapter(representativeFilesArray);
         representativesRecyclerView.setAdapter(representativesAdapter);
 
+        // Set-up collapsible property from text views
+        senatorsText = root.findViewById(R.id.text_senators);
+        senatorsText.setOnClickListener(new CollapseListener(senatorsRecyclerView));
+        representativesText = root.findViewById(R.id.text_representatives);
+        representativesText.setOnClickListener(new CollapseListener(representativesRecyclerView));
+
         return root;
+    }
+
+    private static class CollapseListener implements View.OnClickListener {
+
+        View recyclerView;
+
+        CollapseListener(View view) {
+            recyclerView = view;
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (View.VISIBLE == recyclerView.getVisibility()) recyclerView.setVisibility(View.GONE);
+            else recyclerView.setVisibility(View.VISIBLE);
+        }
     }
 
     private void populateFileArrays(Context context) {
