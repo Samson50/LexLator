@@ -59,8 +59,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         // Update Local Cache
         if (!updated) {
             updated = true;
-            CacheManager cacheManager = new CacheManager(context, root);
-            if (0 != cacheManager.updateLocalCache()) Log.e(TAG, "Failed to update cache.");
+            CacheManager cacheManager = new CacheManager();
+            if (0 != cacheManager.updateLocalCache(context, root)) Log.e(TAG, "Failed to update cache.");
         }
         return root;
     }

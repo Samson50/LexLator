@@ -32,39 +32,33 @@ import javax.net.ssl.HttpsURLConnection;
 public class CacheManager {
 
     private static final String TAG = "CacheManager";
+    private static final String CACHE_URL = "https://theunitedstates.io/congress-legislators/legislators-current.json";
 
     private int progress = 0;
     private boolean isCancelled = false;
-    private Context context;
-    private View view;
     private TextView progressText;
     private File localCache;
 
-    public CacheManager(Context mainContext, View mainView) {
+    public CacheManager() {
         Log.d(TAG, "Creating cache class instance");
-        view = mainView;
-        context = mainContext;
-
-        localCache = context.getCacheDir();
     }
 
-    public int updateLocalCache() {
+    public int updateLocalCache(Context context, View parentView) {
         Log.d(TAG, "Update called");
+        localCache = context.getCacheDir();
+        final File threadCacheFile = new File(localCache.getAbsolutePath());
 
         // Set progress overlay to visible and get the view for text updates
-        final View overlay = view.findViewById(R.id.progress_overlay);
+        final View overlay = parentView.findViewById(R.id.progress_overlay);
         overlay.setVisibility(View.VISIBLE);
-        progressText = view.findViewById(R.id.progress_text);
+        progressText = parentView.findViewById(R.id.progress_text);
 
         // Thread to download, read, and populate cache file
         Thread updateCacheThread = new Thread(new Runnable() {
             @Override
             public void run() {
                 try {
-                    File cacheFile = new File(
-                            localCache,
-                            context.getResources().getString(R.string.current_legislators_path)
-                    );
+                    File cacheFile = new File(localCache, "current_legislators.json");
                     Date lastModified = null;
                     int result;
 
@@ -75,11 +69,7 @@ public class CacheManager {
                     }
 
                     Log.d(TAG, "Starting download");
-                    result = downloadFileBlocking(
-                            context.getResources().getString(R.string.current_legislators_url),
-                            cacheFile.getAbsolutePath(),
-                            lastModified
-                    );
+                    result = downloadFileBlocking(CACHE_URL, cacheFile.getAbsolutePath(), lastModified);
                     if (result == 0) Log.d(TAG, "Download complete");
                     else {
                         Log.e(TAG, "Download failed");
@@ -87,12 +77,13 @@ public class CacheManager {
                     }
 
                     Log.d(TAG, "Checking if state files are already populated");
-                    if (stateFilesPopulated()) {
+                    File[] dirList = threadCacheFile.listFiles();
+                    if (null != dirList && dirList.length >= 50) {
                         Log.d(TAG, "State files found, returning");
                         return;
                     }
                     Log.d(TAG, "Reading cached file");
-                    String legislatorsRaw = readCache(cacheFile.getAbsolutePath());
+                    String legislatorsRaw = readFile(cacheFile.getAbsolutePath());
                     Log.d(TAG, "Finished reading cached file");
 
                     try {
@@ -122,18 +113,6 @@ public class CacheManager {
         updateCacheThread.start();
 
         return 0;
-    }
-
-    private boolean stateFilesPopulated() {
-
-        File[] files = context.getCacheDir().listFiles();
-
-        if (null == files) {
-            Log.e(TAG, "stateFilesPopulated(): Failed to list files");
-            return false;
-        }
-
-        return files.length >= 50;
     }
 
     private int writeLegislatorFile(File legislatorDir, JSONObject legislator, JSONObject term) throws JSONException {
@@ -440,18 +419,55 @@ public class CacheManager {
         return 0;
     }
 
-    private String readCache(String cacheFilePath) {
-        // https://bitbucket.org/asomov/snakeyaml/wiki/Documentation#markdown-header-tutorial
+    public JSONObject stringToJSON(String rawString) {
+        try {
+            Log.d(TAG, "Converting string to JSONObject");
+            return new JSONObject(rawString);
+        } catch (JSONException e) {
+            Log.e(TAG, e.toString());
+            return null;
+        }
+    }
+
+    public String getJSONField(File inputFile, String key) {
+        String outputValue;
+        String infoString;
+
+        infoString = readFile(inputFile.getAbsolutePath());
+        if (null == infoString) {
+            Log.e(TAG, "Failed to read file: " + inputFile.getPath());
+            return null;
+        }
+
+        JSONObject inputJSON = stringToJSON(infoString);
+        if (null == inputJSON) {
+            Log.e(TAG, "Failed to convert string to JSONObject");
+            return null;
+        }
+
+        try {
+            Log.d(TAG, String.format("Getting key (%s) value from JSONObject", key));
+            outputValue = inputJSON.getString(key);
+        } catch (JSONException e) {
+            Log.e(TAG, e.toString());
+            return null;
+        }
+
+        Log.d(TAG, "Value: " + outputValue);
+        return outputValue;
+    }
+
+    public String readFile(String filePath) {
         String ret = "";
 
         try {
-            FileInputStream fileInputStream = new FileInputStream(new File(cacheFilePath));
+            FileInputStream fileInputStream = new FileInputStream(new File(filePath));
 
             InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
             BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String receiveString;
             StringBuilder stringBuilder = new StringBuilder();
 
+            String receiveString;
             while ( (receiveString = bufferedReader.readLine()) != null ) {
                 stringBuilder.append("\n").append(receiveString);
             }
@@ -460,9 +476,9 @@ public class CacheManager {
             ret = stringBuilder.toString();
         }
         catch (FileNotFoundException e) {
-            Log.e(TAG, "File not found: " + cacheFilePath + " - " + e.toString());
+            Log.e(TAG, "File not found: " + filePath + " - " + e.toString());
         } catch (IOException e) {
-            Log.e(TAG, "Can not read file: " + cacheFilePath + " - " + e.toString());
+            Log.e(TAG, "Can not read file: " + filePath + " - " + e.toString());
         }
 
         return ret;

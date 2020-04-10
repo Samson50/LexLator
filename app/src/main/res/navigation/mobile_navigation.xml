@@ -27,6 +27,9 @@
         <argument
             android:name="myArg"
             app:argType="string" />
+        <action
+            android:id="@+id/action_nav_state_list_to_legislatorMain"
+            app:destination="@id/nav_legislator_main" />
     </fragment>
 
     <fragment
@@ -40,4 +43,16 @@
         android:name="com.example.legate.ui.slideshow.SlideshowFragment"
         android:label="@string/menu_slideshow"
         tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/nav_legislator_main"
+        android:name="com.example.legate.ui.legislator.LegislatorMain"
+        android:label="fragment_legislator_main"
+        tools:layout="@layout/fragment_legislator_main" >
+        <action
+            android:id="@+id/action_legislatorMain_to_nav_state_list"
+            app:destination="@id/nav_state_list" />
+        <argument
+            android:name="legislatorPath"
+            app:argType="string" />
+    </fragment>
 </navigation>

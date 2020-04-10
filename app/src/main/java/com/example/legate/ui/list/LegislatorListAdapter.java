@@ -2,6 +2,7 @@ package com.example.legate.ui.list;
 
 import android.content.Context;
 import android.media.Image;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,21 +11,18 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.legate.R;
+import com.example.legate.utils.CacheManager;
 import com.example.legate.utils.ImageTask;
 import com.example.legate.utils.StateHelper;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,17 +38,19 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
     private static final String TAG = "LegislatorListAdapter";
 
     private StateHelper stateHelper = new StateHelper();
+    private CacheManager cacheManager = new CacheManager();
 
     private List<String[]> legislatorsList;
     private Context context;
 
-    static class LegislatorsListViewHolder extends RecyclerView.ViewHolder {
+    static class LegislatorsListViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         ImageView legislatorImage;
         TextView legislatorTitle;
         TextView legislatorState;
         TextView legislatorParty;
         TextView legislatorDistrict;
         ViewGroup districtLayout;
+        String legislatorPath;
 
         LegislatorsListViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -60,6 +60,17 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
             legislatorParty = itemView.findViewById(R.id.legislator_party);
             legislatorDistrict = itemView.findViewById(R.id.legislator_district);
             districtLayout = itemView.findViewById(R.id.district_layout);
+
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (null != legislatorPath) {
+                Bundle bundle = new Bundle();
+                bundle.putString("path", legislatorPath);
+                Navigation.findNavController(v).navigate(R.id.nav_legislator_main, bundle);
+            }
         }
     }
 
@@ -110,35 +121,13 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
         String bioGuide;
         String infoString;
 
-        try {
-            Log.d(TAG, "Reading info.json in " + legislatorDirectory);
-            FileInputStream fileInputStream = new FileInputStream(
-                    new File(legislatorDirectory, "info.json")
-            );
+        infoString = cacheManager.readFile(new File(legislatorDirectory, "info.json").getPath());
+        if (null == infoString) return null;
 
-            InputStreamReader inputStreamReader = new InputStreamReader(fileInputStream);
-            BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
-            String receiveString;
-            StringBuilder stringBuilder = new StringBuilder();
-
-            while ( (receiveString = bufferedReader.readLine()) != null ) {
-                stringBuilder.append("\n").append(receiveString);
-            }
-
-            fileInputStream.close();
-            infoString = stringBuilder.toString();
-        }
-        catch (FileNotFoundException e) {
-            Log.e(TAG, "File not found: " + legislatorDirectory + " - " + e.toString());
-            return null;
-        } catch (IOException e) {
-            Log.e(TAG, "Can not read file: " + legislatorDirectory + " - " + e.toString());
-            return null;
-        }
+        JSONObject legislatorJSON = cacheManager.stringToJSON(infoString);
 
         try {
             Log.d(TAG, "getBioGuide(): Getting bioguide from JSON format string");
-            JSONObject legislatorJSON = new JSONObject(infoString);
             bioGuide = legislatorJSON.getJSONObject("id").getString("bioguide");
         } catch (JSONException e) {
             Log.e(TAG, e.toString());
@@ -165,13 +154,15 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
         holder.legislatorTitle.setText(legislatorData[TITLE]);
         holder.legislatorState.setText(legislatorData[STATE]);
         holder.legislatorParty.setText(legislatorData[PARTY]);
+        // TODO: This is dirty. Clean it up
+        holder.legislatorPath = legislatorData[IMAGE_PATH];
         if (legislatorData[TITLE].contains("Rep")) {
             holder.legislatorDistrict.setText(legislatorData[DISTRICT]);
         }
         else {
             holder.districtLayout.setVisibility(View.GONE);
         }
-        ImageTask imageTask = new ImageTask(context, holder.legislatorImage);
+        ImageTask imageTask = new ImageTask(holder.legislatorImage);
         imageTask.execute(legislatorData[IMAGE_PATH], legislatorData[IMAGE_URL]);
     }
 
@@ -179,6 +170,4 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
     public int getItemCount() {
         return legislatorsList.size();
     }
-
-
 }

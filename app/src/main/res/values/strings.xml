@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
     <string name="app_name">legate</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -92,5 +92,22 @@
     <string name="text_district">District</string>
     <string name="default_district">69</string>
     <string name="legislator_image_description">Profile picture for the selected legislator</string>
+
+    <string name="finances_text">Financial Interests</string>
+    <string name="finances_default">Insert Financial Interests</string>
+    <string name="information_text">Information</string>
+    <string name="bio_text">Biography</string>
+    <string name="committees_text">Committees</string>
+    <string name="activities_text">Activities</string>
+    <string name="sponsored_bills_text">Sponsored Bills</string>
+    <string name="votes_text">Recent Votes</string>
+    <string name="contact_text">Contact</string>
+    <string name="address_text">Address</string>
+    <string name="address_default">Default Address</string>
+    <string name="phone_text">Phone Number</string>
+    <string name="phone_default" tools:ignore="TypographyDashes">+1(123)456-7890</string>
+    <string name="website_text">Website</string>
+    <string name="website_default">https://www.examplewebsite.person.org/</string>
+    <string name="social_media_text">Social Media</string>
 
 </resources>

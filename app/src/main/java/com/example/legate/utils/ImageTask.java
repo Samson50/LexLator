@@ -13,11 +13,9 @@ public class ImageTask extends AsyncTask<String, Integer, Bitmap> {
     private static final String TAG = "ImageTask";
 
     private ImageView imageView;
-    private Context context;
 
-    public ImageTask(Context cont, ImageView view) {
+    public ImageTask(ImageView view) {
         imageView = view;
-        context = cont;
     }
 
     /**
@@ -43,7 +41,7 @@ public class ImageTask extends AsyncTask<String, Integer, Bitmap> {
         if (!imageFile.exists()) {
             Log.d(TAG, "image.jpg not found, downloading through CacheManager");
             // Use CacheManager to download file
-            CacheManager cacheManager = new CacheManager(context, imageView);
+            CacheManager cacheManager = new CacheManager();
             if (0 != cacheManager.downloadFile(imageUrl, imageFile.getAbsolutePath(), null)) {
                 Log.e(TAG, "Failed to download file, exiting");
                 return null;
