@@ -75,7 +75,7 @@ public class CacheManager {
                     }
 
                     Log.d(TAG, "Starting download");
-                    result = downloadFile(
+                    result = downloadFileBlocking(
                             context.getResources().getString(R.string.current_legislators_url),
                             cacheFile.getAbsolutePath(),
                             lastModified
@@ -241,7 +241,7 @@ public class CacheManager {
         return 0;
     }
 
-    private int downloadFile(String fileUrl, String filePath, Date cacheLastModified) {
+    private int downloadFileBlocking(String fileUrl, String filePath, Date cacheLastModified) {
         InputStream input = null;
         OutputStream output = null;
         HttpsURLConnection connection = null;
@@ -327,6 +327,97 @@ public class CacheManager {
                 if (fileLength > 0) // only if total length is known
                     progress = (int) (total * 100 / fileLength);
                     updateProgress("Downloading: ");
+                output.write(data, 0, count);
+            }
+            Log.d(TAG, "File length: " + fileLength);
+            Log.d(TAG, "Bytes downloaded: " + total);
+        } catch (Exception e) {
+            Log.e(TAG, e.toString());
+        } finally {
+            Log.d(TAG, "Closing HTTPS connection and output stream");
+            try {
+                if (output != null)
+                    output.close();
+                if (input != null)
+                    input.close();
+            } catch (IOException ignored) {
+            }
+
+            if (connection != null)
+                connection.disconnect();
+        }
+        return 0;
+    }
+
+    int downloadFile(String fileUrl, String filePath, Date cacheLastModified) {
+        InputStream input = null;
+        OutputStream output = null;
+        HttpsURLConnection connection = null;
+        try {
+            URL url = new URL(fileUrl);
+
+            connection = (HttpsURLConnection) url.openConnection();
+            connection.connect();
+
+            Log.d(TAG, "Headers: \n" + connection.getHeaderFields());
+
+            // expect HTTP 200 OK, so we don't mistakenly save error report
+            // instead of the file
+            if (connection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
+                Log.e(TAG, "Server returned HTTP " + connection.getResponseCode()
+                        + " " + connection.getResponseMessage()
+                );
+                return 1;
+            }
+            Log.d(TAG, "Connection established");
+
+            // Get the last-modified header and compare with last_modified date if not null
+            if (null != cacheLastModified) {
+                String urlModified = connection.getHeaderField("last-modified");
+                if (null != urlModified) {
+                    // Example date: Thu, 02 Apr 2020 11:18:39 GMT
+                    Log.d(TAG, "Raw URL modified string: " + urlModified);
+                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
+                    Date urlModifiedDate = dateFormat.parse(urlModified);
+                    assert urlModifiedDate != null;
+                    Log.d(TAG, "URL Updated: " + urlModifiedDate.toString());
+                    if (urlModifiedDate.before(cacheLastModified)) {
+                        Log.d(TAG, "Cache file up to date, exiting download");
+                        return 0;
+                    }
+                } else Log.d(TAG, "Failed to get last-modified form header, continuing");
+            } else Log.d(TAG, "Cache last modified date == null, continuing");
+
+            // this will be useful to display download percentage
+            // might be -1: server did not report the length
+            int fileLength = connection.getContentLength();
+            // If server did not report the length, try to get it from the header
+            if (-1 == fileLength) {
+                String headerFileLength = connection.getHeaderField("content-length");
+                if (null != headerFileLength) {
+                    Log.d(TAG, "Raw file length string from header: " + headerFileLength);
+                    fileLength = Integer.parseInt(headerFileLength);
+                }
+            }
+
+            // download the file
+            input = connection.getInputStream();
+            Log.d(TAG, "Downloading file to: " + filePath);
+            output = new FileOutputStream(filePath);
+
+            byte[] data = new byte[4096];
+            long total = 0;
+            int count;
+            while ((count = input.read(data)) != -1) {
+                // allow canceling with back button
+                if (isCancelled) {
+                    input.close();
+                    return 1;
+                }
+                total += count;
+                // publishing the progress....
+                if (fileLength > 0) // only if total length is known
+                    progress = (int) (total * 100 / fileLength);
                 output.write(data, 0, count);
             }
             Log.d(TAG, "File length: " + fileLength);
