@@ -35,6 +35,46 @@
         <item>Delaware</item>
         <item>Florida</item>
         <item>Georgia</item>
+        <item>Hawaii</item>
+        <item>Idaho</item>
+        <item>Illinois</item>
+        <item>Indiana</item>
+        <item>Iowa</item>
+        <item>Kansas</item>
+        <item>Kentucky</item>
+        <item>Louisiana</item>
+        <item>Maine</item>
+        <item>Maryland</item>
+        <item>Massachusetts</item>
+        <item>Michigan</item>
+        <item>Minnesota</item>
+        <item>Mississippi</item>
+        <item>Missouri</item>
+        <item>Montana</item>
+        <item>Nebraska</item>
+        <item>Nevada</item>
+        <item>New Hampshire</item>
+        <item>New Jersey</item>
+        <item>New Mexico</item>
+        <item>New York</item>
+        <item>North Carolina</item>
+        <item>North Dakota</item>
+        <item>Ohio</item>
+        <item>Oklahoma</item>
+        <item>Oregon</item>
+        <item>Pennsylvania</item>
+        <item>Rhode Island</item>
+        <item>South Carolina</item>
+        <item>South Dakota</item>
+        <item>Tennessee</item>
+        <item>Texas</item>
+        <item>Utah</item>
+        <item>Vermont</item>
+        <item>Virginia</item>
+        <item>Washington</item>
+        <item>West Virginia</item>
+        <item>Wisconsin</item>
+        <item>Wyoming</item>
     </string-array>
 
     <string name="senators">Senators</string>
@@ -43,5 +83,14 @@
     <string name="current_legislators_url">https://theunitedstates.io/congress-legislators/legislators-current.json</string>
     <string name="current_legislators_path">current_legislators.json</string>
     <string name="current_progress">Current Progress</string>
+
+    <string name="default_legislator_title">Typ. First Last</string>
+    <string name="text_state">State</string>
+    <string name="default_state">Default</string>
+    <string name="text_party">Party</string>
+    <string name="default_party">Default</string>
+    <string name="text_district">District</string>
+    <string name="default_district">69</string>
+    <string name="legislator_image_description">Profile picture for the selected legislator</string>
 
 </resources>

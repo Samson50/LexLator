@@ -2,6 +2,7 @@ package com.example.legate.ui.home;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,9 +18,14 @@ import androidx.navigation.Navigation;
 
 import com.example.legate.R;
 import com.example.legate.utils.CacheManager;
+import com.example.legate.utils.ConfigManager;
 
 
 public class HomeFragment extends Fragment implements AdapterView.OnItemSelectedListener, View.OnClickListener {
+
+    private static final String TAG = "HomeFragment";
+
+    private ConfigManager configManager;
 
     private HomeViewModel homeViewModel;
     private View root;
@@ -32,6 +38,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                              ViewGroup container, Bundle savedInstanceState) {
 
         Context context = getActivity();
+        configManager = new ConfigManager(context);
 
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
@@ -39,7 +46,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         // Initialize State selection drop-down menu
         stateSpinner = root.findViewById(R.id.stateSpinner);
-        assert context != null;
         ArrayAdapter<CharSequence> stateAdapter = ArrayAdapter.createFromResource(context,
                 R.array.states_array, android.R.layout.simple_spinner_item);
         stateSpinner.setAdapter(stateAdapter);
@@ -54,8 +60,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         if (!updated) {
             updated = true;
             CacheManager cacheManager = new CacheManager(context, root);
-            int result = cacheManager.updateLocalCache();
-            //root.findViewById(R.id.progress_overlay).setVisibility(View.GONE);
+            if (0 != cacheManager.updateLocalCache()) Log.e(TAG, "Failed to update cache.");
         }
         return root;
     }
@@ -65,10 +70,18 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         if (position != 0) {
             state = parent.getItemAtPosition(position).toString();
             goStateButton.setVisibility(View.VISIBLE);
+
+            if (0 != configManager.update("state", state)) {
+                Log.e(TAG, "Config update failed");
+            }
         }
         else {
             state = null;
             goStateButton.setVisibility(View.GONE);
+
+            if (0 != configManager.update("state", state)) {
+                Log.e(TAG, "Config update failed");
+            }
         }
     }
 
