@@ -29,6 +29,9 @@ public class ImageTask extends AsyncTask<String, Integer, Bitmap> {
             Log.e(TAG, "Implementation error: too few arguments");
             return null;
         }
+        Log.d(TAG, String.format("ImageTask starting: %s, %s", (Object[]) strings));
+
+        CacheManager cacheManager = new CacheManager();
 
         String imageName;
         if (strings.length == 3) imageName = strings[2];
@@ -41,21 +44,22 @@ public class ImageTask extends AsyncTask<String, Integer, Bitmap> {
         if (!imageFile.exists()) {
             Log.d(TAG, "image.jpg not found, downloading through CacheManager");
             // Use CacheManager to download file
-            CacheManager cacheManager = new CacheManager();
             if (0 != cacheManager.downloadFile(imageUrl, imageFile.getAbsolutePath(), null)) {
-                Log.e(TAG, "Failed to download file, exiting");
-                return null;
+                Log.e(TAG, "Failed to download image file, using default");
+                return cacheManager.getDefaultAvatar();
             }
+            else return BitmapFactory.decodeFile(imageFile.getPath());
         }
-
-        Log.d(TAG, "Loading bitmap from " + imageFile);
-        // Read bitmap from file
-        return  BitmapFactory.decodeFile(imageFile.getPath());
+        else return BitmapFactory.decodeFile(imageFile.getPath());
     }
 
     @Override
     protected void onPostExecute(Bitmap bitmap) {
         super.onPostExecute(bitmap);
+        if (null == bitmap) {
+            Log.e(TAG, "(null == bitmap), exiting");
+            return;
+        }
         imageView.setImageBitmap(bitmap);
     }
 }

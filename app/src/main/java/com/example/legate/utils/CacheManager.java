@@ -1,10 +1,13 @@
 package com.example.legate.utils;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
+import com.example.legate.MainActivity;
 import com.example.legate.R;
 
 import org.json.JSONArray;
@@ -33,11 +36,13 @@ public class CacheManager {
 
     private static final String TAG = "CacheManager";
     private static final String CACHE_URL = "https://theunitedstates.io/congress-legislators/legislators-current.json";
+    //TODO: this is ghetto. fix this.
+    private static final String DEFAULT_IMAGE_URL = "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png";
 
     private int progress = 0;
     private boolean isCancelled = false;
     private TextView progressText;
-    private File localCache;
+    private static File localCache;
 
     public CacheManager() {
         Log.d(TAG, "Creating cache class instance");
@@ -230,20 +235,6 @@ public class CacheManager {
             connection = (HttpsURLConnection) url.openConnection();
             connection.connect();
 
-            /*
-                {null=[HTTP/1.1 200 OK], Accept-Ranges=[bytes], Access-Control-Allow-Origin=[*],
-                Age=[331], Cache-Control=[max-age=600], Connection=[keep-alive],
-                Content-Type=[application/json; charset=utf-8],
-                Date=[Thu, 09 Apr 2020 19:58:20 GMT], ETag=[W/"5e85ca0f-154469"],
-                Expires=[Thu, 09 Apr 2020 19:56:00 GMT],
-                Last-Modified=[Thu, 02 Apr 2020 11:18:39 GMT], Server=[GitHub.com],
-                Vary=[Accept-Encoding], Via=[1.1 varnish], X-Android-Received-Millis=[1586462291090],
-                X-Android-Response-Source=[NETWORK 200], X-Android-Selected-Protocol=[http/1.1],
-                X-Android-Sent-Millis=[1586462291061], X-Cache=[HIT], X-Cache-Hits=[1],
-                X-Fastly-Request-ID=[71d03a863191d7f48032cbcb76207606fa34d72f],
-                X-GitHub-Request-Id=[9AC4:4BE5:44AB26:568A37:5E8F7B78], X-Proxy-Cache=[MISS],
-                X-Served-By=[cache-ewr18145-EWR], X-Timer=[S1586462301.625007,VS0,VE1]}
-             */
             Log.d(TAG, "Headers: \n" + connection.getHeaderFields());
 
             // expect HTTP 200 OK, so we don't mistakenly save error report
@@ -312,6 +303,7 @@ public class CacheManager {
             Log.d(TAG, "Bytes downloaded: " + total);
         } catch (Exception e) {
             Log.e(TAG, e.toString());
+            return 1;
         } finally {
             Log.d(TAG, "Closing HTTPS connection and output stream");
             try {
@@ -335,7 +327,9 @@ public class CacheManager {
         try {
             URL url = new URL(fileUrl);
 
+            Log.d(TAG, "Establishing HTTPS connection");
             connection = (HttpsURLConnection) url.openConnection();
+            connection.setConnectTimeout(1000);
             connection.connect();
 
             Log.d(TAG, "Headers: \n" + connection.getHeaderFields());
@@ -403,6 +397,7 @@ public class CacheManager {
             Log.d(TAG, "Bytes downloaded: " + total);
         } catch (Exception e) {
             Log.e(TAG, e.toString());
+            return 1;
         } finally {
             Log.d(TAG, "Closing HTTPS connection and output stream");
             try {
@@ -417,6 +412,20 @@ public class CacheManager {
                 connection.disconnect();
         }
         return 0;
+    }
+
+    public Bitmap getDefaultAvatar() {
+        File localImage = new File(localCache, "default.png");
+        Log.d(TAG,"Getting default avatar");
+        if (!localImage.exists()) {
+            Log.d(TAG, "Downloading default avatar");
+            if (0 != downloadFile(DEFAULT_IMAGE_URL, localImage.getAbsolutePath(), null)) {
+                Log.e(TAG, "Failed to download default image");
+                return null;
+            }
+        }
+
+        return BitmapFactory.decodeFile(localImage.getPath());
     }
 
     public JSONObject stringToJSON(String rawString) {
@@ -458,6 +467,7 @@ public class CacheManager {
     }
 
     public String readFile(String filePath) {
+        Log.d(TAG, "Reading: " + filePath);
         String ret = "";
 
         try {
