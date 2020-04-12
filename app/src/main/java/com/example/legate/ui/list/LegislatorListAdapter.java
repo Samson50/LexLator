@@ -13,8 +13,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.legate.R;
-import com.example.legate.utils.CacheManager;
-import com.example.legate.utils.Legislator;
+import com.example.legate.data.Legislator;
 
 import java.io.File;
 import java.util.ArrayList;

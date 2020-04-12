@@ -36,8 +36,8 @@ public class CacheManager {
 
     private static final String TAG = "CacheManager";
     private static final String CACHE_URL = "https://theunitedstates.io/congress-legislators/legislators-current.json";
-    //TODO: this is ghetto. fix this.
-    private static final String DEFAULT_IMAGE_URL = "https://iupac.org/wp-content/uploads/2018/05/default-avatar.png";
+    private static final String COMMITTEES_URL = "https://theunitedstates.io/congress-legislators/committees-current.json";
+    private static final String MEMBERSHIP_URL = "https://theunitedstates.io/congress-legislators/committee-membership-current.json";
 
     private int progress = 0;
     private boolean isCancelled = false;
@@ -73,7 +73,9 @@ public class CacheManager {
                         Log.d(TAG, "Cache last modified: " + lastModified.toString());
                     }
 
-                    Log.d(TAG, "Starting download");
+                    Log.d(TAG, "Downloading files");
+                    downloadCurrentCommittees();
+                    downloadCommitteeMembership();
                     result = downloadFileBlocking(CACHE_URL, cacheFile.getAbsolutePath(), lastModified);
                     if (result == 0) Log.d(TAG, "Download complete");
                     else {
@@ -127,23 +129,15 @@ public class CacheManager {
         File infoFile = new File(legislatorDir, infoString);
         File termsFile = new File(legislatorDir, termsString);
 
-        try {
-            String terms = legislator.getJSONArray("terms").toString(4);
-            legislator.remove("terms");
-            FileWriter termWriter = new FileWriter(termsFile.getAbsoluteFile());
-            BufferedWriter termBuffer = new BufferedWriter(termWriter);
-            termBuffer.write(terms);
-            termBuffer.close();
-
-            String legislatorInfo = legislator.put("term", term).toString(4);
-            FileWriter legislatorWriter = new FileWriter(infoFile.getAbsoluteFile());
-            BufferedWriter legislatorBuffer = new BufferedWriter(legislatorWriter);
-            legislatorBuffer.write(legislatorInfo);
-            legislatorBuffer.close();
+        String terms = legislator.getJSONArray("terms").toString(4);
+        legislator.remove("terms");
+        if (0 != writeFile(termsFile.getAbsolutePath(), terms)) {
+            Log.e(TAG, "Failed to write terms: " + termsFile.getAbsolutePath());
         }
-        catch (IOException e) {
-            e.printStackTrace();
-            return 1;
+
+        String legislatorInfo = legislator.put("term", term).toString(4);
+        if (0 != writeFile(infoFile.getAbsolutePath(), legislatorInfo)) {
+            Log.e(TAG, "Failed to write info: " + infoFile.getAbsolutePath());
         }
 
         return 0;
@@ -199,6 +193,30 @@ public class CacheManager {
         return writeLegislatorFile(legislatorDir, legislator, currentTerm);
     }
 
+    public int writeFile(String filePath, JSONArray content) {
+        try {
+            return writeFile(filePath, content.toString(4));
+        } catch (JSONException e) {
+            Log.e(TAG, "writeFile(String, JSONArray) failed...");
+            return 1;
+        }
+    }
+
+    private int writeFile(String filePath, String content) {
+        try {
+            FileWriter fileWriter = new FileWriter(filePath);
+            BufferedWriter fileBuffer = new BufferedWriter(fileWriter);
+            fileBuffer.write(content);
+            fileBuffer.close();
+        }
+        catch (IOException e) {
+            Log.e(TAG, "writeFile(String, String) failed: " + e.toString());
+            return 1;
+        }
+        return 0;
+    }
+
+    // TODO: remake in the official android way
     private void updateProgress(String action) {
         final String update = action.concat(Integer.toString(progress));
         progressText.post(new Runnable() {
@@ -223,6 +241,34 @@ public class CacheManager {
             updateProgress("Populating Cache: ");
         }
         return 0;
+    }
+
+    private void downloadCommitteeMembership() {
+        // committees-current.json, committee-membership-current.json
+        String membershipPath = localCache.getAbsolutePath() + "/committee-membership-current.json";
+
+        if (0 != downloadFileBlocking(MEMBERSHIP_URL, membershipPath)) {
+            Log.e(TAG, "Failed to download: " + MEMBERSHIP_URL);
+        }
+    }
+
+    private void downloadCurrentCommittees() {
+        // committees-current.json, committee-membership-current.json
+        String committeesPath = localCache.getAbsolutePath() + "/committees-current.json";
+
+        if (0 != downloadFileBlocking(COMMITTEES_URL, committeesPath)) {
+            Log.e(TAG, "Failed to download: " + COMMITTEES_URL);
+        }
+    }
+
+    private int downloadFileBlocking(String fileUrl, String filePath) {
+        File downloadFile = new File(filePath);
+        Date lastModified;
+
+        if (!downloadFile.exists()) lastModified = null;
+        else lastModified = new Date(downloadFile.lastModified());
+
+        return downloadFileBlocking(fileUrl, filePath, lastModified);
     }
 
     private int downloadFileBlocking(String fileUrl, String filePath, Date cacheLastModified) {
@@ -320,6 +366,16 @@ public class CacheManager {
         return 0;
     }
 
+    private int downloadFile(String fileUrl, String filePath) {
+        File downloadFile = new File(filePath);
+        Date lastModified;
+
+        if (!downloadFile.exists()) lastModified = null;
+        else lastModified = new Date(downloadFile.lastModified());
+
+        return downloadFile(fileUrl, filePath, lastModified);
+    }
+
     int downloadFile(String fileUrl, String filePath, Date cacheLastModified) {
         InputStream input = null;
         OutputStream output = null;
@@ -414,20 +470,6 @@ public class CacheManager {
         return 0;
     }
 
-    public Bitmap getDefaultAvatar() {
-        File localImage = new File(localCache, "default.png");
-        Log.d(TAG,"Getting default avatar");
-        if (!localImage.exists()) {
-            Log.d(TAG, "Downloading default avatar");
-            if (0 != downloadFile(DEFAULT_IMAGE_URL, localImage.getAbsolutePath(), null)) {
-                Log.e(TAG, "Failed to download default image");
-                return null;
-            }
-        }
-
-        return BitmapFactory.decodeFile(localImage.getPath());
-    }
-
     public JSONObject stringToJSON(String rawString) {
         try {
             Log.d(TAG, "Converting string to JSONObject");
@@ -436,6 +478,32 @@ public class CacheManager {
             Log.e(TAG, e.toString());
             return null;
         }
+    }
+
+    public JSONArray stringToJSONArray(String rawString) {
+        try {
+            Log.d(TAG, "Converting string to JSONObject");
+            return new JSONArray(rawString);
+        } catch (JSONException e) {
+            Log.e(TAG, e.toString());
+            return null;
+        }
+    }
+
+    public JSONArray getCurrentCommittees() {
+        String committeesPath = localCache.getAbsolutePath() + "/committees-current.json";
+
+        String committeesString = readFile(committeesPath);
+
+        return stringToJSONArray(committeesString);
+    }
+
+    public JSONObject getCommitteeMembership() {
+        String membershipPath = localCache.getAbsolutePath() + "/committee-membership-current.json";
+
+        String membershipString = readFile(membershipPath);
+
+        return stringToJSON(membershipString);
     }
 
     public String getJSONField(File inputFile, String key) {

@@ -110,4 +110,14 @@
     <string name="website_default">https://www.examplewebsite.person.org/</string>
     <string name="social_media_text">Social Media</string>
 
+    <string name="committee_default_name">Chamber Committee on Stuff and Things</string>
+    <string name="party_text">Party</string>
+    <string name="title_text">Title</string>
+    <string name="rank_text">Rank</string>
+    <string name="start_text">Start</string>
+    <string name="title_default">Default Title</string>
+    <string name="party_default">Default Party</string>
+    <string name="rank_default">Default Rank</string>
+    <string name="start_default">1999–12–31</string>
+
 </resources>

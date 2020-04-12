@@ -1,6 +1,5 @@
 package com.example.legate.utils;
 
-import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
@@ -46,7 +45,8 @@ public class ImageTask extends AsyncTask<String, Integer, Bitmap> {
             // Use CacheManager to download file
             if (0 != cacheManager.downloadFile(imageUrl, imageFile.getAbsolutePath(), null)) {
                 Log.e(TAG, "Failed to download image file, using default");
-                return cacheManager.getDefaultAvatar();
+                //return cacheManager.getDefaultAvatar();
+                return null;
             }
             else return BitmapFactory.decodeFile(imageFile.getPath());
         }
