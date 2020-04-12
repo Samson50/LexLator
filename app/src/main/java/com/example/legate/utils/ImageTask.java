@@ -28,6 +28,7 @@ public class ImageTask extends AsyncTask<String, Integer, Bitmap> {
             Log.e(TAG, "Implementation error: too few arguments");
             return null;
         }
+        if (isCancelled()) return null;
         Log.d(TAG, String.format("ImageTask starting: %s, %s", (Object[]) strings));
 
         CacheManager cacheManager = new CacheManager();

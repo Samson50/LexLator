@@ -58,12 +58,17 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
 
     LegislatorListAdapter(File[] legislatorsFileArray) {
 
-
         Log.d(TAG, "Populating adapter data");
         legislatorsList = new ArrayList<>();
 
         for (File legislatorFile: legislatorsFileArray) {
             legislatorsList.add(new Legislator(legislatorFile.getAbsolutePath()));
+        }
+    }
+
+    public void cancel() {
+        for (Legislator legislator : legislatorsList) {
+            legislator.cancelImageTask();
         }
     }
 

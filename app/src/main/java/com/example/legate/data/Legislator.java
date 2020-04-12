@@ -43,6 +43,10 @@ public class Legislator {
         if (0 != fillLegislatorMain()) Log.e(TAG, "Failed initial population");
     }
 
+    public void cancelImageTask() {
+        if (null != imageTask) imageTask.cancel(false);
+    }
+
     public int fillLegislatorMain(ImageView imageView, TextView titleView, TextView partyView,
                                   TextView stateView, TextView districtView, ViewGroup districtLayout) {
         if (null == title || null == state || null == party || null == imageUrl) {

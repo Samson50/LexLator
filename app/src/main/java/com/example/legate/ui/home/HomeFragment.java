@@ -28,8 +28,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private ConfigManager configManager;
 
     private HomeViewModel homeViewModel;
-    private View root;
-    private Spinner stateSpinner;
     private Button goStateButton;
     private String state;
     private static boolean updated = false;
@@ -38,14 +36,15 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                              ViewGroup container, Bundle savedInstanceState) {
 
         Context context = getActivity();
+        assert context != null;
         configManager = new ConfigManager(context);
 
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);
-        root = inflater.inflate(R.layout.fragment_home, container, false);
+        View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         // Initialize State selection drop-down menu
-        stateSpinner = root.findViewById(R.id.stateSpinner);
+        Spinner stateSpinner = root.findViewById(R.id.stateSpinner);
         ArrayAdapter<CharSequence> stateAdapter = ArrayAdapter.createFromResource(context,
                 R.array.states_array, android.R.layout.simple_spinner_item);
         stateSpinner.setAdapter(stateAdapter);

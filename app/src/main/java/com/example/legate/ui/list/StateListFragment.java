@@ -34,8 +34,8 @@ public class StateListFragment extends Fragment {
     private TextView representativesText;
     private RecyclerView senatorsRecyclerView;
     private RecyclerView representativesRecyclerView;
-    private RecyclerView.Adapter senatorsAdapter;
-    private RecyclerView.Adapter representativesAdapter;
+    private LegislatorListAdapter senatorsAdapter;
+    private LegislatorListAdapter representativesAdapter;
     private RecyclerView.LayoutManager senatorsManager;
     private RecyclerView.LayoutManager representativesManager;
 
@@ -89,6 +89,13 @@ public class StateListFragment extends Fragment {
         representativesText.setOnClickListener(new CollapseListener(representativesRecyclerView));
 
         return root;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        representativesAdapter.cancel();
+        senatorsAdapter.cancel();
     }
 
     private static class CollapseListener implements View.OnClickListener {
