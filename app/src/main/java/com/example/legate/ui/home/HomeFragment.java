@@ -32,7 +32,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private Spinner stateSpinner;
     private Button goStateButton;
     private String state;
-    private boolean updated = false;
+    private static boolean updated = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -59,8 +59,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         // Update Local Cache
         if (!updated) {
             updated = true;
+            ViewGroup progressOverlay = root.findViewById(R.id.progress_overlay);
+            ViewGroup contentLayout = root.findViewById(R.id.home_content_layout);
             CacheManager cacheManager = new CacheManager();
-            if (0 != cacheManager.updateLocalCache(context, root)) Log.e(TAG, "Failed to update cache.");
+            if (0 != cacheManager.updateLocalCache(context, progressOverlay, contentLayout)) Log.e(TAG, "Failed to update cache.");
         }
         return root;
     }
