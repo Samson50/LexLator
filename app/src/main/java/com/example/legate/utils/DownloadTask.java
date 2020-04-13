@@ -66,7 +66,7 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
                             return "";
                         }
                     } else Log.d(TAG, "Failed to parse URL Modified String: " + urlModified);
-                } else Log.d(TAG, "Cache last modified == null, continuing");
+                } else Log.d(TAG, "Url last modified == null, continuing");
             }
 
             // this will be useful to display download percentage

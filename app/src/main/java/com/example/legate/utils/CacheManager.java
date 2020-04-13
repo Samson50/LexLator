@@ -82,15 +82,6 @@ public class CacheManager {
         DownloadTask downloadTask = new DownloadTask();
         downloadTask.execute(fileUrl, filePath);
         downloadTasks.add(downloadTask);
-        /*
-        File downloadFile = new File(filePath);
-        Date lastModified;
-
-        if (!downloadFile.exists()) lastModified = null;
-        else lastModified = new Date(downloadFile.lastModified());
-
-        return downloadFile(fileUrl, filePath, lastModified);
-        */
     }
 
     int downloadFile(String fileUrl, String filePath, Date cacheLastModified) {

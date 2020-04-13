@@ -31,7 +31,7 @@ public class CommitteesListAdapter extends RecyclerView.Adapter<CommitteesListAd
         TextView membershipRank;
         TextView membershipStart;
 
-        public CommitteesListViewHolder(@NonNull View itemView) {
+        CommitteesListViewHolder(@NonNull View itemView) {
             super(itemView);
             membershipContentLayout = itemView.findViewById(R.id.membership_content_layout);
             committeeName = itemView.findViewById(R.id.committee_name);
@@ -54,7 +54,7 @@ public class CommitteesListAdapter extends RecyclerView.Adapter<CommitteesListAd
         }
     }
 
-    public CommitteesListAdapter(JSONArray committeesArray) {
+    CommitteesListAdapter(JSONArray committeesArray) {
         Log.d(TAG, "Populating committees array");
         committees = committeesArray;
     }

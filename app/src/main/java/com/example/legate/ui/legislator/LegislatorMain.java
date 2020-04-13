@@ -77,14 +77,19 @@ public class LegislatorMain extends Fragment {
             }
         });
 
+        final RecyclerView contributorsRecycler = root.findViewById(R.id.top_contributors_recycler);
+        RecyclerView.LayoutManager contributorsManager = new LinearLayoutManager(context);
+        contributorsRecycler.setLayoutManager(contributorsManager);
+
+        final RecyclerView industriesRecycler = root.findViewById(R.id.top_industries_recycler);
+        RecyclerView.LayoutManager industriesManager = new LinearLayoutManager(context);
+        industriesRecycler.setLayoutManager(industriesManager);
+
+        final ViewGroup summaryView = root.findViewById(R.id.summary_constraint);
         root.findViewById(R.id.finances_fill).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                legislator.fillFinances(
-                        (ViewGroup) root.findViewById(R.id.summary_constraint),
-                        (RecyclerView) root.findViewById(R.id.top_contributors_recycler),
-                        (RecyclerView) root.findViewById(R.id.top_industries_recycler)
-                );
+                legislator.fillFinances(summaryView, contributorsRecycler, industriesRecycler);
             }
         });
 
@@ -94,6 +99,10 @@ public class LegislatorMain extends Fragment {
                 downloadActivities();
             }
         });
+        addCollapse((TextView) root.findViewById(R.id.summary_text), summaryView);
+        addCollapse((TextView) root.findViewById(R.id.top_contributors_text), contributorsRecycler);
+        addCollapse((TextView) root.findViewById(R.id.top_industries_text), industriesRecycler);
+
 
         final TextView bioView = root.findViewById(R.id.legislator_bio);
         final RecyclerView committeesRecycler = root.findViewById(R.id.committees_recycler);

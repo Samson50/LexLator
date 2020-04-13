@@ -26,7 +26,7 @@ public class Legislator {
 
     private CacheManager cacheManager = new CacheManager();
     private StateHelper stateHelper = new StateHelper();
-    private Finances finances = new Finances(cacheManager);
+    private Finances finances;
     private ImageTask imageTask;
 
     private File localCache;
@@ -44,6 +44,7 @@ public class Legislator {
     public Legislator(String legislatorPath) {
         localCache = new File(legislatorPath);
         if (0 != fillLegislatorMain()) Log.e(TAG, "Failed initial population");
+        finances = new Finances(cacheManager, localCache);
     }
 
     public void cancelImageTask() {
@@ -115,7 +116,7 @@ public class Legislator {
     public void downloadFinances() {
         String openSecretsId = getIdValue("opensecrets");
 
-        finances.downloadFinances(localCache, openSecretsId, CYCLE);
+        finances.downloadFinances(openSecretsId, CYCLE);
     }
 
     public void fillFinances(ViewGroup summaryView, RecyclerView contributionsRecycler, RecyclerView industriesRecycler) {

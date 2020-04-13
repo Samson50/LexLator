@@ -128,5 +128,9 @@
     <string name="text_cash">Cash On Hand</string>
     <string name="text_debt">Reported Debt</string>
     <string name="default_finance_value">$0.00</string>
+    <string name="default_contributor_name">Concerned Citizens of America</string>
+    <string name="text_total_value">Total</string>
+    <string name="text_individuals">Individuals</string>
+    <string name="text_pac">Political Action Committees</string>
 
 </resources>
