@@ -43,6 +43,21 @@
                 app:layout_constraintTop_toBottomOf="@+id/legislator_banner" />
 
             <Button
+                android:id="@+id/finances_fill"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginBottom="4dp"
+                android:background="@drawable/download"
+                app:layout_constraintBottom_toBottomOf="@+id/finances_text"
+                app:layout_constraintDimensionRatio="1:1"
+                app:layout_constraintEnd_toStartOf="@+id/finances_download"
+                app:layout_constraintTop_toTopOf="@+id/finances_text"
+                app:layout_constraintVertical_bias="1.0" />
+
+            <Button
                 android:id="@+id/finances_download"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="0dp"
@@ -56,28 +71,15 @@
                 app:layout_constraintEnd_toEndOf="@+id/finances_text"
                 app:layout_constraintTop_toTopOf="@+id/finances_text" />
 
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/finances_constraint"
+            <include
+                android:id="@+id/financial_information"
+                layout="@layout/layout_finances"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/finances_text"
-                tools:visibility="gone">
-
-                <TextView
-                    android:id="@+id/finances_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginBottom="8dp"
-                    android:text="@string/finances_default"
-                    android:textSize="30sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                android:visibility="gone"
+                app:layout_constraintEnd_toEndOf="@+id/finances_text"
+                app:layout_constraintStart_toStartOf="@+id/finances_text"
+                app:layout_constraintTop_toBottomOf="@+id/finances_text" />
 
             <TextView
                 android:id="@+id/information_text"
@@ -92,7 +94,7 @@
                 android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/finances_constraint" />
+                app:layout_constraintTop_toBottomOf="@+id/financial_information" />
 
             <Button
                 android:id="@+id/informaiton_download"

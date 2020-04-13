@@ -44,7 +44,7 @@ public class LegislatorMain extends Fragment {
 
         //homeViewModel =
         //        ViewModelProviders.of(this).get(HomeViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_legislator_main, container, false);
+        final View root = inflater.inflate(R.layout.fragment_legislator_main, container, false);
 
         legislatorLayout = root.findViewById(R.id.legislator_banner);
         legislatorImage = legislatorLayout.findViewById(R.id.legislator_image);
@@ -54,7 +54,7 @@ public class LegislatorMain extends Fragment {
         legislatorDistrict = legislatorLayout.findViewById(R.id.legislator_district);
         ViewGroup districtLayout = legislatorLayout.findViewById(R.id.district_layout);
 
-        addCollapse((TextView) root.findViewById(R.id.finances_text), root.findViewById(R.id.finances_constraint));
+        addCollapse((TextView) root.findViewById(R.id.finances_text), root.findViewById(R.id.financial_information));
         addCollapse((TextView) root.findViewById(R.id.information_text), root.findViewById(R.id.informaiton_constraint));
         addCollapse((TextView) root.findViewById(R.id.bio_text), root.findViewById(R.id.legislator_bio));
         addCollapse((TextView) root.findViewById(R.id.committees_text), root.findViewById(R.id.committees_recycler));
@@ -74,6 +74,17 @@ public class LegislatorMain extends Fragment {
             @Override
             public void onClick(View v) {
                 downloadFinances();
+            }
+        });
+
+        root.findViewById(R.id.finances_fill).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                legislator.fillFinances(
+                        (ViewGroup) root.findViewById(R.id.summary_constraint),
+                        (RecyclerView) root.findViewById(R.id.top_contributors_recycler),
+                        (RecyclerView) root.findViewById(R.id.top_industries_recycler)
+                );
             }
         });
 
@@ -125,7 +136,7 @@ public class LegislatorMain extends Fragment {
     }
 
     private void downloadFinances() {
-
+        legislator.downloadFinances();
     }
 
     private void downloadActivities() {

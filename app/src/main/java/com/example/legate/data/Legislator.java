@@ -1,6 +1,5 @@
 package com.example.legate.data;
 
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.legate.data.finances.Finances;
 import com.example.legate.utils.CacheManager;
 import com.example.legate.utils.ImageTask;
 import com.example.legate.utils.StateHelper;
@@ -19,11 +19,14 @@ import org.json.JSONObject;
 
 import java.io.File;
 
+
 public class Legislator {
     private static final String TAG = "Legislator";
+    private static final String CYCLE = "2020";
 
     private CacheManager cacheManager = new CacheManager();
     private StateHelper stateHelper = new StateHelper();
+    private Finances finances = new Finances(cacheManager);
     private ImageTask imageTask;
 
     private File localCache;
@@ -109,10 +112,20 @@ public class Legislator {
         return 0;
     }
 
+    public void downloadFinances() {
+        String openSecretsId = getIdValue("opensecrets");
+
+        finances.downloadFinances(localCache, openSecretsId, CYCLE);
+    }
+
+    public void fillFinances(ViewGroup summaryView, RecyclerView contributionsRecycler, RecyclerView industriesRecycler) {
+        finances.fillFinances(summaryView, contributionsRecycler, industriesRecycler);
+    }
+
     public void fillContactInformation(TextView addressView, TextView phoneNumberView, TextView websiteView) {
         String address = getTermValue("address");
         if (null == address) address = getTermValue("office");
-        addressView.setText(getTermValue("address"));
+        addressView.setText(address);
 
         phoneNumberView.setText(getTermValue("phone"));
 
@@ -246,7 +259,7 @@ public class Legislator {
         return getValue("term", key);
     }
 
-    public String getIdValue(String key) {
+    private String getIdValue(String key) {
         return getValue("id", key);
     }
 

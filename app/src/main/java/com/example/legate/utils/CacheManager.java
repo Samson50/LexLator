@@ -22,17 +22,24 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
 
+
+// TODO: Fix code duplication among download tasks
+// TODO: Refactor to use localCache when created, only sub-directories (utility class)
 public class CacheManager {
 
     private static final String TAG = "CacheManager";
 
     private boolean isCancelled = false;
     private static File localCache;
+    private List<DownloadTask> downloadTasks = new ArrayList<>();
+
 
     public CacheManager() {
         Log.d(TAG, "Creating cache class instance");
@@ -71,7 +78,11 @@ public class CacheManager {
         return 0;
     }
 
-    private int downloadFile(String fileUrl, String filePath) {
+    public void downloadFile(String fileUrl, String filePath) {
+        DownloadTask downloadTask = new DownloadTask();
+        downloadTask.execute(fileUrl, filePath);
+        downloadTasks.add(downloadTask);
+        /*
         File downloadFile = new File(filePath);
         Date lastModified;
 
@@ -79,6 +90,7 @@ public class CacheManager {
         else lastModified = new Date(downloadFile.lastModified());
 
         return downloadFile(fileUrl, filePath, lastModified);
+        */
     }
 
     int downloadFile(String fileUrl, String filePath, Date cacheLastModified) {

@@ -8,6 +8,30 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="collapsibleHeader">
+        <item name="android:background">@color/collapsibleBackground</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="layout_constraintEnd_toEndOf">parent</item>
+        <item name="layout_constraintStart_toStartOf">parent</item>
+    </style>
+
+    <style name="collapsibleHeader.main" parent="collapsibleHeader">
+        <item name="android:textSize">36sp</item>
+    </style>
+
+    <style name="collapsibleHeader.subOne" parent="collapsibleHeader">
+        <item name="android:textSize">30sp</item>
+    </style>
+
+    <style name="collapsibleHeader.subTwo" parent="collapsibleHeader">
+        <item name="android:textSize">24sp</item>
+    </style>
+
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>

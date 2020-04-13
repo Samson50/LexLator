@@ -101,7 +101,7 @@
     <string name="activities_text">Activities</string>
     <string name="sponsored_bills_text">Sponsored Bills</string>
     <string name="votes_text">Recent Votes</string>
-    <string name="contact_text">Contact</string>
+    <string name="contact_text">Contact Information</string>
     <string name="address_text">Address</string>
     <string name="address_default">Default Address</string>
     <string name="phone_text">Phone Number</string>
@@ -119,5 +119,14 @@
     <string name="party_default">Default Party</string>
     <string name="rank_default">Default Rank</string>
     <string name="start_default">1999–12–31</string>
+
+    <string name="text_summary">Summary</string>
+    <string name="text_top_contributors">Top Contributors</string>
+    <string name="text_top_industries">Top 10 Industries</string>
+    <string name="text_total">Total Contributions</string>
+    <string name="text_spent">Amount Spent</string>
+    <string name="text_cash">Cash On Hand</string>
+    <string name="text_debt">Reported Debt</string>
+    <string name="default_finance_value">$0.00</string>
 
 </resources>

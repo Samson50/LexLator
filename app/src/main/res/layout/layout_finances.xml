@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/finances_constraint"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <TextView
+        android:id="@+id/summary_text"
+        style="@style/collapsibleHeader.subOne"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/text_summary"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/summary_constraint"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        app:layout_constraintEnd_toEndOf="@+id/summary_text"
+        app:layout_constraintStart_toStartOf="@+id/summary_text"
+        app:layout_constraintTop_toBottomOf="@+id/summary_text">
+
+        <TextView
+            android:id="@+id/text_total"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/text_total"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/total_contributions"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/default_finance_value"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_total"
+            app:layout_constraintTop_toTopOf="@+id/text_total" />
+
+        <TextView
+            android:id="@+id/text_spent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/text_spent"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/text_total"
+            app:layout_constraintStart_toStartOf="@+id/text_total"
+            app:layout_constraintTop_toBottomOf="@+id/text_total" />
+
+        <TextView
+            android:id="@+id/amount_spent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/default_finance_value"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_spent"
+            app:layout_constraintTop_toTopOf="@+id/text_spent" />
+
+        <TextView
+            android:id="@+id/text_cash"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/text_cash"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/text_spent"
+            app:layout_constraintStart_toStartOf="@+id/text_spent"
+            app:layout_constraintTop_toBottomOf="@+id/text_spent" />
+
+        <TextView
+            android:id="@+id/cash_on_hand"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/default_finance_value"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_cash"
+            app:layout_constraintTop_toTopOf="@+id/text_cash" />
+
+        <TextView
+            android:id="@+id/text_debt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/text_debt"
+            android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="@+id/text_cash"
+            app:layout_constraintStart_toStartOf="@+id/text_cash"
+            app:layout_constraintTop_toBottomOf="@+id/text_cash" />
+
+        <TextView
+            android:id="@+id/reported_debt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/default_finance_value"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/text_debt"
+            app:layout_constraintTop_toTopOf="@+id/text_debt" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/top_contributors_text"
+        style="@style/collapsibleHeader.subOne"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/text_top_contributors"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/summary_constraint" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/top_contributors_recycler"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/top_contributors_text"
+        app:layout_constraintStart_toStartOf="@+id/top_contributors_text"
+        app:layout_constraintTop_toBottomOf="@+id/top_contributors_text" />
+
+    <TextView
+        android:id="@+id/top_industries_text"
+        style="@style/collapsibleHeader.subOne"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="8dp"
+        android:text="@string/text_top_industries"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/top_contributors_recycler" />
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/top_industries_recycler"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:visibility="gone"
+        app:layout_constraintEnd_toEndOf="@+id/top_industries_text"
+        app:layout_constraintStart_toStartOf="@+id/top_industries_text"
+        app:layout_constraintTop_toBottomOf="@+id/top_industries_text" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

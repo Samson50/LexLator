@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.net.ssl.HttpsURLConnection;
 
+// TODO: Fix code duplication among download calls
 public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
     private static final String TAG = "UpdateTask";
