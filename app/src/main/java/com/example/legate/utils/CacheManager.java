@@ -1,6 +1,7 @@
 package com.example.legate.utils;
 
 import android.content.Context;
+import android.os.Looper;
 import android.util.Log;
 import android.view.ViewGroup;
 
@@ -85,6 +86,10 @@ public class CacheManager {
     }
 
     int downloadFile(String fileUrl, String filePath, Date cacheLastModified) {
+        if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
+            Log.e(TAG, "Attempting to run downloadFile on main thread, exiting");
+            return 1;
+        }
         InputStream input = null;
         OutputStream output = null;
         HttpsURLConnection connection = null;
@@ -241,5 +246,8 @@ public class CacheManager {
 
     public void cancel() {
         isCancelled = true;
+        for (DownloadTask task: downloadTasks) {
+            task.cancel(false);
+        }
     }
 }

@@ -37,6 +37,11 @@ public class DownloadTask extends AsyncTask<String, Integer, String> {
 
             Log.d(TAG, "Establishing HTTPS connection");
             connection = (HttpsURLConnection) url.openConnection();
+            if (sPaths.length == 4) {
+                Log.d(TAG, "Adding api key to request");
+                // connection.setRequestProperty("X-API-Key", apiKey);
+                connection.setRequestProperty(sPaths[2], sPaths[3]);
+            }
             connection.setConnectTimeout(5000);
             connection.connect();
 

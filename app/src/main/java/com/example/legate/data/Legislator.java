@@ -131,6 +131,7 @@ public class Legislator {
         phoneNumberView.setText(getTermValue("phone"));
 
         websiteView.setText(getTermValue("url"));
+        // Social Media: https://theunitedstates.io/congress-legislators/legislators-social-media.json
     }
 
     public void fillBiography(TextView bioView) {
@@ -167,6 +168,28 @@ public class Legislator {
 
         CommitteesListAdapter adapter = new CommitteesListAdapter(membershipJSON);
         view.setAdapter(adapter);
+
+    }
+
+    public void downloadActivities() {
+        // https://github.com/unitedstates/congress
+        // curl "https://api.propublica.org/congress/v1/house/votes/recent.json"
+        //  -H "X-API-Key: PROPUBLICA_API_KEY"
+        // https://projects.propublica.org/api-docs/congress-api/
+        // bills
+        // https://github.com/unitedstates/congress/blob/master/tasks/bills.py
+        // https://www.congress.gov/
+        // https://www.gpo.gov/fdsys/bulkdata/BILLSUM
+        // https://projects.propublica.org/api-docs/congress-api/bills/
+        // https://projects.propublica.org/api-docs/congress-api/bills/#get-recent-bills
+        // https://api.propublica.org/congress/v1/{congress}/{chamber}/bills/{type}.json
+
+        // votes
+        // https://www.senate.gov/legislative/LIS/roll_call_lists/vote_menu_116_2.xml
+        // http://clerk.house.gov/legislative/legvotes.aspx
+        // https://github.com/unitedstates/congress/blob/master/tasks/votes.py
+        // https://projects.propublica.org/api-docs/congress-api/votes/
+        // https://api.propublica.org/congress/v1/{chamber}/votes/recent.json
 
     }
 

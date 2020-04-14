@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -29,6 +30,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HttpsURLConnection;
 
 // TODO: Fix code duplication among download calls
+// TODO: Add votes-last-updated to config.json
 public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
     private static final String TAG = "UpdateTask";
@@ -36,6 +38,12 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
     private static final String CACHE_URL = "https://theunitedstates.io/congress-legislators/legislators-current.json";
     private static final String COMMITTEES_URL = "https://theunitedstates.io/congress-legislators/committees-current.json";
     private static final String MEMBERSHIP_URL = "https://theunitedstates.io/congress-legislators/committee-membership-current.json";
+    // https://api.propublica.org/congress/v1/{chamber}/votes/{start-date}/{end-date}.json
+    // private static final String VOTES_URL = "https://api.propublica.org/congress/v1/%s/votes/%s/%s.json";
+    // https://api.propublica.org/congress/v1/{chamber}/votes/recent.json
+    private static final String VOTES_URL = "https://api.propublica.org/congress/v1/%s/votes/recent.json";
+    private static final String PRO_API_KEY = "c2tpYc0rKnNfyf65N7p4lSBRgbzVHAYdgdrY2PGH ";
+
 
     private PowerManager.WakeLock mWakeLock;
     private Context context;
@@ -92,6 +100,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         File cacheFile = new File(localCache, "legislators-current.json");
 
         Log.d(TAG, "Downloading files");
+
         String membershipPath = localCache.getAbsolutePath() + "/committee-membership-current.json";
         if (0 != downloadFile(MEMBERSHIP_URL, membershipPath)) {
             Log.e(TAG, "Failed to download: " + MEMBERSHIP_URL);
@@ -108,23 +117,10 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
             Log.e(TAG, "Failed to download: " + CACHE_URL);
         }
 
-        Log.d(TAG, "Checking if state files are already populated");
-        File[] dirList = localCache.listFiles();
-        if (null != dirList && dirList.length >= 50) {
-            Log.d(TAG, "State files found, returning");
-            return null;
-        }
-        Log.d(TAG, "Reading cached file");
-        String legislatorsRaw = cacheManager.readFile(cacheFile.getAbsolutePath());
-        Log.d(TAG, "Finished reading cached file");
+        populateStates(cacheFile);
 
-        try {
-            JSONArray legislatorsJSON = new JSONArray(legislatorsRaw);
-            Log.d(TAG, "Populating legislators");
-            if (0 == populateLocal(legislatorsJSON)) Log.d(TAG, "Finished populating legislators");
-            else Log.e(TAG, "populateLocal(...) failed");
-        } catch (JSONException e) {
-            Log.e(TAG, "JSON Error: " + e.toString());
+        if (0 != downloadVotes()) {
+            Log.e(TAG, "Failed to download votes");
         }
 
         return null;
@@ -162,7 +158,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         mWakeLock.release();
     }
 
-    private int downloadFile(String fileUrl, String filePath) {
+    private int downloadFile(String fileUrl, String filePath, String apiArg, String apiKey) {
         File downloadFile = new File(filePath);
         progressText = "Downloading " + downloadFile.getName();
         Date lastModified;
@@ -170,10 +166,10 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         if (!downloadFile.exists()) lastModified = null;
         else lastModified = new Date(downloadFile.lastModified());
 
-        return downloadFile(fileUrl, filePath, lastModified);
+        return downloadFile(fileUrl, filePath, apiArg, apiKey, lastModified);
     }
 
-    private int downloadFile(String fileUrl, String filePath, Date cacheLastModified) {
+    private int downloadFile(String fileUrl, String filePath, String apiArg, String apiKey, Date cacheLastModified) {
         InputStream input = null;
         OutputStream output = null;
         HttpsURLConnection connection = null;
@@ -181,6 +177,12 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
             URL url = new URL(fileUrl);
 
             connection = (HttpsURLConnection) url.openConnection();
+            if (null != apiKey && null != apiArg) {
+                Log.d(TAG, "Adding api key to request: " + apiArg + ": " + apiKey);
+                // connection.setRequestProperty("X-API-Key", apiKey);
+                connection.setRequestProperty(apiArg, apiKey);
+            }
+            connection.setConnectTimeout(5000);
             connection.connect();
 
             Log.d(TAG, "Headers: \n" + connection.getHeaderFields());
@@ -264,7 +266,8 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                     output.close();
                 if (input != null)
                     input.close();
-            } catch (IOException ignored) {
+            } catch (IOException e) {
+                Log.e(TAG, e.toString());
             }
 
             if (connection != null)
@@ -273,7 +276,34 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         return 0;
     }
 
-    private int populateLocal(JSONArray legislators) throws JSONException {
+    private int downloadFile(String fileUrl, String filePath) {
+        return downloadFile(fileUrl, filePath, null, null);
+    }
+
+    private void populateStates(File cacheFile) {
+        Log.d(TAG, "Checking if state files are already populated");
+        File[] dirList = localCache.listFiles();
+        if (null != dirList && dirList.length >= 50) {
+            Log.d(TAG, "State files found, returning");
+            return;
+        }
+        Log.d(TAG, "Reading cached file");
+        String legislatorsRaw = cacheManager.readFile(cacheFile.getAbsolutePath());
+        Log.d(TAG, "Finished reading cached file");
+
+        try {
+            JSONArray legislatorsJSON = new JSONArray(legislatorsRaw);
+            Log.d(TAG, "Populating legislators");
+            if (0 == populateLegislators(legislatorsJSON)) Log.d(TAG, "Finished populating legislators");
+            else {
+                Log.e(TAG, "populateLocal(...) failed");
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "JSON Error: " + e.toString());
+        }
+    }
+
+    private int populateLegislators(JSONArray legislators) throws JSONException {
         progressText = "Populating local cache...";
         int total = legislators.length();
 
@@ -338,6 +368,105 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         }
 
         return 0;
+    }
+
+    private int downloadVotes() {
+        Log.d(TAG, "Downloading votes...");
+        File votesFile = new File(localCache, "votes");
+        if (!votesFile.exists()) {
+            if (!votesFile.mkdir()) {
+                Log.e(TAG, "Failed to create file: " + votesFile.getAbsolutePath());
+                return 1;
+            }
+        }
+
+        // Get two week date range
+        Calendar calendar = Calendar.getInstance();
+        Date endDate = calendar.getTime();
+        calendar.add(Calendar.DATE, -14);
+        Date startDate = calendar.getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+
+        String houseVotesPath = votesFile.getAbsolutePath() + "/house-votes.json";
+        String houseVotesUrl = String.format(
+                VOTES_URL, "house"//, formatter.format(startDate), formatter.format(endDate)
+        );
+        String apiArg = "X-API-Key";
+        if (0 != downloadFile(houseVotesUrl, houseVotesPath, apiArg, PRO_API_KEY)) {
+            Log.e(TAG, "Failed to download: " + houseVotesUrl);
+            return 1;
+        }
+
+        String senateVotesPath = votesFile.getAbsolutePath() + "/senate-votes.json";
+        String senateVotesUrl = String.format(
+                VOTES_URL, "senate"//, formatter.format(startDate), formatter.format(endDate)
+        );
+        if (0 != downloadFile(senateVotesUrl, senateVotesPath, apiArg, PRO_API_KEY)) {
+            Log.e(TAG, "Failed to download: " + senateVotesUrl);
+            return 1;
+        }
+
+        return populateVotes(votesFile, houseVotesPath, senateVotesPath);
+    }
+
+    private int populateChamberVotes(String chamber, File votesFile, String chamberVotesPath) {
+        File chamberVotesDir = new File(votesFile, chamber);
+        Log.d(TAG, "Populating chamber votes from file: " + chamberVotesPath);
+        if (!chamberVotesDir.exists()) {
+            if (!chamberVotesDir.mkdir()) {
+                Log.e(TAG, "Failed to create: " + chamberVotesDir.getAbsolutePath());
+                return 1;
+            }
+        }
+        String chamberVotes = cacheManager.readFile(chamberVotesPath);
+        if (null != chamberVotes) {
+            JSONObject chamberJson = cacheManager.stringToJSON(chamberVotes);
+            if (null != chamberJson) {
+                // File format: {chamber}-{congress #}-{session #}-{roll #} = C-123-1-12345
+                try {
+                    JSONArray votesArray = chamberJson.getJSONObject("results").getJSONArray("votes");
+                    for (int i = 0; i < votesArray.length(); i++) {
+                        Log.d(TAG, String.format(Locale.US, "Populating vote %d for %s", i, chamber));
+
+                        JSONObject vote = votesArray.getJSONObject(i);
+                        String voteName = chamber.substring(0,1) + "-";
+                        voteName += vote.getInt("congress") + "-";
+                        voteName += vote.getInt("session") + "-";
+                        voteName += String.format(Locale.US, "%05d", vote.getInt("roll_call")) + ".json";
+                        Log.d(TAG, "Vote file: " + voteName);
+
+                        String voteUrl = vote.getString("vote_uri");
+
+                        String outputPath = chamberVotesDir.getAbsolutePath() + "/" + voteName;
+
+                        if (0 != downloadFile(voteUrl, outputPath, "X-API-Key", PRO_API_KEY))
+                            Log.e(TAG, "Failed to download: " + voteUrl);
+
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "populateChamberVotes(...) JSON error: " + e.toString());
+                    return 1;
+                }
+            }
+            else {
+                Log.e(TAG, "chamberJson == null, exiting");
+                return 1;
+            }
+        }
+        else {
+            Log.e(TAG, "(String) chamberVotes == null, exiting");
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private int populateVotes(File votesFile, String houseVotesPath, String senateVotesPath) {
+
+        int res = populateChamberVotes("house", votesFile, houseVotesPath);
+        int ras = populateChamberVotes("senate", votesFile, senateVotesPath);
+
+        return res + ras;
     }
 
     private String getLegislatorDir(JSONObject legislator, JSONObject currentTerm) throws JSONException {
