@@ -114,7 +114,7 @@ public class StateListFragment extends Fragment {
     }
 
     private void populateFileArrays(Context context) {
-        ConfigManager configManager = new ConfigManager(context);
+        ConfigManager configManager = new ConfigManager(context.getFilesDir());
 
         // Get the selected state
         String state;

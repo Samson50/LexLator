@@ -37,7 +37,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         Context context = getActivity();
         assert context != null;
-        configManager = new ConfigManager(context);
+        configManager = new ConfigManager(context.getFilesDir());
 
         homeViewModel =
                 ViewModelProviders.of(this).get(HomeViewModel.class);

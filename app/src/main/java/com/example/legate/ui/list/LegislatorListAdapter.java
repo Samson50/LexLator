@@ -83,7 +83,7 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
 
     @Override
     public void onBindViewHolder(@NonNull LegislatorsListViewHolder holder, int position) {
-        if (0 != legislatorsList.get(position).fillLegislatorMain(
+        if (0 != legislatorsList.get(position).fillLegislatorInfo(
                 holder.legislatorImage,
                 holder.legislatorTitle,
                 holder.legislatorParty,

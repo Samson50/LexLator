@@ -133,4 +133,10 @@
     <string name="text_individuals">Individuals</string>
     <string name="text_pac">Political Action Committees</string>
 
+    <string name="default_vote_date">31 Dec., 1999</string>
+    <string name="text_vote_number">Vote #:</string>
+    <string name="default_vote_number">0000</string>
+    <string name="default_position">Yea</string>
+    <string name="default_description">This is a more detailed description of what this specific vote was about</string>
+
 </resources>

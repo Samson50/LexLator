@@ -14,12 +14,9 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.legate.R;
-import com.example.legate.data.CommitteesListAdapter;
 import com.example.legate.utils.CacheManager;
 import com.example.legate.data.Legislator;
 import com.example.legate.utils.StateHelper;
-
-import org.json.JSONArray;
 
 public class LegislatorMain extends Fragment {
 
@@ -54,22 +51,17 @@ public class LegislatorMain extends Fragment {
         legislatorDistrict = legislatorLayout.findViewById(R.id.legislator_district);
         ViewGroup districtLayout = legislatorLayout.findViewById(R.id.district_layout);
 
-        addCollapse((TextView) root.findViewById(R.id.finances_text), root.findViewById(R.id.financial_information));
-        addCollapse((TextView) root.findViewById(R.id.information_text), root.findViewById(R.id.informaiton_constraint));
-        addCollapse((TextView) root.findViewById(R.id.bio_text), root.findViewById(R.id.legislator_bio));
-        addCollapse((TextView) root.findViewById(R.id.committees_text), root.findViewById(R.id.committees_recycler));
-        addCollapse((TextView) root.findViewById(R.id.activities_text), root.findViewById(R.id.activities_constraint));
-        addCollapse((TextView) root.findViewById(R.id.contact_text), root.findViewById(R.id.contact_constraint));
-
         Bundle arguments = getArguments();
         String legislatorPath = null;
         if (null != arguments) legislatorPath = arguments.getString("path");
         if (null != legislatorPath) {
             legislator = new Legislator(legislatorPath);
-            legislator.fillLegislatorMain(legislatorImage, legislatorTitle, legislatorParty,
+            legislator.fillLegislatorInfo(legislatorImage, legislatorTitle, legislatorParty,
                     legislatorState, legislatorDistrict, districtLayout);
         }
 
+        // Initialize financial views
+        addCollapse((TextView) root.findViewById(R.id.finances_text), root.findViewById(R.id.financial_information));
         root.findViewById(R.id.finances_download).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -77,15 +69,20 @@ public class LegislatorMain extends Fragment {
             }
         });
 
+        final ViewGroup summaryView = root.findViewById(R.id.summary_constraint);
+        addCollapse((TextView) root.findViewById(R.id.summary_text), summaryView);
+
         final RecyclerView contributorsRecycler = root.findViewById(R.id.top_contributors_recycler);
         RecyclerView.LayoutManager contributorsManager = new LinearLayoutManager(context);
         contributorsRecycler.setLayoutManager(contributorsManager);
+        addCollapse((TextView) root.findViewById(R.id.top_contributors_text), contributorsRecycler);
+
 
         final RecyclerView industriesRecycler = root.findViewById(R.id.top_industries_recycler);
         RecyclerView.LayoutManager industriesManager = new LinearLayoutManager(context);
         industriesRecycler.setLayoutManager(industriesManager);
+        addCollapse((TextView) root.findViewById(R.id.top_industries_text), industriesRecycler);
 
-        final ViewGroup summaryView = root.findViewById(R.id.summary_constraint);
         root.findViewById(R.id.finances_fill).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -93,27 +90,44 @@ public class LegislatorMain extends Fragment {
             }
         });
 
-        root.findViewById(R.id.activities_download).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                downloadActivities();
-            }
-        });
-        addCollapse((TextView) root.findViewById(R.id.summary_text), summaryView);
-        addCollapse((TextView) root.findViewById(R.id.top_contributors_text), contributorsRecycler);
-        addCollapse((TextView) root.findViewById(R.id.top_industries_text), industriesRecycler);
-
+        // Initialize Information views
+        addCollapse((TextView) root.findViewById(R.id.information_text), root.findViewById(R.id.informaiton_constraint));
 
         final TextView bioView = root.findViewById(R.id.legislator_bio);
+        addCollapse((TextView) root.findViewById(R.id.bio_text), bioView);
+
         final RecyclerView committeesRecycler = root.findViewById(R.id.committees_recycler);
         RecyclerView.LayoutManager committeesManager = new LinearLayoutManager(context);
         committeesRecycler.setLayoutManager(committeesManager);
+        addCollapse((TextView) root.findViewById(R.id.committees_text), committeesRecycler);
+
         root.findViewById(R.id.informaiton_download).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 downloadInformation(bioView, committeesRecycler);
             }
         });
+
+        // Initialize Action views
+        addCollapse((TextView) root.findViewById(R.id.activities_text), root.findViewById(R.id.activities_constraint));
+
+        final RecyclerView billsRecycler = root.findViewById(R.id.sponsored_bills_recycler);
+        addCollapse((TextView) root.findViewById(R.id.sponsored_bills_text), billsRecycler);
+
+        final RecyclerView votesRecycler = root.findViewById(R.id.votes_recycler);
+        RecyclerView.LayoutManager votesManager = new LinearLayoutManager(context);
+        votesRecycler.setLayoutManager(votesManager);
+        addCollapse((TextView) root.findViewById(R.id.votes_text), votesRecycler);
+
+        root.findViewById(R.id.activities_download).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                fillActions(billsRecycler, votesRecycler);
+            }
+        });
+
+        // Initialize Contact Information views
+        addCollapse((TextView) root.findViewById(R.id.contact_text), root.findViewById(R.id.contact_constraint));
 
         TextView addressView = root.findViewById(R.id.legislator_address);
         TextView phoneView = root.findViewById(R.id.legislator_phone);
@@ -148,8 +162,8 @@ public class LegislatorMain extends Fragment {
         legislator.downloadFinances();
     }
 
-    private void downloadActivities() {
-
+    private void fillActions(RecyclerView billsRecycler, RecyclerView votesRecycler) {
+        legislator.fillActions(billsRecycler, votesRecycler);
     }
 
     private void downloadInformation(TextView bioView, RecyclerView committeesRecycler) {

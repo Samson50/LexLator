@@ -122,7 +122,6 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
             populateStates(cacheFile);
         }
 
-
         if (0 != downloadVotes()) {
             Log.e(TAG, "Failed to download votes");
         }
@@ -304,7 +303,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 return;
             }
         }
-        
+
         Log.d(TAG, "Reading cached file");
         String legislatorsRaw = cacheManager.readFile(legislatorsFile.getAbsolutePath());
         Log.d(TAG, "Finished reading cached file");
@@ -391,10 +390,28 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
     private int downloadVotes() {
         Log.d(TAG, "Downloading votes...");
         File votesFile = new File(localCache, "votes");
+        String houseVotesPath = votesFile.getAbsolutePath() + "/house-votes.json";
+        String senateVotesPath = votesFile.getAbsolutePath() + "/senate-votes.json";
+
         if (!votesFile.exists()) {
             if (!votesFile.mkdir()) {
                 Log.e(TAG, "Failed to create file: " + votesFile.getAbsolutePath());
                 return 1;
+            }
+        }
+        else {
+            // Get the last modified date from local file
+            File senateVotesFile = new File(senateVotesPath);
+            if (senateVotesFile.exists()) {
+                Date lastModified = new Date(senateVotesFile.lastModified());
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, -3);
+                Date oldestDate = calendar.getTime();
+                if (lastModified.after(oldestDate)) {
+                    Log.d(TAG, "Vote files within date range, no update required, exiting");
+                    return 0;
+                }
             }
         }
 
@@ -407,7 +424,6 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         */
 
-        String houseVotesPath = votesFile.getAbsolutePath() + "/house-votes.json";
         String houseVotesUrl = String.format(
                 VOTES_URL, "house"//, formatter.format(startDate), formatter.format(endDate)
         );
@@ -417,7 +433,6 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
             return 1;
         }
 
-        String senateVotesPath = votesFile.getAbsolutePath() + "/senate-votes.json";
         String senateVotesUrl = String.format(
                 VOTES_URL, "senate"//, formatter.format(startDate), formatter.format(endDate)
         );
@@ -492,10 +507,29 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
     private int downloadBills() {
         Log.d(TAG, "Downloading bills...");
         File billsFile = new File(localCache, "bills");
+        String houseBillsPath = billsFile.getAbsolutePath() + "/house-bills.json";
+        String senateBillsPath = billsFile.getAbsolutePath() + "/senate-bills.json";
+
         if (!billsFile.exists()) {
             if (!billsFile.mkdir()) {
                 Log.e(TAG, "Failed to create file: " + billsFile.getAbsolutePath());
                 return 1;
+            }
+        }
+        else {
+            // Get the last modified date from local file
+            File senateBillsFile = new File(senateBillsPath);
+
+            if (senateBillsFile.exists()) {
+                Date senateLastModified = new Date(senateBillsFile.lastModified());
+
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, -3);
+                Date oldestDate = calendar.getTime();
+                if (senateLastModified.after(oldestDate)) {
+                    Log.d(TAG, "Bill files within date range, no update required, exiting");
+                    return 0;
+                }
             }
         }
 
@@ -511,7 +545,6 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
         */
 
-        String houseBillsPath = billsFile.getAbsolutePath() + "/house-bills.json";
         String houseBillsUrl = String.format(
                 BILLS_URL, congress, "house", billType//, formatter.format(startDate), formatter.format(endDate)
         );
@@ -521,7 +554,6 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
             return 1;
         }
 
-        String senateBillsPath = billsFile.getAbsolutePath() + "/senate-bills.json";
         String senateBillsUrl = String.format(
                 BILLS_URL, congress, "senate", billType//, formatter.format(startDate), formatter.format(endDate)
         );

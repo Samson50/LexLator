@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.legate.data.actions.VotesListAdapter;
 import com.example.legate.data.finances.Finances;
 import com.example.legate.utils.CacheManager;
 import com.example.legate.utils.ImageTask;
@@ -32,6 +33,7 @@ public class Legislator {
     private File legislatorFile;
     private JSONObject infoJSON = null;
     private JSONArray membershipJSON = new JSONArray();
+    private JSONArray votesJSON = new JSONArray();
 
     private String title;
     private String state;
@@ -43,7 +45,7 @@ public class Legislator {
 
     public Legislator(String legislatorPath) {
         legislatorFile = new File(legislatorPath);
-        if (0 != fillLegislatorMain()) Log.e(TAG, "Failed initial population");
+        if (0 != getLegislatorInfo()) Log.e(TAG, "Failed initial population");
         finances = new Finances(cacheManager, legislatorFile);
     }
 
@@ -51,10 +53,10 @@ public class Legislator {
         if (null != imageTask) imageTask.cancel(false);
     }
 
-    public int fillLegislatorMain(ImageView imageView, TextView titleView, TextView partyView,
-                                  TextView stateView, TextView districtView, ViewGroup districtLayout) {
+    public int fillLegislatorInfo(ImageView imageView, TextView titleView, TextView partyView,
+                                 TextView stateView, TextView districtView, ViewGroup districtLayout) {
         if (null == title || null == state || null == party || null == imageUrl) {
-            if (0 != fillLegislatorMain()) {
+            if (0 != getLegislatorInfo()) {
                 Log.e(TAG, "fillLegislatorMain(...) failed");
                 return 1;
             }
@@ -75,7 +77,15 @@ public class Legislator {
         return 0;
     }
 
-    private int fillLegislatorMain() {
+    /**
+     * Called from LegislatorMain to fill all fields from cached files
+     * @return int indicating success or error code
+     */
+    public int fillLegislatorMain() {
+        return 0;
+    }
+
+    private int getLegislatorInfo() {
         if (null == infoJSON) {
             if (0 != getInfoJSON()) {
                 Log.e(TAG, "Failed to get info.json");
@@ -154,11 +164,11 @@ public class Legislator {
 
                 if (null != currentCommittees && null != currentMembership) {
                     parseCommitteeMembership(currentMembership, currentCommittees, null);
-                }
 
-                if (0 != cacheManager.writeFile(committeesFile.getAbsolutePath(), membershipJSON)) {
-                    Log.e(TAG, "Failed to write committee membership to file");
-                }
+                    if (0 != cacheManager.writeFile(committeesFile.getAbsolutePath(), membershipJSON)) {
+                        Log.e(TAG, "Failed to write committee membership to file");
+                    }
+                } else Log.e(TAG, "fillCommittees(...): (null == currentCommittees || null == currentMembership)");
             }
             else {
                 String membershipString = cacheManager.readFile(committeesFile.getAbsolutePath());
@@ -171,25 +181,45 @@ public class Legislator {
 
     }
 
-    public void downloadActivities() {
-        // https://github.com/unitedstates/congress
-        // curl "https://api.propublica.org/congress/v1/house/votes/recent.json"
-        //  -H "X-API-Key: PROPUBLICA_API_KEY"
-        // https://projects.propublica.org/api-docs/congress-api/
-        // bills
-        // https://github.com/unitedstates/congress/blob/master/tasks/bills.py
-        // https://www.congress.gov/
-        // https://www.gpo.gov/fdsys/bulkdata/BILLSUM
-        // https://projects.propublica.org/api-docs/congress-api/bills/
-        // https://projects.propublica.org/api-docs/congress-api/bills/#get-recent-bills
-        // https://api.propublica.org/congress/v1/{congress}/{chamber}/bills/{type}.json
+    public void fillActions(RecyclerView billsRecycler, RecyclerView votesRecycler) {
+        fillVotes(votesRecycler);
+        fillSponsoredBills(billsRecycler);
+    }
 
-        // votes
-        // https://www.senate.gov/legislative/LIS/roll_call_lists/vote_menu_116_2.xml
-        // http://clerk.house.gov/legislative/legvotes.aspx
-        // https://github.com/unitedstates/congress/blob/master/tasks/votes.py
-        // https://projects.propublica.org/api-docs/congress-api/votes/
-        // https://api.propublica.org/congress/v1/{chamber}/votes/recent.json
+    private void fillVotes(RecyclerView votesView) {
+        Log.d(TAG, "Getting votes...");
+        if (0 == votesJSON.length()) {
+            Log.d(TAG, "votesJSON empty, populating");
+            File votesFile = new File(legislatorFile, "votes.json");
+
+            if (!votesFile.exists()) {
+                Log.d(TAG, "Getting votes for " + title);
+
+                JSONArray votes = cacheManager.getCurrentCommittees();
+
+                if (null != votes) {
+                    String chamber = title.substring(0, 1);
+                    if (chamber.equals("S")) chamber = "senate";
+                    else chamber = "house";
+
+                    votesJSON = cacheManager.getVotes(chamber, bioGuide); //parseCommitteeMembership(currentMembership, votes, null);
+                    if (0 != cacheManager.writeFile(votesFile.getAbsolutePath(), votesJSON)) {
+                        Log.e(TAG, "Failed to write votes to file");
+                    }
+                } else Log.e(TAG, "fillVotes(): (null == votes)");
+            }
+            else {
+                String votesString = cacheManager.readFile(votesFile.getAbsolutePath());
+                votesJSON = cacheManager.stringToJSONArray(votesString);
+            }
+        }
+
+        VotesListAdapter adapter = new VotesListAdapter(votesJSON);
+        votesView.setAdapter(adapter);
+    }
+
+    private void fillSponsoredBills(RecyclerView billsRecycler) {
+        Log.d(TAG, "Getting sponsored bills...");
 
     }
 

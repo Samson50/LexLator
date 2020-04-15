@@ -32,7 +32,6 @@ import javax.net.ssl.HttpsURLConnection;
 
 
 // TODO: Fix code duplication among download tasks
-// TODO: Refactor to use localCache when created, only sub-directories (utility class)
 public class CacheManager {
 
     private static final String TAG = "CacheManager";
@@ -214,6 +213,56 @@ public class CacheManager {
         String membershipString = readFile(membershipPath);
 
         return stringToJSON(membershipString);
+    }
+
+    public JSONArray getVotes(String chamber, String bioGuide) {
+        File votesDir = new File(localCache, "votes/" + chamber);
+        JSONArray votesArray = new JSONArray();
+
+        if (!votesDir.exists()) {
+            Log.e(TAG, "Votes directory does not exist: " + votesDir.getAbsolutePath());
+            return votesArray;
+        }
+
+        File[] voteFiles = votesDir.listFiles();
+        if (null == voteFiles) {
+            Log.e(TAG, "getVotes(...): (null == voteFiles), exiting");
+            return votesArray;
+        }
+        for (File voteFile: voteFiles) {
+            try {
+                String voteString = readFile(voteFile.getAbsolutePath());
+                JSONObject vote = stringToJSON(voteString).getJSONObject("results").getJSONObject("votes").getJSONObject("vote");
+
+                // roll_call: #, description, "", vote_type: "", date: "yyyy-MM-dd",
+                // time: "HH:mm:ss"*, result: "", positions: JSONArray
+                JSONObject voteInfo = new JSONObject();
+                voteInfo.put("roll-call", vote.getInt("roll_call"));
+                voteInfo.put("description", vote.getString("description"));
+                voteInfo.put("vote-type", vote.getString("vote_type"));
+                voteInfo.put("date", vote.getString("date"));
+                voteInfo.put("time", vote.getString("time"));
+
+                // Iterate over votes to find one matching bioGuide...
+                JSONArray positions = vote.getJSONArray("positions");
+                for (int i = 0; i < positions.length(); i++) {
+                    JSONObject position = positions.getJSONObject(i);
+                    if (position.getString("member_id").equals(bioGuide)) {
+                        voteInfo.put("position", position.getString("vote_position"));
+                    }
+                }
+
+                // If the legislator was absent...
+                if (!voteInfo.has("position")) voteInfo.put("position", "absent");
+
+                // Add vote to array
+                votesArray.put(voteInfo);
+            } catch (JSONException e) {
+                Log.e(TAG, "getVotes(...): " + e.toString());
+            }
+        }
+
+        return votesArray;
     }
 
     public String readFile(String filePath) {

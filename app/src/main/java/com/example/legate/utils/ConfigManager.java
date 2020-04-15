@@ -22,8 +22,8 @@ public class ConfigManager {
     private File configFile;
     private JSONObject configJSON;
 
-    public ConfigManager(Context context) {
-        configFile = new File(context.getFilesDir(), "config.json");
+    public ConfigManager(File localDir) {
+        configFile = new File(localDir, "config.json");
 
         if (!configFile.exists()) {
             try {
@@ -45,7 +45,7 @@ public class ConfigManager {
             configJSON.put(name, value);
 
         } catch (JSONException e) {
-            Log.e(TAG, e.toString());
+            Log.e(TAG, "Failed to update config: " + e.toString());
             return 1;
         }
 
