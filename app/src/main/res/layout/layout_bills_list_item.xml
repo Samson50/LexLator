@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/bill_name"
+        style="@style/collapsibleHeader.subTwo"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="C.1234"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/bill_action_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/bill_name"
+        app:layout_constraintEnd_toEndOf="@+id/bill_name"
+        app:layout_constraintTop_toTopOf="@+id/bill_name" />
+
+    <TextView
+        android:id="@+id/text_bill_action_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="TextView"
+        app:layout_constraintBottom_toBottomOf="@+id/bill_action_date"
+        app:layout_constraintEnd_toStartOf="@+id/bill_action_date"
+        app:layout_constraintTop_toTopOf="@+id/bill_action_date" />
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/bill_content_layout"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/bill_name"
+        app:layout_constraintStart_toStartOf="@+id/bill_name"
+        app:layout_constraintTop_toBottomOf="@+id/bill_name">
+
+        <TextView
+            android:id="@+id/text_bill_title"
+            style="@style/collapsibleHeader.subThree"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="Title"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <TextView
+            android:id="@+id/bill_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginEnd="8dp"
+            android:text="TextView"
+            app:layout_constraintEnd_toEndOf="@+id/text_bill_title"
+            app:layout_constraintStart_toStartOf="@+id/text_bill_title"
+            app:layout_constraintTop_toBottomOf="@+id/text_bill_title" />
+
+        <TextView
+            android:id="@+id/text_bill_introduced"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Introduced"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/text_bill_title"
+            app:layout_constraintTop_toBottomOf="@+id/bill_title" />
+
+        <TextView
+            android:id="@+id/bill_introduced_date"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            app:layout_constraintBottom_toBottomOf="@+id/text_bill_introduced"
+            app:layout_constraintStart_toStartOf="@+id/bill_last_action"
+            app:layout_constraintTop_toTopOf="@+id/text_bill_introduced" />
+
+        <TextView
+            android:id="@+id/textView8"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Last Action"
+            android:textStyle="bold"
+            app:layout_constraintStart_toStartOf="@+id/text_bill_introduced"
+            app:layout_constraintTop_toBottomOf="@+id/text_bill_introduced" />
+
+        <TextView
+            android:id="@+id/bill_last_action"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="TextView"
+            app:layout_constraintStart_toEndOf="@+id/textView8"
+            app:layout_constraintTop_toTopOf="@+id/textView8" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bill_summary_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/textView8">
+
+            <TextView
+                android:id="@+id/text_bill_summary"
+                style="@style/collapsibleHeader.subThree"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Summary"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/bill_summary"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:text="TextView"
+                app:layout_constraintEnd_toEndOf="@+id/text_bill_summary"
+                app:layout_constraintStart_toStartOf="@+id/text_bill_summary"
+                app:layout_constraintTop_toBottomOf="@+id/text_bill_summary" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

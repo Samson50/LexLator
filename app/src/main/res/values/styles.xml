@@ -32,6 +32,10 @@
         <item name="android:textSize">24sp</item>
     </style>
 
+    <style name="collapsibleHeader.subThree" parent="collapsibleHeader">
+        <item name="android:textSize">20sp</item>
+    </style>
+
     <style name="multipartHeader">
         <item name="android:background">@color/collapsibleBackground</item>
         <item name="android:textStyle">bold</item>

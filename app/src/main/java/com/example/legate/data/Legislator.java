@@ -34,6 +34,7 @@ public class Legislator {
     private JSONObject infoJSON = null;
     private JSONArray membershipJSON = new JSONArray();
     private JSONArray votesJSON = new JSONArray();
+    private JSONArray billsJSON = new JSONArray();
 
     private String title;
     private String state;
@@ -133,18 +134,20 @@ public class Legislator {
         finances.fillFinances(summaryView, contributionsRecycler, industriesRecycler);
     }
 
-    public void fillContactInformation(TextView addressView, TextView phoneNumberView, TextView websiteView) {
-        String address = getTermValue("address");
-        if (null == address) address = getTermValue("office");
-        addressView.setText(address);
-
-        phoneNumberView.setText(getTermValue("phone"));
-
-        websiteView.setText(getTermValue("url"));
-        // Social Media: https://theunitedstates.io/congress-legislators/legislators-social-media.json
-    }
-
     public void fillBiography(TextView bioView) {
+        // bio.txt exists?
+
+        // download bio from bioguide: https://bioguideretro.congress.gov/Home/MemberDetails?memIndex=L000585
+
+        // Read file to String
+
+        // Convert string to XML
+
+        // Get content from "<biography>" tag
+
+        // Write content to local file (bio.txt)
+
+        // bioView.setText(bioString)
 
     }
 
@@ -195,18 +198,14 @@ public class Legislator {
             if (!votesFile.exists()) {
                 Log.d(TAG, "Getting votes for " + title);
 
-                JSONArray votes = cacheManager.getCurrentCommittees();
+                String chamber = title.substring(0, 1);
+                if (chamber.equals("S")) chamber = "senate";
+                else chamber = "house";
 
-                if (null != votes) {
-                    String chamber = title.substring(0, 1);
-                    if (chamber.equals("S")) chamber = "senate";
-                    else chamber = "house";
-
-                    votesJSON = cacheManager.getVotes(chamber, bioGuide); //parseCommitteeMembership(currentMembership, votes, null);
-                    if (0 != cacheManager.writeFile(votesFile.getAbsolutePath(), votesJSON)) {
-                        Log.e(TAG, "Failed to write votes to file");
-                    }
-                } else Log.e(TAG, "fillVotes(): (null == votes)");
+                votesJSON = cacheManager.getVotes(chamber, bioGuide);
+                if (0 != cacheManager.writeFile(votesFile.getAbsolutePath(), votesJSON)) {
+                    Log.e(TAG, "Failed to write votes to file");
+                }
             }
             else {
                 String votesString = cacheManager.readFile(votesFile.getAbsolutePath());
@@ -220,6 +219,30 @@ public class Legislator {
 
     private void fillSponsoredBills(RecyclerView billsRecycler) {
         Log.d(TAG, "Getting sponsored bills...");
+        if (0 == billsJSON.length()) {
+            Log.d(TAG, "billsJSON empty, populating");
+            File billsFile = new File(legislatorFile, "bills.json");
+
+            if (!billsFile.exists()) {
+                Log.d(TAG, "Getting bills for " + title);
+
+                String chamber = title.substring(0, 1);
+                if (chamber.equals("S")) chamber = "senate";
+                else chamber = "house";
+
+                billsJSON = cacheManager.getSponsoredBills(chamber, bioGuide); //parseCommitteeMembership(currentMembership, votes, null);
+                if (0 != cacheManager.writeFile(billsFile.getAbsolutePath(), billsJSON)) {
+                    Log.e(TAG, "Failed to write votes to file");
+                }
+            }
+            else {
+                String billsString = cacheManager.readFile(billsFile.getAbsolutePath());
+                billsJSON = cacheManager.stringToJSONArray(billsString);
+            }
+        }
+
+        //BillsListAdapter adapter = new BillsListAdapter(votesJSON);
+        //billsRecycler.setAdapter(adapter);
 
     }
 
@@ -269,6 +292,17 @@ public class Legislator {
             }
         }
 
+    }
+
+    public void fillContactInformation(TextView addressView, TextView phoneNumberView, TextView websiteView) {
+        String address = getTermValue("address");
+        if (null == address) address = getTermValue("office");
+        addressView.setText(address);
+
+        phoneNumberView.setText(getTermValue("phone"));
+
+        websiteView.setText(getTermValue("url"));
+        // Social Media: https://theunitedstates.io/congress-legislators/legislators-social-media.json
     }
 
     public String getPath() {

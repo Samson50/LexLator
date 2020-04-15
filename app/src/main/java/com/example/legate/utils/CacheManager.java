@@ -265,6 +265,51 @@ public class CacheManager {
         return votesArray;
     }
 
+    public JSONArray getSponsoredBills(String chamber, String bioGuide) {
+        File billsDir = new File(localCache, "bills/" + chamber);
+        JSONArray billsArray = new JSONArray();
+
+        if (!billsDir.exists()) {
+            Log.e(TAG, "Bills directory does not exist: " + billsDir.getAbsolutePath());
+            return billsArray;
+        }
+
+        File[] billFiles = billsDir.listFiles();
+        if (null == billFiles) {
+            Log.e(TAG, "getBills(...): (null == billFiles), exiting");
+            return billsArray;
+        }
+        for (File billFile: billFiles) {
+            try {
+                String billString = readFile(billFile.getAbsolutePath());
+                JSONObject bill = stringToJSON(billString).getJSONObject("results").getJSONObject("votes").getJSONObject("vote");
+
+                String sponsorId = bill.getString("sponsor_id");
+                if (sponsorId.equals(bioGuide)) {
+                    // bill: "", title: "", short_title: "", sponsor_id: "bioguide", congressdotgov_url: "",
+                    // govtrack_url: "", introduced_date: "", last_major_action_date: "",
+                    // last_major_action: "", summary: "probably empty"
+                    JSONObject billInfo = new JSONObject();
+                    billInfo.put("name", bill.getString("bill"));
+                    billInfo.put("title", bill.getString("title"));
+                    billInfo.put("short-title", bill.getString("short_title"));
+                    billInfo.put("congress-url", bill.getString("congressdotgov_url"));
+                    billInfo.put("introduced", bill.getString("introduced_date"));
+                    billInfo.put("last-action-date", bill.getString("last_major_action_date"));
+                    billInfo.put("last-action", bill.getString("last_major_action"));
+                    billInfo.put("summary", bill.getString("summary"));
+
+                    // Add bill to array
+                    billsArray.put(billInfo);
+                }
+            } catch (JSONException e) {
+                Log.e(TAG, "getBills(...): " + e.toString());
+            }
+        }
+
+        return billsArray;
+    }
+
     public String readFile(String filePath) {
         Log.d(TAG, "Reading: " + filePath);
         String ret = "";
