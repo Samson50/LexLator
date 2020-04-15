@@ -42,6 +42,8 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
     // private static final String VOTES_URL = "https://api.propublica.org/congress/v1/%s/votes/%s/%s.json";
     // https://api.propublica.org/congress/v1/{chamber}/votes/recent.json
     private static final String VOTES_URL = "https://api.propublica.org/congress/v1/%s/votes/recent.json";
+    // https://api.propublica.org/congress/v1/{congress}/{chamber}/bills/{type}.json
+    private static final String BILLS_URL = "https://api.propublica.org/congress/v1/%s/%s/bills/%s.json";
     private static final String PRO_API_KEY = "c2tpYc0rKnNfyf65N7p4lSBRgbzVHAYdgdrY2PGH ";
 
 
@@ -116,11 +118,17 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         if (0 != downloadFile(CACHE_URL, legislatorsPath)) {
             Log.e(TAG, "Failed to download: " + CACHE_URL);
         }
+        else {
+            populateStates(cacheFile);
+        }
 
-        populateStates(cacheFile);
 
         if (0 != downloadVotes()) {
             Log.e(TAG, "Failed to download votes");
+        }
+
+        if (0 != downloadBills()) {
+            Log.e(TAG, "Failed to download bills");
         }
 
         return null;
@@ -280,21 +288,31 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         return downloadFile(fileUrl, filePath, null, null);
     }
 
-    private void populateStates(File cacheFile) {
+    private void populateStates(File legislatorsFile) {
         Log.d(TAG, "Checking if state files are already populated");
-        File[] dirList = localCache.listFiles();
-        if (null != dirList && dirList.length >= 50) {
-            Log.d(TAG, "State files found, returning");
-            return;
+        File statesDir = new File(localCache, "states");
+        if (statesDir.exists()) {
+            File[] dirList = statesDir.listFiles();
+            if (null != dirList && dirList.length >= 50) {
+                Log.d(TAG, "State files found, returning");
+                return;
+            }
         }
+        else {
+            if (!statesDir.mkdir()) {
+                Log.e(TAG, "Failed to create: " + statesDir.getAbsolutePath());
+                return;
+            }
+        }
+        
         Log.d(TAG, "Reading cached file");
-        String legislatorsRaw = cacheManager.readFile(cacheFile.getAbsolutePath());
+        String legislatorsRaw = cacheManager.readFile(legislatorsFile.getAbsolutePath());
         Log.d(TAG, "Finished reading cached file");
 
         try {
             JSONArray legislatorsJSON = new JSONArray(legislatorsRaw);
             Log.d(TAG, "Populating legislators");
-            if (0 == populateLegislators(legislatorsJSON)) Log.d(TAG, "Finished populating legislators");
+            if (0 == populateLegislators(statesDir, legislatorsJSON)) Log.d(TAG, "Finished populating legislators");
             else {
                 Log.e(TAG, "populateLocal(...) failed");
             }
@@ -303,13 +321,13 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         }
     }
 
-    private int populateLegislators(JSONArray legislators) throws JSONException {
+    private int populateLegislators(File statesDir, JSONArray legislators) throws JSONException {
         progressText = "Populating local cache...";
         int total = legislators.length();
 
         for (int i = 0; i < total; i++){
             JSONObject currentLegislator = legislators.getJSONObject(i);
-            int result = createLegislator(currentLegislator);
+            int result = createLegislator(statesDir, currentLegislator);
             if (0 != result) {
                 Log.e(TAG, "Failed to create legislator: " + i);
             }
@@ -320,7 +338,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         return 0;
     }
 
-    private int createLegislator(JSONObject legislator) throws JSONException {
+    private int createLegislator(File statesDir, JSONObject legislator) throws JSONException {
         // get terms
         JSONArray terms = legislator.getJSONArray("terms");
         int termsLength = terms.length();
@@ -329,7 +347,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         // get state
         String legislatorState = currentTerm.getString("state");
         // check/create state folder
-        File statePath = new File(localCache, legislatorState);
+        File statePath = new File(statesDir, legislatorState);
         if (!statePath.exists()) {
             if (!statePath.mkdir()) {
                 Log.e(TAG, "Failed to create directory: " + statePath);
@@ -380,12 +398,14 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
             }
         }
 
+        /*
         // Get two week date range
         Calendar calendar = Calendar.getInstance();
         Date endDate = calendar.getTime();
         calendar.add(Calendar.DATE, -14);
         Date startDate = calendar.getTime();
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        */
 
         String houseVotesPath = votesFile.getAbsolutePath() + "/house-votes.json";
         String houseVotesUrl = String.format(
@@ -465,6 +485,112 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
         int res = populateChamberVotes("house", votesFile, houseVotesPath);
         int ras = populateChamberVotes("senate", votesFile, senateVotesPath);
+
+        return res + ras;
+    }
+
+    private int downloadBills() {
+        Log.d(TAG, "Downloading bills...");
+        File billsFile = new File(localCache, "bills");
+        if (!billsFile.exists()) {
+            if (!billsFile.mkdir()) {
+                Log.e(TAG, "Failed to create file: " + billsFile.getAbsolutePath());
+                return 1;
+            }
+        }
+
+        String congress = "116";
+        String billType = "introduced";
+
+        /*
+        // Get two week date range
+        Calendar calendar = Calendar.getInstance();
+        Date endDate = calendar.getTime();
+        calendar.add(Calendar.DATE, -14);
+        Date startDate = calendar.getTime();
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd", Locale.US);
+        */
+
+        String houseBillsPath = billsFile.getAbsolutePath() + "/house-bills.json";
+        String houseBillsUrl = String.format(
+                BILLS_URL, congress, "house", billType//, formatter.format(startDate), formatter.format(endDate)
+        );
+        String apiArg = "X-API-Key";
+        if (0 != downloadFile(houseBillsUrl, houseBillsPath, apiArg, PRO_API_KEY)) {
+            Log.e(TAG, "Failed to download: " + houseBillsUrl);
+            return 1;
+        }
+
+        String senateBillsPath = billsFile.getAbsolutePath() + "/senate-bills.json";
+        String senateBillsUrl = String.format(
+                BILLS_URL, congress, "senate", billType//, formatter.format(startDate), formatter.format(endDate)
+        );
+        if (0 != downloadFile(senateBillsUrl, senateBillsPath, apiArg, PRO_API_KEY)) {
+            Log.e(TAG, "Failed to download: " + senateBillsUrl);
+            return 1;
+        }
+
+        return populateBills(billsFile, houseBillsPath, senateBillsPath);
+    }
+
+    private int populateChamberBills(String chamber, File billsFile, String chamberBillsPath) {
+        File chamberBillDir = new File(billsFile, chamber);
+        Log.d(TAG, "Populating chamber bills from file: " + chamberBillsPath);
+        if (!chamberBillDir.exists()) {
+            if (!chamberBillDir.mkdir()) {
+                Log.e(TAG, "Failed to create: " + chamberBillDir.getAbsolutePath());
+                return 1;
+            }
+        }
+        String chamberBills = cacheManager.readFile(chamberBillsPath);
+        if (null != chamberBills) {
+            JSONObject chamberJson = cacheManager.stringToJSON(chamberBills);
+            if (null != chamberJson) {
+                // File format: {chamber}{bill #}-{congress} = ch1234-123
+                try {
+                    JSONArray resultsArray = chamberJson.getJSONArray("results");
+                    for (int j = 0; j < resultsArray.length(); j++) {
+                        JSONObject chamberCongressJson = resultsArray.getJSONObject(j);
+                        JSONArray billsArray = chamberCongressJson.getJSONArray("bills");
+
+                        for (int i = 0; i < billsArray.length(); i++) {
+                            Log.d(TAG, String.format(Locale.US, "Populating vote %d for %s", i, chamber));
+
+                            JSONObject bill = billsArray.getJSONObject(i);
+
+                            String billName = bill.getString("bill_id") + ".json";
+
+                            Log.d(TAG, "Bill file: " + billName);
+
+                            String billUrl = bill.getString("bill_uri");
+
+                            String outputPath = chamberBillDir.getAbsolutePath() + "/" + billName;
+
+                            if (0 != downloadFile(billUrl, outputPath, "X-API-Key", PRO_API_KEY))
+                                Log.e(TAG, "Failed to download: " + billUrl);
+                        }
+                    }
+                } catch (JSONException e) {
+                    Log.e(TAG, "populateChamberBills(...) JSON error: " + e.toString());
+                    return 1;
+                }
+            }
+            else {
+                Log.e(TAG, "chamberJson == null, exiting");
+                return 1;
+            }
+        }
+        else {
+            Log.e(TAG, "(String) chamberBills == null, exiting");
+            return 1;
+        }
+
+        return 0;
+    }
+
+    private int populateBills(File billsFile, String houseBillsString, String senateBillsString) {
+        int res = populateChamberBills("house", billsFile, houseBillsString);
+        int ras = populateChamberBills("senate", billsFile, senateBillsString);
 
         return res + ras;
     }

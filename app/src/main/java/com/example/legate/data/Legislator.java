@@ -29,7 +29,7 @@ public class Legislator {
     private Finances finances;
     private ImageTask imageTask;
 
-    private File localCache;
+    private File legislatorFile;
     private JSONObject infoJSON = null;
     private JSONArray membershipJSON = new JSONArray();
 
@@ -42,9 +42,9 @@ public class Legislator {
 
 
     public Legislator(String legislatorPath) {
-        localCache = new File(legislatorPath);
+        legislatorFile = new File(legislatorPath);
         if (0 != fillLegislatorMain()) Log.e(TAG, "Failed initial population");
-        finances = new Finances(cacheManager, localCache);
+        finances = new Finances(cacheManager, legislatorFile);
     }
 
     public void cancelImageTask() {
@@ -70,7 +70,7 @@ public class Legislator {
             districtLayout.setVisibility(View.GONE);
         }
         imageTask = new ImageTask(imageView);
-        imageTask.execute(localCache.getAbsolutePath(), imageUrl);
+        imageTask.execute(legislatorFile.getAbsolutePath(), imageUrl);
 
         return 0;
     }
@@ -83,7 +83,7 @@ public class Legislator {
             }
         }
 
-        String[] fileSplit = localCache.getName().split("-");
+        String[] fileSplit = legislatorFile.getName().split("-");
 
         String legislatorName = fileSplit[fileSplit.length - 2] + " " + fileSplit[fileSplit.length - 1];
 
@@ -97,7 +97,7 @@ public class Legislator {
             party = fileSplit[1];
         }
 
-        File parentFile = localCache.getParentFile();
+        File parentFile = legislatorFile.getParentFile();
         if (parentFile == null) return 1;
         String shortState = parentFile.getName();
         state = stateHelper.shortToFull(shortState);
@@ -144,7 +144,7 @@ public class Legislator {
 
         if (0 == membershipJSON.length()) {
             Log.d(TAG, "membershipJSON empty, populating");
-            File committeesFile = new File(localCache, "committees.json");
+            File committeesFile = new File(legislatorFile, "committees.json");
 
             if (!committeesFile.exists()) {
                 Log.d(TAG, "Getting committees for " + title);
@@ -242,12 +242,12 @@ public class Legislator {
     }
 
     public String getPath() {
-        if (null != localCache) return localCache.getAbsolutePath();
+        if (null != legislatorFile) return legislatorFile.getAbsolutePath();
         else return null;
     }
 
     private int getInfoJSON() {
-        String infoString = cacheManager.readFile(new File(localCache, "info.json").getPath());
+        String infoString = cacheManager.readFile(new File(legislatorFile, "info.json").getPath());
         if (null == infoString) return 1;
 
         infoJSON = cacheManager.stringToJSON(infoString);

@@ -133,7 +133,7 @@ public class StateListFragment extends Fragment {
         }
 
         // Populate array from files in state directory
-        File stateCacheFile = new File(context.getCacheDir(), state);
+        File stateCacheFile = new File(context.getCacheDir().getAbsolutePath() + "/states/" + state);
         senatorFilesArray = stateCacheFile.listFiles(senFilter);
         representativeFilesArray = stateCacheFile.listFiles(repFilter);
         if (null == senatorFilesArray || null == representativeFilesArray) {
