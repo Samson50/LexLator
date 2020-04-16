@@ -1,6 +1,8 @@
 package com.example.legate.data;
 
+import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Xml;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -18,8 +20,16 @@ import com.example.legate.utils.StateHelper;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class Legislator {
@@ -43,12 +53,69 @@ public class Legislator {
     private String district;
     private String bioGuide;
     private String imageUrl;
+    private String biography;
 
 
     public Legislator(String legislatorPath) {
         legislatorFile = new File(legislatorPath);
         if (0 != getLegislatorInfo()) Log.e(TAG, "Failed initial population");
         finances = new Finances(cacheManager, legislatorFile);
+    }
+
+    private class DownloadBio extends AsyncTask<String, Integer, String> {
+
+        private TextView bioView;
+
+        public DownloadBio(TextView biographyView) {
+            bioView = biographyView;
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            // download bio from bioguide: https://bioguideretro.congress.gov/Home/MemberDetails?memIndex=L000585
+            String bioGuide = strings[0];
+            String bioChar = bioGuide.substring(0, 1);
+            String bioUrl = String.format("https://bioguideretro.congress.gov/Static_Files/data/%s/%s.xml", bioChar, bioGuide);
+            // <uscongress-bio><biography>That sweet sweet data</biography></uscongress-bio>
+            URL url = null;
+            try {
+                url = new URL(bioUrl);
+            } catch (MalformedURLException e) {
+                Log.e(TAG, e.toString());
+                return null;
+            }
+            InputStream stream;
+            try {
+                stream = url.openConnection().getInputStream();
+            } catch (IOException e) {
+                Log.e(TAG, e.toString());
+                return null;
+            }
+
+            // Get content from "<biography>" tag
+            String bioString;
+            try {
+                bioString = parseXml(stream, "uscongress-bio", "biography");
+                Log.d(TAG, "Biography: " + bioString);
+            } catch (IOException e) {
+                Log.e(TAG, e.toString());
+                return null;
+            }
+
+            // Write content to local file (bio.txt)
+            String legislatorPath = strings[1];
+            String bioPath = legislatorPath + "/bio.txt";
+            cacheManager.writeFile(bioPath, bioString);
+
+            return bioString;
+        }
+
+        @Override
+        protected void onPostExecute(String bio) {
+            super.onPostExecute(bio);
+            biography = bio;
+            bioView.setText(bio);
+        }
     }
 
     public void cancelImageTask() {
@@ -135,21 +202,101 @@ public class Legislator {
         finances.fillFinances(summaryView, contributionsRecycler, industriesRecycler);
     }
 
+    private String parseXml(InputStream input, String firstTag, String textTag) throws IOException {
+        Log.d(TAG, "Parsing xml tree from input stream...");
+        try {
+            // Setup the xml parser...
+            XmlPullParser parser = Xml.newPullParser();
+            parser.setFeature(XmlPullParser.FEATURE_PROCESS_NAMESPACES, false);
+            parser.setInput(input, null);
+            parser.nextTag();
+
+            // Require first tag to be html? This could be an issue
+            parser.require(XmlPullParser.START_TAG, null, firstTag);// outer tag
+            // Iterate over the tags...
+            while (parser.next() != XmlPullParser.END_TAG) {
+                // If the parser encounters a start tag, ignore it
+                if (parser.getEventType() != XmlPullParser.START_TAG) {
+                    continue;
+                }
+                // Starts by looking for the entry tag
+                if (parser.getName().equals("biography")) { // the tag we want
+                    parser.require(XmlPullParser.START_TAG, null, textTag);
+                    if (parser.next() == XmlPullParser.TEXT) {
+                        return parser.getText();
+                    }
+                }
+                // If the parser encounters a tag we don't want, skip it and all children
+                else {
+                    // skip tags that don't match...
+                    skip(parser);
+                }
+            }
+        } catch (XmlPullParserException e) {
+            Log.e(TAG, e.toString());
+        }
+        finally {
+            Log.d(TAG, "Reached finally, closing input stream");
+            input.close();
+        }
+        Log.e(TAG, "Failed to get value from xml tree");
+        return null;
+    }
+
+    private void skip(XmlPullParser parser) throws XmlPullParserException, IOException {
+        if (parser.getEventType() != XmlPullParser.START_TAG) {
+            throw new IllegalStateException();
+        }
+        int depth = 1;
+        while (depth != 0) {
+            switch (parser.next()) {
+                case XmlPullParser.END_TAG:
+                    depth--;
+                    break;
+                case XmlPullParser.START_TAG:
+                    depth++;
+                    break;
+            }
+        }
+    }
+
     public void fillBiography(TextView bioView) {
+        // Check if field already populated
+        if (null != biography) {
+            Log.d(TAG, "Populating biography from class variable");
+            bioView.setText(biography);
+            return;
+        }
         // bio.txt exists?
+        File bioFile = new File(legislatorFile, "bio.txt");
+        if (bioFile.exists()) {
+            Log.d(TAG, "Populating biography from cache file");
+            String bioString = cacheManager.readFile(bioFile.getAbsolutePath());
+            if (!bioString.isEmpty()) {
+                biography = bioString;
+                bioView.setText(biography);
+                return;
+            }
+        }
 
-        // download bio from bioguide: https://bioguideretro.congress.gov/Home/MemberDetails?memIndex=L000585
+        Log.d(TAG, "Biography not found, getting from url");
+        DownloadBio bioTask = new DownloadBio(bioView);
+        bioTask.execute(bioGuide, legislatorFile.getAbsolutePath());
+    }
 
-        // Read file to String
+    private void getCommittees(File committeesFile) {
+        Log.d(TAG, "Getting committees for " + title);
 
-        // Convert string to XML
+        JSONArray currentCommittees = cacheManager.getCurrentCommittees();
+        JSONObject currentMembership = cacheManager.getCommitteeMembership();
 
-        // Get content from "<biography>" tag
+        if (null != currentCommittees && null != currentMembership) {
+            parseCommitteeMembership(currentMembership, currentCommittees, null);
 
-        // Write content to local file (bio.txt)
-
-        // bioView.setText(bioString)
-
+            if (0 != cacheManager.writeFile(committeesFile.getAbsolutePath(), membershipJSON)) {
+                Log.e(TAG, "Failed to write committee membership to file");
+            }
+        } else Log.e(TAG, "fillCommittees(...): (null == currentCommittees || null == currentMembership)");
     }
 
     public void fillCommittees(RecyclerView view) {
@@ -160,34 +307,34 @@ public class Legislator {
             Log.d(TAG, "membershipJSON empty, populating");
             File committeesFile = new File(legislatorFile, "committees.json");
 
-            if (!committeesFile.exists()) {
-                Log.d(TAG, "Getting committees for " + title);
-
-                JSONArray currentCommittees = cacheManager.getCurrentCommittees();
-                JSONObject currentMembership = cacheManager.getCommitteeMembership();
-
-                if (null != currentCommittees && null != currentMembership) {
-                    parseCommitteeMembership(currentMembership, currentCommittees, null);
-
-                    if (0 != cacheManager.writeFile(committeesFile.getAbsolutePath(), membershipJSON)) {
-                        Log.e(TAG, "Failed to write committee membership to file");
-                    }
-                } else Log.e(TAG, "fillCommittees(...): (null == currentCommittees || null == currentMembership)");
-            }
-            else {
+            if (committeesFile.exists()) {
                 String membershipString = cacheManager.readFile(committeesFile.getAbsolutePath());
-                membershipJSON = cacheManager.stringToJSONArray(membershipString);
+                if (membershipString.isEmpty()) getCommittees(committeesFile);
+                else membershipJSON = cacheManager.stringToJSONArray(membershipString);
             }
+            else getCommittees(committeesFile);
         }
 
         CommitteesListAdapter adapter = new CommitteesListAdapter(membershipJSON);
         view.setAdapter(adapter);
-
     }
 
     public void fillActions(RecyclerView billsRecycler, RecyclerView votesRecycler) {
         fillVotes(votesRecycler);
         fillSponsoredBills(billsRecycler);
+    }
+
+    private void getVotes(File votesFile) {
+        Log.d(TAG, "Getting votes for " + title);
+
+        String chamber = title.substring(0, 1);
+        if (chamber.equals("S")) chamber = "senate";
+        else chamber = "house";
+
+        votesJSON = cacheManager.getVotes(chamber, bioGuide);
+        if (0 != cacheManager.writeFile(votesFile.getAbsolutePath(), votesJSON)) {
+            Log.e(TAG, "Failed to write votes to file");
+        }
     }
 
     private void fillVotes(RecyclerView votesView) {
@@ -196,26 +343,29 @@ public class Legislator {
             Log.d(TAG, "votesJSON empty, populating");
             File votesFile = new File(legislatorFile, "votes.json");
 
-            if (!votesFile.exists()) {
-                Log.d(TAG, "Getting votes for " + title);
-
-                String chamber = title.substring(0, 1);
-                if (chamber.equals("S")) chamber = "senate";
-                else chamber = "house";
-
-                votesJSON = cacheManager.getVotes(chamber, bioGuide);
-                if (0 != cacheManager.writeFile(votesFile.getAbsolutePath(), votesJSON)) {
-                    Log.e(TAG, "Failed to write votes to file");
-                }
-            }
+            if (!votesFile.exists()) getVotes(votesFile);
             else {
                 String votesString = cacheManager.readFile(votesFile.getAbsolutePath());
-                votesJSON = cacheManager.stringToJSONArray(votesString);
+                if (!votesString.isEmpty()) votesJSON = cacheManager.stringToJSONArray(votesString);
+                else getVotes(votesFile);
             }
         }
 
         VotesListAdapter adapter = new VotesListAdapter(votesJSON);
         votesView.setAdapter(adapter);
+    }
+
+    private void getSponsoredBills(File billsFile) {
+        Log.d(TAG, "Getting bills for " + title);
+
+        String chamber = title.substring(0, 1);
+        if (chamber.equals("S")) chamber = "senate";
+        else chamber = "house";
+
+        billsJSON = cacheManager.getSponsoredBills(chamber, bioGuide); //parseCommitteeMembership(currentMembership, votes, null);
+        if (0 != cacheManager.writeFile(billsFile.getAbsolutePath(), billsJSON)) {
+            Log.e(TAG, "Failed to write votes to file");
+        }
     }
 
     private void fillSponsoredBills(RecyclerView billsRecycler) {
@@ -224,21 +374,11 @@ public class Legislator {
             Log.d(TAG, "billsJSON empty, populating");
             File billsFile = new File(legislatorFile, "bills.json");
 
-            if (!billsFile.exists()) {
-                Log.d(TAG, "Getting bills for " + title);
-
-                String chamber = title.substring(0, 1);
-                if (chamber.equals("S")) chamber = "senate";
-                else chamber = "house";
-
-                billsJSON = cacheManager.getSponsoredBills(chamber, bioGuide); //parseCommitteeMembership(currentMembership, votes, null);
-                if (0 != cacheManager.writeFile(billsFile.getAbsolutePath(), billsJSON)) {
-                    Log.e(TAG, "Failed to write votes to file");
-                }
-            }
+            if (!billsFile.exists()) getSponsoredBills(billsFile);
             else {
                 String billsString = cacheManager.readFile(billsFile.getAbsolutePath());
-                billsJSON = cacheManager.stringToJSONArray(billsString);
+                if (!billsString.isEmpty()) billsJSON = cacheManager.stringToJSONArray(billsString);
+                else getSponsoredBills(billsFile);
             }
         }
 
