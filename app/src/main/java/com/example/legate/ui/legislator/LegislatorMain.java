@@ -91,7 +91,7 @@ public class LegislatorMain extends Fragment {
         });
 
         // Initialize Information views
-        addCollapse((TextView) root.findViewById(R.id.information_text), root.findViewById(R.id.informaiton_constraint));
+        addCollapse((TextView) root.findViewById(R.id.information_text), root.findViewById(R.id.information_constraint));
 
         final TextView bioView = root.findViewById(R.id.legislator_bio);
         addCollapse((TextView) root.findViewById(R.id.bio_text), bioView);
@@ -101,7 +101,7 @@ public class LegislatorMain extends Fragment {
         committeesRecycler.setLayoutManager(committeesManager);
         addCollapse((TextView) root.findViewById(R.id.committees_text), committeesRecycler);
 
-        root.findViewById(R.id.informaiton_download).setOnClickListener(new View.OnClickListener() {
+        root.findViewById(R.id.information_download).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 downloadInformation(bioView, committeesRecycler);
@@ -109,7 +109,7 @@ public class LegislatorMain extends Fragment {
         });
 
         // Initialize Action views
-        addCollapse((TextView) root.findViewById(R.id.activities_text), root.findViewById(R.id.activities_constraint));
+        addCollapse((TextView) root.findViewById(R.id.recent_actions_text), root.findViewById(R.id.activities_constraint));
 
         final RecyclerView billsRecycler = root.findViewById(R.id.sponsored_bills_recycler);
         RecyclerView.LayoutManager billsManager = new LinearLayoutManager(context);

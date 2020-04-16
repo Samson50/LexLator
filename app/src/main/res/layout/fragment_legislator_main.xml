@@ -31,13 +31,8 @@
                 android:id="@+id/finances_text"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="#DADADA"
+                style="@style/collapsibleHeader.main"
                 android:text="@string/finances_text"
-                android:textSize="36sp"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/legislator_banner" />
@@ -83,21 +78,14 @@
 
             <TextView
                 android:id="@+id/information_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="#DADADA"
+                style="@style/collapsibleHeader.main"
                 android:text="@string/information_text"
-                android:textSize="36sp"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/financial_information" />
 
             <Button
-                android:id="@+id/informaiton_download"
+                android:id="@+id/information_download"
                 style="@style/Widget.AppCompat.Button.Borderless"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
@@ -112,25 +100,19 @@
                 app:layout_constraintVertical_bias="0.0" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/informaiton_constraint"
+                android:id="@+id/information_constraint"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/information_text"
+                app:layout_constraintStart_toStartOf="@+id/information_text"
                 app:layout_constraintTop_toBottomOf="@+id/information_text"
                 tools:visibility="gone">
 
                 <TextView
                     android:id="@+id/bio_text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
+                    style="@style/collapsibleHeader.subOne"
                     android:text="@string/bio_text"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -150,14 +132,8 @@
 
                 <TextView
                     android:id="@+id/committees_text"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
+                    style="@style/collapsibleHeader.subOne"
                     android:text="@string/committees_text"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/legislator_bio" />
@@ -176,19 +152,12 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
-                android:id="@+id/activities_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="#DADADA"
-                android:text="@string/activities_text"
-                android:textSize="36sp"
-                android:textStyle="bold"
+                android:id="@+id/recent_actions_text"
+                style="@style/collapsibleHeader.main"
+                android:text="@string/text_recent_actions"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/informaiton_constraint" />
+                app:layout_constraintTop_toBottomOf="@+id/information_constraint" />
 
             <Button
                 android:id="@+id/activities_download"
@@ -199,29 +168,24 @@
                 android:layout_marginEnd="4dp"
                 android:layout_marginBottom="4dp"
                 android:background="@drawable/download"
-                app:layout_constraintBottom_toBottomOf="@+id/activities_text"
+                app:layout_constraintBottom_toBottomOf="@+id/recent_actions_text"
                 app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toEndOf="@+id/activities_text"
-                app:layout_constraintTop_toTopOf="@+id/activities_text"
+                app:layout_constraintEnd_toEndOf="@+id/recent_actions_text"
+                app:layout_constraintTop_toTopOf="@+id/recent_actions_text"
                 app:layout_constraintVertical_bias="1.0" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/activities_constraint"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/activities_text"
-                tools:visibility="visible">
+                app:layout_constraintEnd_toEndOf="@+id/recent_actions_text"
+                app:layout_constraintStart_toStartOf="@+id/recent_actions_text"
+                app:layout_constraintTop_toBottomOf="@+id/recent_actions_text"
+                tools:visibility="gone">
 
                 <TextView
                     android:id="@+id/sponsored_bills_text"
                     style="@style/collapsibleHeader.subOne"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
                     android:text="@string/sponsored_bills_text"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -241,11 +205,6 @@
                 <TextView
                     android:id="@+id/votes_text"
                     style="@style/collapsibleHeader.subOne"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="8dp"
                     android:text="@string/votes_text"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
@@ -265,15 +224,8 @@
 
             <TextView
                 android:id="@+id/contact_text"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
-                android:background="#DADADA"
+                style="@style/collapsibleHeader.main"
                 android:text="@string/contact_text"
-                android:textSize="36sp"
-                android:textStyle="bold"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/activities_constraint" />
@@ -284,8 +236,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
                 android:visibility="gone"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toEndOf="@+id/contact_text"
+                app:layout_constraintStart_toStartOf="@+id/contact_text"
                 app:layout_constraintTop_toBottomOf="@+id/contact_text">
 
                 <TextView
@@ -325,18 +277,6 @@
                     app:layout_constraintTop_toBottomOf="@+id/phone_text" />
 
                 <TextView
-                    android:id="@+id/social_media_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:text="@string/social_media_text"
-                    android:textSize="14sp"
-                    android:textStyle="bold"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/website_text" />
-
-                <TextView
                     android:id="@+id/legislator_address"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -368,6 +308,14 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/phone_text"
                     app:layout_constraintTop_toTopOf="@+id/website_text" />
+
+                <TextView
+                    android:id="@+id/social_media_text"
+                    style="@style/collapsibleHeader.subTwo"
+                    android:text="@string/social_media_text"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/website_text" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

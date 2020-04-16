@@ -10,13 +10,9 @@
 
     <TextView
         android:id="@+id/text_senators"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
+        style="@style/collapsibleHeader.main"
         android:text="@string/senators"
-        android:textColor="#000000"
-        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
@@ -33,13 +29,9 @@
 
     <TextView
         android:id="@+id/text_representatives"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="8dp"
+        style="@style/collapsibleHeader.main"
         android:text="@string/representatives"
-        android:textColor="#000000"
-        android:textSize="24sp"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/senatorsRecyclerView" />
 

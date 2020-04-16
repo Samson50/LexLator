@@ -98,7 +98,7 @@
     <string name="information_text">Information</string>
     <string name="bio_text">Biography</string>
     <string name="committees_text">Committees</string>
-    <string name="activities_text">Activities</string>
+    <string name="text_recent_actions">Recent Actions</string>
     <string name="sponsored_bills_text">Sponsored Bills</string>
     <string name="votes_text">Recent Votes</string>
     <string name="contact_text">Contact Information</string>
