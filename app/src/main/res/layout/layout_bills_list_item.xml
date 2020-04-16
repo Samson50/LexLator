@@ -11,7 +11,7 @@
         style="@style/collapsibleHeader.subTwo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="C.1234"
+        android:text="@string/default_bill_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -21,7 +21,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="TextView"
+        android:text="@string/default_bill_date"
         app:layout_constraintBottom_toBottomOf="@+id/bill_name"
         app:layout_constraintEnd_toEndOf="@+id/bill_name"
         app:layout_constraintTop_toTopOf="@+id/bill_name" />
@@ -31,7 +31,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
-        android:text="TextView"
+        android:text="@string/text_last_action"
         app:layout_constraintBottom_toBottomOf="@+id/bill_action_date"
         app:layout_constraintEnd_toStartOf="@+id/bill_action_date"
         app:layout_constraintTop_toTopOf="@+id/bill_action_date" />
@@ -49,7 +49,7 @@
             style="@style/collapsibleHeader.subThree"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:text="Title"
+            android:text="@string/text_bill_title"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
@@ -61,7 +61,7 @@
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
             android:layout_marginEnd="8dp"
-            android:text="TextView"
+            android:text="@string/default_bill_title"
             app:layout_constraintEnd_toEndOf="@+id/text_bill_title"
             app:layout_constraintStart_toStartOf="@+id/text_bill_title"
             app:layout_constraintTop_toBottomOf="@+id/text_bill_title" />
@@ -71,7 +71,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Introduced"
+            android:text="@string/text_bill_introduced"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/text_bill_title"
             app:layout_constraintTop_toBottomOf="@+id/bill_title" />
@@ -80,17 +80,17 @@
             android:id="@+id/bill_introduced_date"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="TextView"
+            android:text="@string/default_bill_date"
             app:layout_constraintBottom_toBottomOf="@+id/text_bill_introduced"
             app:layout_constraintStart_toStartOf="@+id/bill_last_action"
             app:layout_constraintTop_toTopOf="@+id/text_bill_introduced" />
 
         <TextView
-            android:id="@+id/textView8"
+            android:id="@+id/text_last_action"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
-            android:text="Last Action"
+            android:text="@string/text_bill_last_action"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="@+id/text_bill_introduced"
             app:layout_constraintTop_toBottomOf="@+id/text_bill_introduced" />
@@ -100,9 +100,9 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="TextView"
-            app:layout_constraintStart_toEndOf="@+id/textView8"
-            app:layout_constraintTop_toTopOf="@+id/textView8" />
+            android:text="@string/default_last_action"
+            app:layout_constraintStart_toEndOf="@+id/text_last_action"
+            app:layout_constraintTop_toTopOf="@+id/text_last_action" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bill_summary_layout"
@@ -110,14 +110,14 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/textView8">
+            app:layout_constraintTop_toBottomOf="@+id/text_last_action">
 
             <TextView
                 android:id="@+id/text_bill_summary"
                 style="@style/collapsibleHeader.subThree"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="Summary"
+                android:text="@string/text_summary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -129,7 +129,7 @@
                 android:layout_marginStart="8dp"
                 android:layout_marginTop="8dp"
                 android:layout_marginEnd="8dp"
-                android:text="TextView"
+                android:text="@string/default_bill_summary"
                 app:layout_constraintEnd_toEndOf="@+id/text_bill_summary"
                 app:layout_constraintStart_toStartOf="@+id/text_bill_summary"
                 app:layout_constraintTop_toBottomOf="@+id/text_bill_summary" />

@@ -276,13 +276,13 @@ public class CacheManager {
 
         File[] billFiles = billsDir.listFiles();
         if (null == billFiles) {
-            Log.e(TAG, "getBills(...): (null == billFiles), exiting");
+            Log.e(TAG, "getSponsoredBills(...): (null == billFiles), exiting");
             return billsArray;
         }
         for (File billFile: billFiles) {
             try {
                 String billString = readFile(billFile.getAbsolutePath());
-                JSONObject bill = stringToJSON(billString).getJSONObject("results").getJSONObject("votes").getJSONObject("vote");
+                JSONObject bill = stringToJSON(billString).getJSONArray("results").getJSONObject(0);
 
                 String sponsorId = bill.getString("sponsor_id");
                 if (sponsorId.equals(bioGuide)) {
@@ -295,15 +295,15 @@ public class CacheManager {
                     billInfo.put("short-title", bill.getString("short_title"));
                     billInfo.put("congress-url", bill.getString("congressdotgov_url"));
                     billInfo.put("introduced", bill.getString("introduced_date"));
-                    billInfo.put("last-action-date", bill.getString("last_major_action_date"));
-                    billInfo.put("last-action", bill.getString("last_major_action"));
+                    billInfo.put("last-action-date", bill.getString("latest_major_action_date"));
+                    billInfo.put("last-action", bill.getString("latest_major_action"));
                     billInfo.put("summary", bill.getString("summary"));
 
                     // Add bill to array
                     billsArray.put(billInfo);
                 }
             } catch (JSONException e) {
-                Log.e(TAG, "getBills(...): " + e.toString());
+                Log.e(TAG, "getSponsoredBills(...): " + e.toString());
             }
         }
 

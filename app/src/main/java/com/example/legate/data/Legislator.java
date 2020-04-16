@@ -8,6 +8,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.legate.data.actions.SponsoredBillsAdapter;
 import com.example.legate.data.actions.VotesListAdapter;
 import com.example.legate.data.finances.Finances;
 import com.example.legate.utils.CacheManager;
@@ -241,9 +242,8 @@ public class Legislator {
             }
         }
 
-        //BillsListAdapter adapter = new BillsListAdapter(votesJSON);
-        //billsRecycler.setAdapter(adapter);
-
+        SponsoredBillsAdapter adapter = new SponsoredBillsAdapter(billsJSON);
+        billsRecycler.setAdapter(adapter);
     }
 
     private void parseCommitteeMembership(JSONObject membership, JSONArray committees, String prefix) {

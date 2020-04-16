@@ -139,4 +139,14 @@
     <string name="default_position">Yea</string>
     <string name="default_description">This is a more detailed description of what this specific vote was about</string>
 
+    <string name="default_bill_name">C.1234</string>
+    <string name="text_last_action">Last Action:</string>
+    <string name="default_bill_date">31 Dec., 1999</string>
+    <string name="text_bill_title">Title</string>
+    <string name="default_bill_title">This is the default tile for C.1234 which is meant to do things for reasons.</string>
+    <string name="text_bill_introduced">Introduced</string>
+    <string name="text_bill_last_action">Last Action</string>
+    <string name="default_last_action">Sent to Committee on Stuff and Things</string>
+    <string name="default_bill_summary">No summary available</string>
+
 </resources>
