@@ -1,6 +1,8 @@
 package com.example.legate.ui.legislator;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,22 +17,21 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.legate.R;
-import com.example.legate.utils.CacheManager;
 import com.example.legate.data.Legislator;
-import com.example.legate.utils.StateHelper;
 
 public class LegislatorMain extends Fragment {
 
     private final static String TAG = "LegislatorMain";
+    // twitter - http://twitter.com/[username]
+    private final static String TWITTER_URL = "http://twitter.com/";
+    // facebook - https://www.facebook.com/[username]
+    private final static String FACEBOOK_URL = "https://www.facebook.com/";
+    // youtube - https://www.youtube.com/user/[username]
+    private final static String YOUTUBE_URL = "https://www.youtube.com/user/";
+    // instagram - https://www.instagram.com/[username]
+    private final static String INSTAGRAM_URL = "https://www.instagram.com/";
 
     private Legislator legislator;
-
-    private ViewGroup legislatorLayout;
-    private ImageView legislatorImage;
-    private TextView legislatorTitle;
-    private TextView legislatorState;
-    private TextView legislatorParty;
-    private TextView legislatorDistrict;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                         ViewGroup container, Bundle savedInstanceState) {
@@ -43,12 +44,12 @@ public class LegislatorMain extends Fragment {
         //        ViewModelProviders.of(this).get(HomeViewModel.class);
         final View root = inflater.inflate(R.layout.fragment_legislator_main, container, false);
 
-        legislatorLayout = root.findViewById(R.id.legislator_banner);
-        legislatorImage = legislatorLayout.findViewById(R.id.legislator_image);
-        legislatorTitle = legislatorLayout.findViewById(R.id.legislator_title);
-        legislatorState = legislatorLayout.findViewById(R.id.legislator_state);
-        legislatorParty = legislatorLayout.findViewById(R.id.legislator_party);
-        legislatorDistrict = legislatorLayout.findViewById(R.id.legislator_district);
+        ViewGroup legislatorLayout = root.findViewById(R.id.legislator_banner);
+        ImageView legislatorImage = legislatorLayout.findViewById(R.id.legislator_image);
+        TextView legislatorTitle = legislatorLayout.findViewById(R.id.legislator_title);
+        TextView legislatorState = legislatorLayout.findViewById(R.id.legislator_state);
+        TextView legislatorParty = legislatorLayout.findViewById(R.id.legislator_party);
+        TextView legislatorDistrict = legislatorLayout.findViewById(R.id.legislator_district);
         ViewGroup districtLayout = legislatorLayout.findViewById(R.id.district_layout);
 
         Bundle arguments = getArguments();
@@ -113,9 +114,49 @@ public class LegislatorMain extends Fragment {
         TextView addressView = root.findViewById(R.id.legislator_address);
         TextView phoneView = root.findViewById(R.id.legislator_phone);
         TextView websiteView = root.findViewById(R.id.legislator_website);
-        legislator.fillContactInformation(addressView, phoneView, websiteView);
+        ViewGroup socialViewGroup = root.findViewById(R.id.social_media_layout);
+        legislator.fillContactInformation(addressView, phoneView, websiteView, socialViewGroup);
+
+        ImageView twitterIcon = root.findViewById(R.id.icon_twitter);
+        String twitterLink = TWITTER_URL + legislator.getUserName("twitter");
+        SocialListener twitterListener = new SocialListener(context, twitterLink);
+        twitterIcon.setOnClickListener(twitterListener);
+
+        ImageView facebookIcon = root.findViewById(R.id.icon_facebook);
+        String facebookLink = FACEBOOK_URL + legislator.getUserName("facebook");
+        SocialListener facebookListener = new SocialListener(context, facebookLink);
+        facebookIcon.setOnClickListener(facebookListener);
+
+        ImageView instagramIcon = root.findViewById(R.id.icon_instagram);
+        String instagramLink = INSTAGRAM_URL + legislator.getUserName("instagram");
+        SocialListener instagramListener = new SocialListener(context, instagramLink);
+        instagramIcon.setOnClickListener(instagramListener);
+
+        ImageView youtubeIcon = root.findViewById(R.id.icon_youtube);
+        String youtubeLink = YOUTUBE_URL + legislator.getUserName("youtube");
+        SocialListener youtubeListener = new SocialListener(context, youtubeLink);
+        youtubeIcon.setOnClickListener(youtubeListener);
 
         return root;
+    }
+
+    private static class SocialListener implements View.OnClickListener {
+
+        private String socialUrl;
+        private Context context;
+
+        SocialListener(Context c, String url) {
+            context = c;
+            socialUrl = url;
+        }
+
+        @Override
+        public void onClick(View v) {
+            Log.d(TAG, "Navigating to: " + socialUrl);
+            Uri uri = Uri.parse(socialUrl);
+            Intent intent = new Intent(Intent.ACTION_VIEW, uri);
+            context.startActivity(intent);
+        }
     }
 
     private void addCollapse(TextView clicker, View hider) {

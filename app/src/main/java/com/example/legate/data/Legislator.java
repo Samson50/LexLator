@@ -10,6 +10,7 @@ import android.widget.TextView;
 
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.legate.R;
 import com.example.legate.data.actions.SponsoredBillsAdapter;
 import com.example.legate.data.actions.VotesListAdapter;
 import com.example.legate.data.finances.Finances;
@@ -29,8 +30,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-import javax.net.ssl.HttpsURLConnection;
-
 
 public class Legislator {
     private static final String TAG = "Legislator";
@@ -46,6 +45,7 @@ public class Legislator {
     private JSONArray membershipJSON = new JSONArray();
     private JSONArray votesJSON = new JSONArray();
     private JSONArray billsJSON = new JSONArray();
+    private JSONObject socialMediaJSON = null;
 
     private String title;
     private String state;
@@ -449,7 +449,59 @@ public class Legislator {
 
     }
 
-    public void fillContactInformation(TextView addressView, TextView phoneNumberView, TextView websiteView) {
+    public String getUserName(String platform) {
+        try {
+            return socialMediaJSON.getString(platform);
+        } catch (JSONException e) {
+            Log.e(TAG, "Legislator " + bioGuide + " " + platform + " not found");
+            return null;
+        }
+    }
+
+    private void getSocialMedia(File socialFile) {
+        JSONObject newSocial = cacheManager.getSocialMedia(getBioGuide());
+        if (null != newSocial) {
+            socialMediaJSON = newSocial;
+            if (0 != cacheManager.writeFile(socialFile.getAbsolutePath(), socialMediaJSON))
+                Log.e(TAG, "Failed to write social media to file");
+        }
+
+    }
+
+    private void fillSocialMedia(ViewGroup mediaLayout) {
+        // twitter - http://twitter.com/[username]
+        // facebook - https://www.facebook.com/[username]
+        // youtube - https://www.youtube.com/user/[username]
+        // instagram - https://www.instagram.com/[username]
+        Log.d(TAG, "Getting social media...");
+        if (null == socialMediaJSON) {
+            Log.d(TAG, "socialMediaJSON == null, populating");
+            File socialFile = new File(legislatorFile, "social-media.json");
+            if (!socialFile.exists()) getSocialMedia(socialFile);
+            else {
+                String socialString = cacheManager.readFile(socialFile.getAbsolutePath());
+                if (!socialString.isEmpty()) socialMediaJSON = cacheManager.stringToJSON(socialString);
+                else getSocialMedia(socialFile);
+            }
+        }
+
+        // Connect data with views...
+        if (socialMediaJSON.has("twitter")) {
+            mediaLayout.findViewById(R.id.icon_twitter).setVisibility(View.VISIBLE);
+        }
+        if (socialMediaJSON.has("facebook")) {
+            mediaLayout.findViewById(R.id.icon_facebook).setVisibility(View.VISIBLE);
+        }
+        if (socialMediaJSON.has("instagram")) {
+            mediaLayout.findViewById(R.id.icon_instagram).setVisibility(View.VISIBLE);
+        }
+        if (socialMediaJSON.has("youtube")) {
+            mediaLayout.findViewById(R.id.icon_youtube).setVisibility(View.VISIBLE);
+        }
+    }
+
+    public void fillContactInformation(TextView addressView, TextView phoneNumberView,
+                                       TextView websiteView, ViewGroup socialViewGroup) {
         String address = getTermValue("address");
         if (null == address) address = getTermValue("office");
         addressView.setText(address);
@@ -457,7 +509,8 @@ public class Legislator {
         phoneNumberView.setText(getTermValue("phone"));
 
         websiteView.setText(getTermValue("url"));
-        // Social Media: https://theunitedstates.io/congress-legislators/legislators-social-media.json
+
+        fillSocialMedia(socialViewGroup);
     }
 
     public String getPath() {

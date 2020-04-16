@@ -64,6 +64,15 @@ public class CacheManager {
         }
     }
 
+    public int writeFile(String filePath, JSONObject content) {
+        try {
+            return writeFile(filePath, content.toString(4));
+        } catch (JSONException e) {
+            Log.e(TAG, "writeFile(String, JSONArray) failed...");
+            return 1;
+        }
+    }
+
     public int writeFile(String filePath, String content) {
         try {
             FileWriter fileWriter = new FileWriter(filePath);
@@ -315,6 +324,28 @@ public class CacheManager {
         }
 
         return billsArray;
+    }
+
+    public JSONObject getSocialMedia(String bioGuide) {
+        Log.d(TAG, "Parsing cached social media file for " + bioGuide);
+        String socialString = readFile(localCache.getAbsolutePath() + "/legislators-social-media.json");
+
+        JSONArray socialJson = stringToJSONArray(socialString);
+
+        try {
+            for (int i = 0; i < socialJson.length(); i++) {
+                JSONObject social = socialJson.getJSONObject(i);
+                String socialId = social.getJSONObject("id").getString("bioguide");
+                if (socialId.equals(bioGuide)) {
+                    return social.getJSONObject("social");
+                }
+            }
+        } catch (JSONException e) {
+            Log.e(TAG, "getSocialMedia(...): " + e.toString());
+        }
+
+        Log.e(TAG, "Failed to get social media information for: " + bioGuide);
+        return null;
     }
 
     public String readFile(String filePath) {

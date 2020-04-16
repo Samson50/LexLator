@@ -175,7 +175,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="8dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="@+id/contact_text"
                 app:layout_constraintStart_toStartOf="@+id/contact_text"
                 app:layout_constraintTop_toBottomOf="@+id/contact_text">
@@ -256,6 +256,53 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/website_text" />
+
+                <LinearLayout
+                    android:id="@+id/social_media_layout"
+                    android:layout_width="0dp"
+                    android:layout_height="60dp"
+                    android:layout_marginTop="8dp"
+                    android:orientation="horizontal"
+                    app:layout_constraintEnd_toEndOf="@+id/social_media_text"
+                    app:layout_constraintStart_toStartOf="@+id/social_media_text"
+                    app:layout_constraintTop_toBottomOf="@+id/social_media_text">
+
+                    <ImageView
+                        android:id="@+id/icon_facebook"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/facebook_content"
+                        android:src="@drawable/facebook"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/icon_twitter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/twitter_content"
+                        android:src="@drawable/twitter"
+                        tools:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/icon_youtube"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/youtube_content"
+                        android:src="@drawable/youtube"
+                        android:visibility="gone" />
+
+                    <ImageView
+                        android:id="@+id/icon_instagram"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:contentDescription="@string/instagram_content"
+                        android:src="@drawable/instagram"
+                        android:visibility="gone" />
+                </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>

@@ -35,7 +35,8 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
     private static final String TAG = "UpdateTask";
     //private static final int ANIMATION_DURATION = 200;
-    private static final String CACHE_URL = "https://theunitedstates.io/congress-legislators/legislators-current.json";
+    private static final String LEGISLATORS_URL = "https://theunitedstates.io/congress-legislators/legislators-current.json";
+    private static final String SOCIAL_MEDIA_URL = "https://theunitedstates.io/congress-legislators/legislators-social-media.json";
     private static final String COMMITTEES_URL = "https://theunitedstates.io/congress-legislators/committees-current.json";
     private static final String MEMBERSHIP_URL = "https://theunitedstates.io/congress-legislators/committee-membership-current.json";
     // https://api.propublica.org/congress/v1/{chamber}/votes/{start-date}/{end-date}.json
@@ -99,7 +100,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
         localCache = new File(strings[0]);
 
-        File cacheFile = new File(localCache, "legislators-current.json");
+        File legislatorsFile = new File(localCache, "legislators-current.json");
 
         Log.d(TAG, "Downloading files");
 
@@ -114,12 +115,17 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
             Log.e(TAG, "Failed to download: " + COMMITTEES_URL);
         }
 
+        String socialMediaPath = localCache.getAbsolutePath() + "/legislators-social-media.json";
+        if (0 != downloadFile(SOCIAL_MEDIA_URL, socialMediaPath)) {
+            Log.e(TAG, "Failed to download: " + SOCIAL_MEDIA_URL);
+        }
+
         String legislatorsPath = localCache.getAbsolutePath() + "/legislators-current.json";
-        if (0 != downloadFile(CACHE_URL, legislatorsPath)) {
-            Log.e(TAG, "Failed to download: " + CACHE_URL);
+        if (0 != downloadFile(LEGISLATORS_URL, legislatorsPath)) {
+            Log.e(TAG, "Failed to download: " + LEGISLATORS_URL);
         }
         else {
-            populateStates(cacheFile);
+            populateStates(legislatorsFile);
         }
 
         if (0 != downloadVotes()) {

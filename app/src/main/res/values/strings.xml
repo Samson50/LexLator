@@ -149,4 +149,9 @@
     <string name="default_last_action">Sent to Committee on Stuff and Things</string>
     <string name="default_bill_summary">No summary available</string>
 
+    <string name="twitter_content">Twitter Icon</string>
+    <string name="facebook_content">Facebook Icon</string>
+    <string name="instagram_content">Instagram Icon</string>
+    <string name="youtube_content">YouTube Icon</string>
+
 </resources>
