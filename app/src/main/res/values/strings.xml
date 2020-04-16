@@ -20,7 +20,11 @@
     <string name="bills">Bills</string>
 
     <string name="state">State</string>
+    <string name="text_find_district">Find your district</string>
+    <string name="text_address">Address</string>
+    <string name="text_city">City</string>
 
+    <string name="go_district">Find My District</string>
     <string name="go_state">Go to Legislators</string>
 
     <string-array name="states_array">
