@@ -37,35 +37,6 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/legislator_banner" />
 
-            <Button
-                android:id="@+id/finances_fill"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/download"
-                app:layout_constraintBottom_toBottomOf="@+id/finances_text"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toStartOf="@+id/finances_download"
-                app:layout_constraintTop_toTopOf="@+id/finances_text"
-                app:layout_constraintVertical_bias="1.0" />
-
-            <Button
-                android:id="@+id/finances_download"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/download"
-                app:layout_constraintBottom_toBottomOf="@+id/finances_text"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toEndOf="@+id/finances_text"
-                app:layout_constraintTop_toTopOf="@+id/finances_text" />
-
             <include
                 android:id="@+id/financial_information"
                 layout="@layout/layout_finances"
@@ -84,26 +55,10 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/financial_information" />
 
-            <Button
-                android:id="@+id/information_download"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/download"
-                app:layout_constraintBottom_toBottomOf="@+id/information_text"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toEndOf="@+id/information_text"
-                app:layout_constraintTop_toTopOf="@+id/information_text"
-                app:layout_constraintVertical_bias="0.0" />
-
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/information_constraint"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
                 app:layout_constraintEnd_toEndOf="@+id/information_text"
                 app:layout_constraintStart_toStartOf="@+id/information_text"
                 app:layout_constraintTop_toBottomOf="@+id/information_text"
@@ -158,21 +113,6 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/information_constraint" />
-
-            <Button
-                android:id="@+id/activities_download"
-                style="@style/Widget.AppCompat.Button.Borderless"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:layout_marginTop="4dp"
-                android:layout_marginEnd="4dp"
-                android:layout_marginBottom="4dp"
-                android:background="@drawable/download"
-                app:layout_constraintBottom_toBottomOf="@+id/recent_actions_text"
-                app:layout_constraintDimensionRatio="1:1"
-                app:layout_constraintEnd_toEndOf="@+id/recent_actions_text"
-                app:layout_constraintTop_toTopOf="@+id/recent_actions_text"
-                app:layout_constraintVertical_bias="1.0" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/activities_constraint"

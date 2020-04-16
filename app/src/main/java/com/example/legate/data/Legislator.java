@@ -66,7 +66,7 @@ public class Legislator {
 
         private TextView bioView;
 
-        public DownloadBio(TextView biographyView) {
+        DownloadBio(TextView biographyView) {
             bioView = biographyView;
         }
 
@@ -118,6 +118,34 @@ public class Legislator {
         }
     }
 
+    private class FinanceTask extends AsyncTask<String, Void, Void> {
+
+        private ViewGroup summaryView;
+        private RecyclerView contributionsRecycler;
+        private RecyclerView industriesRecycler;
+        Finances financeHelper;
+
+        FinanceTask(ViewGroup summary, RecyclerView contributes, RecyclerView industries, Finances helper) {
+            summaryView = summary;
+            contributionsRecycler = contributes;
+            industriesRecycler = industries;
+            financeHelper = helper;
+        }
+
+        @Override
+        protected Void doInBackground(String... strings) {
+            String openSecretsId = strings[0];
+
+            financeHelper.downloadFinances(openSecretsId, CYCLE);
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void avoid) {
+            financeHelper.fillFinances(summaryView, contributionsRecycler, industriesRecycler);
+        }
+    }
+
     public void cancelImageTask() {
         if (null != imageTask) imageTask.cancel(false);
     }
@@ -143,14 +171,6 @@ public class Legislator {
         imageTask = new ImageTask(imageView);
         imageTask.execute(legislatorFile.getAbsolutePath(), imageUrl);
 
-        return 0;
-    }
-
-    /**
-     * Called from LegislatorMain to fill all fields from cached files
-     * @return int indicating success or error code
-     */
-    public int fillLegislatorMain() {
         return 0;
     }
 
@@ -192,14 +212,9 @@ public class Legislator {
         return 0;
     }
 
-    public void downloadFinances() {
-        String openSecretsId = getIdValue("opensecrets");
-
-        finances.downloadFinances(openSecretsId, CYCLE);
-    }
-
     public void fillFinances(ViewGroup summaryView, RecyclerView contributionsRecycler, RecyclerView industriesRecycler) {
-        finances.fillFinances(summaryView, contributionsRecycler, industriesRecycler);
+        FinanceTask task = new FinanceTask(summaryView, contributionsRecycler, industriesRecycler, finances);
+        task.execute(getIdValue("opensecrets"));
     }
 
     private String parseXml(InputStream input, String firstTag, String textTag) throws IOException {
