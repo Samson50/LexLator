@@ -55,4 +55,12 @@
             android:name="legislatorPath"
             app:argType="string" />
     </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.example.legate.SettingsFragment"
+        android:label="SettingsFragment" />
+
+    <action android:id="@+id/open_settings"
+        app:destination="@id/settingsFragment"/>
 </navigation>
