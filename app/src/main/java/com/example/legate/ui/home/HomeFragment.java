@@ -1,6 +1,7 @@
 package com.example.legate.ui.home;
 
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,7 +12,6 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -21,6 +21,18 @@ import androidx.navigation.Navigation;
 import com.example.legate.R;
 import com.example.legate.utils.CacheManager;
 import com.example.legate.utils.ConfigManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.URL;
+import java.util.Iterator;
+
+import javax.net.ssl.HttpsURLConnection;
 
 
 public class HomeFragment extends Fragment implements AdapterView.OnItemSelectedListener, View.OnClickListener {
@@ -32,6 +44,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private ConfigManager configManager;
 
     private HomeViewModel homeViewModel;
+    private ViewGroup contentLayout;
+    private ViewGroup progressOverlay;
+    ViewGroup addressLayout;
     private Button goStateButton;
     private String state;
     private EditText address;
@@ -52,6 +67,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
+        progressOverlay = root.findViewById(R.id.progress_overlay);
+        contentLayout = root.findViewById(R.id.home_content_layout);
+
         // Initialize State selection drop-down menu
         Spinner stateSpinner = root.findViewById(R.id.stateSpinner);
         ArrayAdapter<CharSequence> stateAdapter = ArrayAdapter.createFromResource(context,
@@ -59,23 +77,30 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         stateSpinner.setAdapter(stateAdapter);
         stateSpinner.setOnItemSelectedListener(this);
 
+        // Hide district & address information
+        addressLayout = root.findViewById(R.id.address_layout);
+        addressLayout.setVisibility(View.GONE);
+
         // Initialize goStateButton
         goStateButton = root.findViewById(R.id.goStateButton);
         goStateButton.setVisibility(View.GONE);
         goStateButton.setOnClickListener(this);
 
+        // Initialize goDistrictButton
+        Button districtButton = root.findViewById(R.id.district_button);
+        districtButton.setOnClickListener(new DistrictButton());
+
         // Initialize address views
         address = root.findViewById(R.id.edit_address);
         city = root.findViewById(R.id.edit_city);
-        zipCode = root.findViewById(R.id.edit_state);
+        zipCode = root.findViewById(R.id.edit_zip);
 
         // Update Local Cache
         if (!updated) {
             updated = true;
-            ViewGroup progressOverlay = root.findViewById(R.id.progress_overlay);
-            ViewGroup contentLayout = root.findViewById(R.id.home_content_layout);
             CacheManager cacheManager = new CacheManager();
-            if (0 != cacheManager.updateLocalCache(context, progressOverlay, contentLayout)) Log.e(TAG, "Failed to update cache.");
+            if (0 != cacheManager.updateLocalCache(context, progressOverlay, contentLayout))
+                Log.e(TAG, "Failed to update cache.");
         }
         return root;
     }
@@ -85,6 +110,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         if (position != 0) {
             state = parent.getItemAtPosition(position).toString();
             goStateButton.setVisibility(View.VISIBLE);
+            addressLayout.setVisibility(View.VISIBLE);
+
 
             if (0 != configManager.update("state", state)) {
                 Log.e(TAG, "Config update failed");
@@ -93,6 +120,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         else {
             state = null;
             goStateButton.setVisibility(View.GONE);
+            addressLayout.setVisibility(View.GONE);
 
             if (0 != configManager.update("state", state)) {
                 Log.e(TAG, "Config update failed");
@@ -129,14 +157,110 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             queryString += "address=" + addressString;
             queryString += "&includeOffices=false";
             queryString += "&levels=country";
-            queryString += "key=" + CIVIC_KEY;
+            queryString += "&key=" + CIVIC_KEY;
 
             Log.d(TAG, queryString);
 
-            // Hide home fragment and display progress overlay
+            QueryTask queryTask = new QueryTask();
+            queryTask.execute(queryString);
+        }
+    }
 
-            // Call query task
+    private class QueryTask extends AsyncTask<String, Void, String> {
 
+        @Override
+        protected void onPreExecute() {
+            contentLayout.setVisibility(View.GONE);
+            progressOverlay.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected String doInBackground(String... strings) {
+            if (strings.length < 1) {
+                Log.e(TAG, "Implementation error: too few arguments in sPaths");
+                return "";
+            }
+            InputStream input = null;
+            HttpsURLConnection connection = null;
+            String response = null;
+            try {
+                URL url = new URL(strings[0]);
+
+                Log.d(TAG, "Establishing HTTPS connection");
+                connection = (HttpsURLConnection) url.openConnection();
+                connection.setConnectTimeout(5000);
+                connection.connect();
+
+                // expect HTTP 200 OK, so we don't mistakenly save error report
+                // instead of the file
+                if (connection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
+                    String message = "Server returned HTTP " + connection.getResponseCode()
+                            + " " + connection.getResponseMessage();
+                    Log.e(TAG, message);
+                    return message;
+                }
+                Log.d(TAG, "Connection established");
+
+                // download the file
+                input = connection.getInputStream();
+                BufferedReader r = new BufferedReader(new InputStreamReader(input));
+                StringBuilder total = new StringBuilder();
+
+                // Read the string form the input stream
+                for (String line; (line = r.readLine()) != null; ) {
+                    total.append(line).append('\n');
+                }
+                response = total.toString();
+            } catch (Exception e) {
+                Log.e(TAG, e.toString());
+            } finally {
+                Log.d(TAG, "Closing HTTPS connection");
+                try {
+                    if (input != null)
+                        input.close();
+                } catch (IOException e) {
+                    Log.e(TAG, e.toString());
+                }
+
+                if (connection != null)
+                    connection.disconnect();
+            }
+            Log.d(TAG, "Query response: " + response);
+            return response;
+        }
+
+        @Override
+        protected void onPostExecute(String response) {
+            // Get district from response
+            CacheManager manager = new CacheManager();
+            String districtName = null;
+            String district = null;
+            try {
+                JSONObject responseJson = manager.stringToJSON(response).getJSONObject("divisions");
+                Iterator<String> keys = responseJson.keys();
+                String longest = "";
+                while (keys.hasNext()) {
+                    String key = keys.next();
+                    if (key.length() > longest.length()) longest = key;
+                }
+
+                String[] split = longest.split(":");
+                district = split[split.length - 1];
+                districtName = responseJson.getJSONObject(longest).getString("name");
+            } catch (JSONException e) {
+                Log.e(TAG, "Failed to get district name: " + e.toString());
+            }
+
+            // Remove overlay
+            progressOverlay.setVisibility(View.GONE);
+            contentLayout.setVisibility(View.VISIBLE);
+
+            // Navigate
+            Bundle bundle = new Bundle();
+            bundle.putString("district", district);
+            bundle.putString("district-name", districtName);
+            bundle.putString("state", state);
+            Navigation.findNavController(contentLayout).navigate(R.id.nav_state_list, bundle);
         }
     }
 }

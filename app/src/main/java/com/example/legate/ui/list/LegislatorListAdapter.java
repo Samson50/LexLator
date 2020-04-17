@@ -56,6 +56,24 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
         }
     }
 
+    LegislatorListAdapter(File[] legislatorsFileArray, String district) {
+        Log.d(TAG, "Populating adapter data");
+        legislatorsList = new ArrayList<>();
+
+        if (null != district) {
+            for (File legislatorFile : legislatorsFileArray) {
+                if (legislatorFile.getName().contains(district)) {
+                    legislatorsList.add(new Legislator(legislatorFile.getAbsolutePath()));
+                }
+            }
+        }
+        else {
+            for (File legislatorFile : legislatorsFileArray) {
+                legislatorsList.add(new Legislator(legislatorFile.getAbsolutePath()));
+            }
+        }
+    }
+
     LegislatorListAdapter(File[] legislatorsFileArray) {
 
         Log.d(TAG, "Populating adapter data");

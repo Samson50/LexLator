@@ -1,10 +1,13 @@
 package com.example.legate.utils;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.widget.ImageView;
+
+import com.example.legate.R;
 
 import java.io.File;
 
@@ -12,9 +15,11 @@ public class ImageTask extends AsyncTask<String, Integer, Bitmap> {
     private static final String TAG = "ImageTask";
 
     private ImageView imageView;
+    private Context context;
 
     public ImageTask(ImageView view) {
         imageView = view;
+        context = imageView.getContext();
     }
 
     /**
@@ -46,8 +51,7 @@ public class ImageTask extends AsyncTask<String, Integer, Bitmap> {
             // Use CacheManager to download file
             if (0 != cacheManager.downloadFile(imageUrl, imageFile.getAbsolutePath(), null)) {
                 Log.e(TAG, "Failed to download image file, using default");
-                //return cacheManager.getDefaultAvatar();
-                return null;
+                return BitmapFactory.decodeResource(context.getResources(), R.drawable.default_avatar);
             }
             else return BitmapFactory.decodeFile(imageFile.getPath());
         }

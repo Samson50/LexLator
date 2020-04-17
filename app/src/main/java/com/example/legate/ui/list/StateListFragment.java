@@ -29,6 +29,10 @@ public class StateListFragment extends Fragment {
 
     private StateHelper stateHelper = new StateHelper();
 
+    private String state;
+    private String district;
+    private String districtName;
+
     private View root;
     private TextView senatorsText;
     private TextView representativesText;
@@ -66,20 +70,38 @@ public class StateListFragment extends Fragment {
             return root;
         }
 
-        senatorsRecyclerView = root.findViewById(R.id.senatorsRecyclerView);
-        representativesRecyclerView = root.findViewById(R.id.representativesRecyclerView);
+        // Get bundle arguments
+        Bundle arguments = getArguments();
+        if (null != arguments) {
+            state = arguments.getString("state");
+            district = arguments.getString("district");
+            districtName = arguments.getString("district-name");
+        }
+        TextView districtView = root.findViewById(R.id.state_district);
+        if (districtName != null) {
+            districtView.setText(districtName);
+        }
+        else {
+            districtView.setVisibility(View.GONE);
+        }
 
+        // Populate legislator arrays for recycler views
+        populateFileArrays(context);
+
+        // Initialize legislator recycler views
+        senatorsRecyclerView = root.findViewById(R.id.senatorsRecyclerView);
         senatorsManager = new LinearLayoutManager(context);
         senatorsRecyclerView.setLayoutManager(senatorsManager);
+
+        representativesRecyclerView = root.findViewById(R.id.representativesRecyclerView);
         representativesManager = new LinearLayoutManager(context);
         representativesRecyclerView.setLayoutManager(representativesManager);
 
-        populateFileArrays(context);
 
         // Iterate over array, populating recycler view
         senatorsAdapter = new LegislatorListAdapter(senatorFilesArray);
         senatorsRecyclerView.setAdapter(senatorsAdapter);
-        representativesAdapter = new LegislatorListAdapter(representativeFilesArray);
+        representativesAdapter = new LegislatorListAdapter(representativeFilesArray, district);
         representativesRecyclerView.setAdapter(representativesAdapter);
 
         // Set-up collapsible property from text views
@@ -114,22 +136,28 @@ public class StateListFragment extends Fragment {
     }
 
     private void populateFileArrays(Context context) {
-        ConfigManager configManager = new ConfigManager(context.getFilesDir());
 
-        // Get the selected state
-        String state;
-        String configValue = configManager.getValue("state");
-        if (null != configValue) {
-            state = configValue;
-            state = stateHelper.fullToShort(state);
-            if (null == state) {
-                Log.e(TAG, "Failed to convert state fullToShort");
+        if (null == state) {
+            ConfigManager configManager = new ConfigManager(context.getFilesDir());
+
+            // Get the selected state
+            String configValue = configManager.getValue("state");
+            if (null != configValue) {
+                state = configValue;
+                state = stateHelper.fullToShort(state);
+                if (null == state) {
+                    Log.e(TAG, "Failed to convert state fullToShort");
+                    return;
+                }
+            } else {
+                Log.e(TAG, "Failed to get state String from config file");
                 return;
             }
         }
         else {
-            Log.e(TAG, "Failed to get state String from config file");
-            return;
+            if (2 != state.length()) {
+                state = stateHelper.fullToShort(state);
+            }
         }
 
         // Populate array from files in state directory
