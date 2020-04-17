@@ -1,15 +1,51 @@
 <?xml version="1.0" encoding="utf-8"?>
-<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <CheckBoxPreference
-        android:defaultValue="false"
-        android:key="check_box_preference_1"
-        android:title="Check box preference" />
+    <PreferenceCategory
+        android:title="Default Information">
 
-    <SwitchPreference
-        android:layout_width="wrap_content"
-        android:defaultValue="false"
-        android:key="switch_preference_1"
-        android:title="Switch preference" />
+        <ListPreference
+            android:defaultValue="0"
+            android:entries="@array/states_array"
+            android:summary="%s"
+            android:entryValues="@array/states_array"
+            android:key="state_preference"
+            android:title="Your State"
+            app:isPreferenceVisible="true" />
+        <EditTextPreference
+            android:defaultValue="Default value"
+            android:key="address_preference"
+            android:summary="%s"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Your address" />
+        <EditTextPreference
+            android:defaultValue="Default value"
+            android:key="city_preference"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Your city" />
+        <EditTextPreference
+            android:defaultValue="Default value"
+            android:key="zip_preference"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Your zip code" />
+        <EditTextPreference
+            android:defaultValue="None"
+            android:key="district_preference"
+            android:selectAllOnFocus="true"
+            android:singleLine="true"
+            android:title="Your district" />
+    </PreferenceCategory>
+
+    <PreferenceCategory android:title="Local data">
+
+        <CheckBoxPreference
+            android:defaultValue="false"
+            android:key="clear_data_on_exit"
+            android:title="Clear data on exit" />
+    </PreferenceCategory>
 
 </PreferenceScreen>
