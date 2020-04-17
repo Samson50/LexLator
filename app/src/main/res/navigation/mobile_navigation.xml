@@ -59,7 +59,7 @@
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.legate.SettingsFragment"
-        android:label="SettingsFragment" />
+        android:label="Settings" />
 
     <action android:id="@+id/open_settings"
         app:destination="@id/settingsFragment"/>

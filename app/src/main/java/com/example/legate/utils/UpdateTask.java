@@ -9,6 +9,8 @@ import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import androidx.preference.PreferenceManager;
+
 import com.example.legate.R;
 
 import org.json.JSONArray;
@@ -30,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HttpsURLConnection;
 
 // TODO: Fix code duplication among download calls
-// TODO: Add votes-last-updated to config.json
 public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
     private static final String TAG = "UpdateTask";
@@ -54,12 +55,15 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
     private ViewGroup contentLayout;
     private TextView progressTextView;
     private String progressText = "Updating...";
+    private int updateInterval;
     private ProgressBar progressBar;
     private CacheManager cacheManager;
     private File localCache;
 
-    public UpdateTask(Context parentContext, ViewGroup overlay, ViewGroup content, CacheManager manager) {
+    UpdateTask(Context parentContext, ViewGroup overlay, ViewGroup content, CacheManager manager) {
         context = parentContext;
+        String updateString = PreferenceManager.getDefaultSharedPreferences(context).getString("update_interval_preference", "1");
+        updateInterval = Integer.parseInt(updateString);
         progressOverlay = overlay;
         contentLayout = content;
         progressBar = progressOverlay.findViewById(R.id.update_progress_bar);
@@ -412,7 +416,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 Date lastModified = new Date(senateVotesFile.lastModified());
 
                 Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.DATE, -3);
+                calendar.add(Calendar.DATE, - updateInterval);
                 Date oldestDate = calendar.getTime();
                 if (lastModified.after(oldestDate)) {
                     Log.d(TAG, "Vote files within date range, no update required, exiting");
@@ -530,7 +534,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 Date senateLastModified = new Date(senateBillsFile.lastModified());
 
                 Calendar calendar = Calendar.getInstance();
-                calendar.add(Calendar.DATE, -3);
+                calendar.add(Calendar.DATE, - updateInterval);
                 Date oldestDate = calendar.getTime();
                 if (senateLastModified.after(oldestDate)) {
                     Log.d(TAG, "Bill files within date range, no update required, exiting");

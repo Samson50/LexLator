@@ -1,6 +1,7 @@
 package com.example.legate;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -13,8 +14,13 @@ import androidx.navigation.ui.NavigationUI;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.preference.PreferenceManager;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final String TAG = "MainActivity";
 
     private AppBarConfiguration mAppBarConfiguration;
 
@@ -65,5 +71,34 @@ public class MainActivity extends AppCompatActivity {
             default:
                 return super.onOptionsItemSelected(item);
         }
+    }
+
+    private void deleteFiles(File directory) {
+        if (directory.isDirectory()) {
+            File[] children = directory.listFiles();
+            for (File child: children) {
+                deleteFiles(child);
+            }
+        }
+        else directory.delete();
+        directory.delete();
+    }
+
+    private void clearCache() {
+        Log.d(TAG, "Deleting local files...");
+
+        File[] children = getCacheDir().listFiles();
+        for (File child: children) {
+            deleteFiles(child);
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        boolean clearOnExit = PreferenceManager.getDefaultSharedPreferences(this)
+                .getBoolean("clear_data_on_exit", false);
+
+        if (clearOnExit) clearCache();
     }
 }

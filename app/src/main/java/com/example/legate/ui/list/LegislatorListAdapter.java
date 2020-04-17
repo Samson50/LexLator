@@ -62,7 +62,8 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
 
         if (null != district) {
             for (File legislatorFile : legislatorsFileArray) {
-                if (legislatorFile.getName().contains(district)) {
+                String legislatorDistrict = legislatorFile.getName().split("-")[1];
+                if (legislatorDistrict.equals(district)) {
                     legislatorsList.add(new Legislator(legislatorFile.getAbsolutePath()));
                 }
             }
@@ -84,7 +85,7 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
         }
     }
 
-    public void cancel() {
+    void cancel() {
         for (Legislator legislator : legislatorsList) {
             legislator.cancelImageTask();
         }

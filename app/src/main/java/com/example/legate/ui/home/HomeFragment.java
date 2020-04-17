@@ -1,6 +1,7 @@
 package com.example.legate.ui.home;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,6 +18,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
+import androidx.preference.PreferenceManager;
 
 import com.example.legate.R;
 import com.example.legate.utils.CacheManager;
@@ -46,7 +48,8 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private HomeViewModel homeViewModel;
     private ViewGroup contentLayout;
     private ViewGroup progressOverlay;
-    ViewGroup addressLayout;
+    private ViewGroup addressLayout;
+    private String district;
     private Button goStateButton;
     private String state;
     private EditText address;
@@ -95,6 +98,22 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         city = root.findViewById(R.id.edit_city);
         zipCode = root.findViewById(R.id.edit_zip);
 
+        // Populate values from preferences
+        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(context);
+        state = preferences.getString("state_preference", null);
+        if (null != state) {
+            int index = stateAdapter.getPosition(state);
+            stateSpinner.setSelection(index);
+        }
+        String addressValue = preferences.getString("address_preference", null);
+        if (null != addressValue && addressValue.length() != 0) address.setText(addressValue);
+        String cityValue = preferences.getString("city_preference", null);
+        if (null != cityValue && cityValue.length() != 0) city.setText(cityValue);
+        String zipValue = preferences.getString("zip_preference", null);
+        if (null != zipValue && zipValue.length() != 0) zipCode.setText(zipValue);
+        district = preferences.getString("district_preference", null);
+
+
         // Update Local Cache
         if (!updated) {
             updated = true;
@@ -111,7 +130,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             state = parent.getItemAtPosition(position).toString();
             goStateButton.setVisibility(View.VISIBLE);
             addressLayout.setVisibility(View.VISIBLE);
-
 
             if (0 != configManager.update("state", state)) {
                 Log.e(TAG, "Config update failed");
@@ -139,30 +157,50 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         Navigation.findNavController(v).navigate(R.id.nav_state_list);
     }
 
+    private void validateAddress() {
+
+    }
+
     private class DistrictButton implements View.OnClickListener {
 
         @Override
         public void onClick(View v) {
             // https://developers.google.com/civic-information/docs/v2
             // https://developers.google.com/civic-information/
+            if (null == district || district.length() == 0) {
 
-            String queryString = CIVIC_API;
-            String addressString = String.format(
-                    "%s, %s, %s, %s",
-                    address.getText().toString(),
-                    city.getText().toString(),
-                    state,
-                    zipCode.getText().toString()
-            );
-            queryString += "address=" + addressString;
-            queryString += "&includeOffices=false";
-            queryString += "&levels=country";
-            queryString += "&key=" + CIVIC_KEY;
+                String queryString = CIVIC_API;
+                String addressString = String.format(
+                        "%s, %s, %s, %s",
+                        address.getText().toString(),
+                        city.getText().toString(),
+                        state,
+                        zipCode.getText().toString()
+                );
+                queryString += "address=" + addressString;
+                queryString += "&includeOffices=false";
+                queryString += "&levels=country";
+                queryString += "&key=" + CIVIC_KEY;
 
-            Log.d(TAG, queryString);
+                Log.d(TAG, queryString);
 
-            QueryTask queryTask = new QueryTask();
-            queryTask.execute(queryString);
+                QueryTask queryTask = new QueryTask();
+                queryTask.execute(queryString);
+            }
+            else {
+                // TODO: add "th" etc to district name
+                String districtName = String.format(
+                        "%s's %s Congressional District",
+                        state,
+                        district
+                );
+                // Navigate
+                Bundle bundle = new Bundle();
+                bundle.putString("district", district);
+                bundle.putString("district-name", districtName);
+                bundle.putString("state", state);
+                Navigation.findNavController(contentLayout).navigate(R.id.nav_state_list, bundle);
+            }
         }
     }
 

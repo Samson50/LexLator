@@ -14,26 +14,21 @@
             android:title="Your State"
             app:isPreferenceVisible="true" />
         <EditTextPreference
-            android:defaultValue="Default value"
             android:key="address_preference"
-            android:summary="%s"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="Your address" />
         <EditTextPreference
-            android:defaultValue="Default value"
             android:key="city_preference"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="Your city" />
         <EditTextPreference
-            android:defaultValue="Default value"
             android:key="zip_preference"
             android:selectAllOnFocus="true"
             android:singleLine="true"
             android:title="Your zip code" />
         <EditTextPreference
-            android:defaultValue="None"
             android:key="district_preference"
             android:selectAllOnFocus="true"
             android:singleLine="true"
@@ -46,6 +41,13 @@
             android:defaultValue="false"
             android:key="clear_data_on_exit"
             android:title="Clear data on exit" />
+        <ListPreference
+            android:defaultValue="1"
+            android:entries="@array/update_intervals"
+            android:entryValues="@array/update_interval_values"
+            android:key="update_interval_preference"
+            android:summary="%s"
+            android:title="Update Interval" />
     </PreferenceCategory>
 
 </PreferenceScreen>

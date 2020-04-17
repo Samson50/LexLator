@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="update_intervals">
+        <item>Daily</item>
+        <item>Every other day</item>
+        <item>Every three days</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+    </string-array>
+
+    <string-array name="update_interval_values">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+        <item>7</item>
+        <item>32</item>
+    </string-array>
+</resources>
