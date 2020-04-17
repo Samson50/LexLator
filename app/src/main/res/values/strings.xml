@@ -161,4 +161,42 @@
     <string name="youtube_content">YouTube Icon</string>
 
     <string name="text_about">About</string>
+    <string name="text_data_sources">Data Sources</string>
+    <string name="data_description">
+        \tAll of the data presented in the application is pulled from other projects. This
+        application does not generate any original content.
+    </string>
+    <string name="text_legislator_data">Legislator Information</string>
+    <string name="legislator_source">
+        \tInformation on Members of Congress, including current members, committees, contact
+        information, and social media is pulled from the congress-legislators-project(add link).
+        The congress-legislators-project is a community repository originally developed by the team
+        behind GovTrack.us and now maintained by a large community of volunteers.
+        \n\tImages and biographies for Members of Congress are pulled from The Congressional
+        Biographical Directory at http://bioguide.congress.gov/
+    </string>
+    <string name="text_legislative_data">Bills &amp; Votes</string>
+    <string name="legislative_source">
+        \tInformation on recent bills and votes in both the House and Senate is pulled periodically
+        from the ProPublica Congress API. This is the only public API for legislative information.
+        \n\tIf you want to change the applications update frequency, you can do so from the
+        application\'s settings menu.
+    </string>
+    <string name="text_financial_data">Financial Information</string>
+    <string name="financial_source">
+        \tFinancial information is pulled from OpenSecrets.org, a website maintained by The Center
+        for Responsive Politics.
+        \n\tFrom their website:
+        \n\t\"Nonpartisan, independent and nonprofit, the Center for Responsive Politics is the
+        nation\'s premier research group tracking money in U.S. politics and its effect on elections
+        and public policy. Our vision is for Americans to be empowered by access to clear and
+        unbiased information about money\'s role in politics and policy and to use that knowledge
+        to strengthen our democracy. Our mission is to produce and disseminate peerless data and
+        analysis on money in politics to inform and engage Americans, champion transparency, and
+        expose disproportionate or undue influence on public policy.\"
+    </string>
+    <string name="text_other_data">Other Data</string>
+    <string name="other_source">
+        \tDistrict information is acquired by querying the Google Civic Information API.
+    </string>
 </resources>
