@@ -100,6 +100,8 @@
     <string name="legislator_image_description">Profile picture for the selected legislator</string>
 
     <string name="finances_text">Financial Interests</string>
+    <string name="finances_disclaimer">Provided by OpenSecrets.org</string>
+    <string name="finances_icon_description">Icon for OpenSecrets.org</string>
     <string name="finances_default">Insert Financial Interests</string>
     <string name="information_text">Information</string>
     <string name="bio_text">Biography</string>
