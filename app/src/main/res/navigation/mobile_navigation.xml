@@ -33,17 +33,6 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_gallery"
-        android:name="com.example.legate.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
-
-    <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.legate.ui.slideshow.SlideshowFragment"
-        android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
-    <fragment
         android:id="@+id/nav_legislator_main"
         android:name="com.example.legate.ui.legislator.LegislatorMain"
         android:label="fragment_legislator_main"
@@ -63,4 +52,9 @@
 
     <action android:id="@+id/open_settings"
         app:destination="@id/settingsFragment"/>
+    <fragment
+        android:id="@+id/nav_about"
+        android:name="com.example.legate.ui.about.AboutFragment"
+        tools:layout="@layout/fragment_about"
+        android:label="About this application" />
 </navigation>
