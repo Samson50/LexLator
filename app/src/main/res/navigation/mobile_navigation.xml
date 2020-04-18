@@ -35,7 +35,7 @@
     <fragment
         android:id="@+id/nav_legislator_main"
         android:name="com.example.legate.ui.legislator.LegislatorMain"
-        android:label="fragment_legislator_main"
+        android:label="Legislator Information"
         tools:layout="@layout/fragment_legislator_main" >
         <action
             android:id="@+id/action_legislatorMain_to_nav_state_list"

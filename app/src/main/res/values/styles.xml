@@ -10,6 +10,10 @@
 
     <style name="collapsibleHeader">
         <item name="android:background">@color/collapsibleBackground</item>
+        <item name="android:textColor">@color/collapsibleTextColor</item>
+        <!--item name="android:textIsSelectable">true</item-->
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
         <item name="android:textStyle">bold</item>
         <item name="android:layout_width">0dp</item>
         <item name="android:layout_height">wrap_content</item>
@@ -21,25 +25,55 @@
     </style>
 
     <style name="collapsibleHeader.main" parent="collapsibleHeader">
-        <item name="android:textSize">36sp</item>
+        <item name="android:textSize">34sp</item>
     </style>
 
     <style name="collapsibleHeader.subOne" parent="collapsibleHeader">
-        <item name="android:textSize">30sp</item>
+        <item name="android:textSize">28sp</item>
     </style>
 
     <style name="collapsibleHeader.subTwo" parent="collapsibleHeader">
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">22sp</item>
     </style>
 
     <style name="collapsibleHeader.subThree" parent="collapsibleHeader">
-        <item name="android:textSize">20sp</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <style name="contentLayout">
+        <item name="android:background">@drawable/layout_border</item>
+        <item name="android:paddingTop">0dp</item>
+        <item name="android:paddingBottom">14dp</item>
     </style>
 
     <style name="multipartHeader">
         <item name="android:background">@color/collapsibleBackground</item>
+        <item name="android:textColor">@color/collapsibleTextColor</item>
         <item name="android:textStyle">bold</item>
-        <item name="android:textSize">24sp</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="infoItemName">
+        <item name="android:background">@color/collapsibleTextColor</item>
+        <item name="android:textColor">@color/collapsibleBackground</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:textStyle">bold</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">0dp</item>
+        <item name="android:layout_width">60dp</item>
+    </style>
+
+    <style name="textContent">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/blockTextColor</item>
+        <item name="android:textIsSelectable">true</item>
+    </style>
+
+    <style name="textBlock" parent="textContent">
+        <item name="android:paddingTop">4dp</item>
+        <item name="android:paddingStart">8dp</item>
+        <item name="android:paddingEnd">8dp</item>
+        <item name="android:background">@drawable/layout_border</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

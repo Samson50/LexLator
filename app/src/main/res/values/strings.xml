@@ -3,8 +3,8 @@
     <string name="app_name">legate</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
-    <string name="nav_header_title">Android Studio</string>
-    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_title">LexLator</string>
+    <string name="nav_header_subtitle">Knowledge Is Power</string>
     <string name="nav_header_desc">Navigation header</string>
     <string name="action_settings">Settings</string>
 
@@ -174,21 +174,21 @@
         information, and social media is pulled from the congress-legislators-project(add link).
         The congress-legislators-project is a community repository originally developed by the team
         behind GovTrack.us and now maintained by a large community of volunteers.
-        \n\tImages and biographies for Members of Congress are pulled from The Congressional
+        \n\n\tImages and biographies for Members of Congress are pulled from The Congressional
         Biographical Directory at http://bioguide.congress.gov/
     </string>
     <string name="text_legislative_data">Bills &amp; Votes</string>
     <string name="legislative_source">
         \tInformation on recent bills and votes in both the House and Senate is pulled periodically
         from the ProPublica Congress API. This is the only public API for legislative information.
-        \n\tIf you want to change the applications update frequency, you can do so from the
+        \n\n\tIf you want to change the applications update frequency, you can do so from the
         application\'s settings menu.
     </string>
     <string name="text_financial_data">Financial Information</string>
     <string name="financial_source">
         \tFinancial information is pulled from OpenSecrets.org, a website maintained by The Center
         for Responsive Politics.
-        \n\tFrom their website:
+        \n\n\tFrom their website:
         \n\t\"Nonpartisan, independent and nonprofit, the Center for Responsive Politics is the
         nation\'s premier research group tracking money in U.S. politics and its effect on elections
         and public policy. Our vision is for Americans to be empowered by access to clear and

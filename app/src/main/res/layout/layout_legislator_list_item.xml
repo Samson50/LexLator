@@ -13,85 +13,98 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageView
-        android:id="@+id/legislator_image"
-        android:layout_width="96dp"
-        android:layout_height="96dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginBottom="8dp"
-        android:contentDescription="@string/legislator_image_description"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@+id/legislator_title"
-        app:layout_constraintTop_toBottomOf="@+id/legislator_title"
-        tools:srcCompat="@drawable/default_avatar" />
-
-    <TextView
-        android:id="@+id/text_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:text="@string/text_state"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/legislator_image"
-        app:layout_constraintTop_toBottomOf="@+id/legislator_title" />
-
-    <TextView
-        android:id="@+id/legislator_state"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/default_state"
-        app:layout_constraintStart_toEndOf="@+id/text_state"
-        app:layout_constraintTop_toTopOf="@+id/text_state" />
-
-    <TextView
-        android:id="@+id/text_party"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:text="@string/text_party"
-        android:textStyle="bold"
-        app:layout_constraintStart_toEndOf="@+id/legislator_state"
-        app:layout_constraintTop_toTopOf="@+id/legislator_state" />
-
-    <TextView
-        android:id="@+id/legislator_party"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:text="@string/default_party"
-        app:layout_constraintStart_toEndOf="@+id/text_party"
-        app:layout_constraintTop_toTopOf="@+id/text_party" />
-
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/district_layout"
+        style="@style/contentLayout"
         android:layout_width="0dp"
-        android:layout_height="0dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toEndOf="@+id/legislator_image"
-        app:layout_constraintTop_toBottomOf="@+id/text_state">
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="@+id/legislator_title"
+        app:layout_constraintStart_toStartOf="@+id/legislator_title"
+        app:layout_constraintTop_toBottomOf="@+id/legislator_title">
+
+        <ImageView
+            android:id="@+id/legislator_image"
+            android:layout_width="96dp"
+            android:layout_height="96dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:contentDescription="@string/legislator_image_description"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/default_avatar" />
 
         <TextView
-            android:id="@+id/text_district"
-            android:layout_width="wrap_content"
+            android:id="@+id/text_state"
+            style="@style/infoItemName"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:layout_marginTop="8dp"
-            android:text="@string/text_district"
+            android:text="@string/text_state"
             android:textStyle="bold"
-            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/legislator_image"
             app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
-            android:id="@+id/legislator_district"
+            android:id="@+id/legislator_state"
+            style="@style/textContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
-            android:text="@string/default_district"
-            app:layout_constraintStart_toEndOf="@+id/text_district"
-            app:layout_constraintTop_toTopOf="@+id/text_district" />
+            android:text="@string/default_state"
+            app:layout_constraintStart_toEndOf="@+id/text_state"
+            app:layout_constraintTop_toTopOf="@+id/text_state" />
+
+        <TextView
+            android:id="@+id/text_party"
+            style="@style/infoItemName"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:text="@string/text_party"
+            android:textStyle="bold"
+            app:layout_constraintStart_toEndOf="@+id/legislator_image"
+            app:layout_constraintTop_toBottomOf="@+id/text_state" />
+
+        <TextView
+            android:id="@+id/legislator_party"
+            style="@style/textContent"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:text="@string/default_party"
+            app:layout_constraintStart_toEndOf="@+id/text_party"
+            app:layout_constraintTop_toTopOf="@+id/text_party" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/district_layout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/legislator_image"
+            app:layout_constraintTop_toBottomOf="@+id/text_party">
+
+            <TextView
+                android:id="@+id/text_district"
+                style="@style/infoItemName"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:text="@string/text_district"
+                android:textStyle="bold"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/legislator_district"
+                style="@style/textContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="@string/default_district"
+                app:layout_constraintStart_toEndOf="@+id/text_district"
+                app:layout_constraintTop_toTopOf="@+id/text_district" />
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

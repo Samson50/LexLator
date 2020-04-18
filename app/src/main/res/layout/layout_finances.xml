@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/finances_constraint"
+    style="@style/contentLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
 
@@ -27,6 +28,7 @@
 
         <TextView
             android:id="@+id/open_secrets_text"
+            android:textIsSelectable="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -66,6 +68,7 @@
 
         <TextView
             android:id="@+id/total_contributions"
+            style="@style/textContent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -87,6 +90,7 @@
 
         <TextView
             android:id="@+id/amount_spent"
+            style="@style/textContent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -108,6 +112,7 @@
 
         <TextView
             android:id="@+id/cash_on_hand"
+            style="@style/textContent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -129,6 +134,7 @@
 
         <TextView
             android:id="@+id/reported_debt"
+            style="@style/textContent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"

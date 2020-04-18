@@ -160,7 +160,7 @@ public class Legislator {
         }
 
         titleView.setText(title);
-        partyView.setText(party);
+        partyView.setText(getParty());
         stateView.setText(state);
         if (title.contains("Rep")) {
             districtView.setText(district);
@@ -549,6 +549,10 @@ public class Legislator {
             Log.e(TAG, e.toString());
             return null;
         }
+    }
+
+    private String getParty() {
+        return getTermValue("party");
     }
 
     private String getTermValue(String key) {

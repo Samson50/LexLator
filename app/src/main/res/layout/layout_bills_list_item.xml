@@ -18,6 +18,7 @@
 
     <TextView
         android:id="@+id/bill_action_date"
+        android:textColor="@color/collapsibleTextColor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -28,6 +29,7 @@
 
     <TextView
         android:id="@+id/text_bill_action_date"
+        android:textColor="@color/collapsibleTextColor"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginEnd="8dp"
@@ -38,6 +40,7 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/bill_content_layout"
+        style="@style/contentLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         app:layout_constraintEnd_toEndOf="@+id/bill_name"
