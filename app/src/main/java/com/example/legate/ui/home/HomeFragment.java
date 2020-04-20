@@ -15,6 +15,7 @@ import android.widget.EditText;
 import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
@@ -157,8 +158,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         Navigation.findNavController(v).navigate(R.id.nav_state_list);
     }
 
-    private void validateAddress() {
-
+    private boolean addressValid() {
+        if (0 == address.getText().toString().length()) return false;
+        if (0 == city.getText().toString().length()) return false;
+        return 0 != zipCode.getText().toString().length();
     }
 
     private class DistrictButton implements View.OnClickListener {
@@ -169,23 +172,32 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             // https://developers.google.com/civic-information/
             if (null == district || district.length() == 0) {
 
-                String queryString = CIVIC_API;
-                String addressString = String.format(
-                        "%s, %s, %s, %s",
-                        address.getText().toString(),
-                        city.getText().toString(),
-                        state,
-                        zipCode.getText().toString()
-                );
-                queryString += "address=" + addressString;
-                queryString += "&includeOffices=false";
-                queryString += "&levels=country";
-                queryString += "&key=" + CIVIC_KEY;
+                if (addressValid()) {
 
-                Log.d(TAG, queryString);
+                    String queryString = CIVIC_API;
+                    String addressString = String.format(
+                            "%s, %s, %s, %s",
+                            address.getText().toString(),
+                            city.getText().toString(),
+                            state,
+                            zipCode.getText().toString()
+                    );
+                    queryString += "address=" + addressString;
+                    queryString += "&includeOffices=false";
+                    queryString += "&levels=country";
+                    queryString += "&key=" + CIVIC_KEY;
 
-                QueryTask queryTask = new QueryTask();
-                queryTask.execute(queryString);
+                    Log.d(TAG, queryString);
+
+                    QueryTask queryTask = new QueryTask();
+                    queryTask.execute(queryString);
+                }
+                else {
+                    DialogFragment alert = new AlertFragment(
+                            "Street address and city required to find district."
+                    );
+                    alert.show(getFragmentManager(), "address-failure");
+                }
             }
             else {
                 // TODO: add "th" etc to district name
@@ -272,7 +284,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             // Get district from response
             CacheManager manager = new CacheManager();
             String districtName = null;
-            String district = null;
+            String districtString = null;
             try {
                 JSONObject responseJson = manager.stringToJSON(response).getJSONObject("divisions");
                 Iterator<String> keys = responseJson.keys();
@@ -283,7 +295,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 }
 
                 String[] split = longest.split(":");
-                district = split[split.length - 1];
+                districtString = split[split.length - 1];
                 districtName = responseJson.getJSONObject(longest).getString("name");
             } catch (JSONException e) {
                 Log.e(TAG, "Failed to get district name: " + e.toString());
@@ -293,9 +305,20 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             progressOverlay.setVisibility(View.GONE);
             contentLayout.setVisibility(View.VISIBLE);
 
+            Log.d(TAG, "District string: " + districtString);
+            Log.d(TAG, "District name: " + districtName);
+
+            if (state.equals(districtName)) {
+                DialogFragment alert = new AlertFragment(
+                        "We could not find your district with the address provided."
+                );
+                alert.show(getFragmentManager(), "address-failure");
+                return;
+            }
+
             // Navigate
             Bundle bundle = new Bundle();
-            bundle.putString("district", district);
+            bundle.putString("district", districtString);
             bundle.putString("district-name", districtName);
             bundle.putString("state", state);
             Navigation.findNavController(contentLayout).navigate(R.id.nav_state_list, bundle);
