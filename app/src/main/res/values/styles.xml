@@ -9,8 +9,9 @@
     </style>
 
     <style name="collapsibleHeader">
-        <item name="android:background">@color/collapsibleBackground</item>
+        <!--item name="android:background">@color/collapsibleBackground</item-->
         <item name="android:textColor">@color/collapsibleTextColor</item>
+        <item name="android:background">@drawable/layout_header_border</item>
         <!--item name="android:textIsSelectable">true</item-->
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>
@@ -41,14 +42,14 @@
     </style>
 
     <style name="contentLayout">
-        <item name="android:background">@drawable/layout_border</item>
+        <item name="android:background">@drawable/layout_content_border</item>
         <item name="android:paddingTop">0dp</item>
         <item name="android:paddingBottom">14dp</item>
     </style>
 
     <style name="multipartHeader">
         <item name="android:background">@color/collapsibleBackground</item>
-        <item name="android:textColor">@color/collapsibleTextColor</item>
+        <item name="android:textColor">#FFFFFF</item>
         <item name="android:textStyle">bold</item>
         <item name="android:textSize">20sp</item>
     </style>
@@ -73,7 +74,7 @@
         <item name="android:paddingTop">4dp</item>
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">8dp</item>
-        <item name="android:background">@drawable/layout_border</item>
+        <item name="android:background">@drawable/layout_content_border</item>
     </style>
 
     <style name="AppTheme.NoActionBar">

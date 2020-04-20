@@ -4,6 +4,7 @@
     <color name="colorPrimaryDark">#1A237E</color>
     <color name="colorAccent">#3F51B5</color>
     <color name="collapsibleBackground">#303F9F</color>
-    <color name="collapsibleTextColor">#BBDEFB</color>
+    <color name="collapsibleTextColor">#E8EAF6</color>
+    <color name="background">#E8EAF6</color>
     <color name="blockTextColor">#000000</color>
 </resources>

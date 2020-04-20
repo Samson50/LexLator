@@ -55,18 +55,23 @@
 
         <TextView
             android:id="@+id/select_state_text"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
+            android:layout_marginStart="24dp"
             android:layout_marginTop="25dp"
+            android:layout_marginEnd="24dp"
+            android:background="@color/collapsibleTextColor"
             android:text="@string/state"
+            android:textColor="@color/collapsibleBackground"
             android:textSize="24sp"
             android:textStyle="bold"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
         <Spinner
             android:id="@+id/stateSpinner"
+            android:background="@drawable/layout_spinner_border"
             android:layout_width="0dp"
             android:layout_height="25dp"
             android:layout_marginStart="32dp"
@@ -78,9 +83,9 @@
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/spinner_hidden"
+            style="@style/contentLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
             app:layout_constraintEnd_toEndOf="@+id/stateSpinner"
             app:layout_constraintStart_toStartOf="@+id/stateSpinner"
             app:layout_constraintTop_toBottomOf="@+id/stateSpinner">
@@ -89,6 +94,7 @@
                 android:id="@+id/goStateButton"
                 android:layout_width="250dp"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
                 android:text="@string/go_state"
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -108,11 +114,14 @@
 
                 <TextView
                     android:id="@+id/text_find_district"
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:background="@color/collapsibleTextColor"
                     android:text="@string/text_find_district"
+                    android:textColor="@color/collapsibleBackground"
                     android:textSize="24sp"
                     android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -164,14 +173,14 @@
 
                 <EditText
                     android:id="@+id/edit_address"
-                    android:autofillHints="postalAddress"
-                    android:hint="@string/text_address"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
+                    android:autofillHints="postalAddress"
                     android:ems="10"
+                    android:hint="@string/text_address"
                     android:inputType="textPersonName"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/text_address"
@@ -179,13 +188,13 @@
 
                 <EditText
                     android:id="@+id/edit_city"
-                    android:autofillHints="postalAddressLocality"
-                    android:hint="@string/text_city"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="8dp"
                     android:layout_marginEnd="8dp"
+                    android:autofillHints="postalAddressLocality"
                     android:ems="10"
+                    android:hint="@string/text_city"
                     android:inputType="textPersonName"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="@+id/edit_address"
