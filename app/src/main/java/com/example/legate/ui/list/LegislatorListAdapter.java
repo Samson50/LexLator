@@ -15,8 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.legate.R;
 import com.example.legate.data.Legislator;
 
-import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAdapter.LegislatorsListViewHolder> {
@@ -56,33 +54,8 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
         }
     }
 
-    LegislatorListAdapter(File[] legislatorsFileArray, String district) {
-        Log.d(TAG, "Populating adapter data");
-        legislatorsList = new ArrayList<>();
-
-        if (null != district) {
-            for (File legislatorFile : legislatorsFileArray) {
-                String legislatorDistrict = legislatorFile.getName().split("-")[1];
-                if (legislatorDistrict.equals(district)) {
-                    legislatorsList.add(new Legislator(legislatorFile.getAbsolutePath()));
-                }
-            }
-        }
-        else {
-            for (File legislatorFile : legislatorsFileArray) {
-                legislatorsList.add(new Legislator(legislatorFile.getAbsolutePath()));
-            }
-        }
-    }
-
-    LegislatorListAdapter(File[] legislatorsFileArray) {
-
-        Log.d(TAG, "Populating adapter data");
-        legislatorsList = new ArrayList<>();
-
-        for (File legislatorFile: legislatorsFileArray) {
-            legislatorsList.add(new Legislator(legislatorFile.getAbsolutePath()));
-        }
+    LegislatorListAdapter(List<Legislator> legislators) {
+        legislatorsList = legislators;
     }
 
     void cancel() {
@@ -115,6 +88,12 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
 
     @Override
     public int getItemCount() {
+        if (null == legislatorsList) return 0;
         return legislatorsList.size();
+    }
+
+    void setLegislatorsList(List<Legislator> newList) {
+        legislatorsList = newList;
+        notifyDataSetChanged();
     }
 }

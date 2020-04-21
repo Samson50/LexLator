@@ -100,7 +100,7 @@ public class CacheManager {
         }
     }
 
-    int downloadFile(String fileUrl, String filePath, Date cacheLastModified) {
+    public int downloadFile(String fileUrl, String filePath, Date cacheLastModified) {
         if (Looper.getMainLooper().getThread() == Thread.currentThread()) {
             Log.e(TAG, "Attempting to run downloadFile on main thread, exiting");
             return 1;

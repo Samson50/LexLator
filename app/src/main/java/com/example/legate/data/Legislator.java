@@ -1,5 +1,7 @@
 package com.example.legate.data;
 
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.util.Log;
 import android.util.Xml;
@@ -15,7 +17,6 @@ import com.example.legate.data.actions.SponsoredBillsAdapter;
 import com.example.legate.data.actions.VotesListAdapter;
 import com.example.legate.data.finances.Finances;
 import com.example.legate.utils.CacheManager;
-import com.example.legate.utils.ImageTask;
 import com.example.legate.utils.StateHelper;
 
 import org.json.JSONArray;
@@ -41,6 +42,8 @@ public class Legislator {
     private ImageTask imageTask;
 
     private File legislatorFile;
+    private ImageView imageViewVariable;
+    private Bitmap image;
     private JSONObject infoJSON = null;
     private JSONArray membershipJSON = new JSONArray();
     private JSONArray votesJSON = new JSONArray();
@@ -54,7 +57,6 @@ public class Legislator {
     private String bioGuide;
     private String imageUrl;
     private String biography;
-
 
     public Legislator(String legislatorPath) {
         legislatorFile = new File(legislatorPath);
@@ -146,6 +148,55 @@ public class Legislator {
         }
     }
 
+    private class ImageTask extends AsyncTask<String, Integer, Bitmap> {
+        private static final String TAG = "ImageTask";
+
+        /**
+         *
+         * @param strings - image parent file path (required), source url (required), name (optional)
+         * @return Bitmap of specified image
+         */
+        @Override
+        protected Bitmap doInBackground(String... strings) {
+            if (strings.length < 2) {
+                Log.e(TAG, "Implementation error: too few arguments");
+                return null;
+            }
+            if (isCancelled()) return null;
+            Log.d(TAG, String.format("ImageTask starting: %s, %s", (Object[]) strings));
+
+            String imageName;
+            if (strings.length == 3) imageName = strings[2];
+            else imageName = "image.jpg";
+
+            File imageFile = new File(strings[0], imageName);
+            String imageUrl = strings[1];
+
+            // Check if file exists
+            if (!imageFile.exists()) {
+                Log.d(TAG, "image.jpg not found, downloading through CacheManager");
+                // Use CacheManager to download file
+                if (0 != cacheManager.downloadFile(imageUrl, imageFile.getAbsolutePath(), null)) {
+                    Log.e(TAG, "Failed to download image file, using default");
+                    return null;
+                }
+                else return BitmapFactory.decodeFile(imageFile.getPath());
+            }
+            else return BitmapFactory.decodeFile(imageFile.getPath());
+        }
+
+        @Override
+        protected void onPostExecute(Bitmap bitmap) {
+            super.onPostExecute(bitmap);
+            image = bitmap;
+            if (null == bitmap) {
+                Log.e(TAG, "(null == bitmap), using default");
+                image = BitmapFactory.decodeResource(imageViewVariable.getContext().getResources(), R.drawable.default_avatar);
+            }
+            imageViewVariable.setImageBitmap(image);
+        }
+    }
+
     public void cancelImageTask() {
         if (null != imageTask) imageTask.cancel(false);
     }
@@ -168,8 +219,14 @@ public class Legislator {
         else {
             districtLayout.setVisibility(View.GONE);
         }
-        imageTask = new ImageTask(imageView);
-        imageTask.execute(legislatorFile.getAbsolutePath(), imageUrl);
+        if (null == image) {
+            imageViewVariable = imageView;
+            imageTask = new ImageTask();
+            imageTask.execute(legislatorFile.getAbsolutePath(), imageUrl);
+        }
+        else {
+            imageView.setImageBitmap(image);
+        }
 
         return 0;
     }

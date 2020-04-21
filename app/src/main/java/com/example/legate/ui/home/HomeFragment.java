@@ -155,7 +155,9 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     @Override
     public void onClick(View v) {
-        Navigation.findNavController(v).navigate(R.id.nav_state_list);
+        Bundle bundle = new Bundle();
+        bundle.putString("state", state);
+        Navigation.findNavController(v).navigate(R.id.nav_state_list, bundle);
     }
 
     private boolean addressValid() {
