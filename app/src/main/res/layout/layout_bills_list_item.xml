@@ -59,6 +59,7 @@
 
         <TextView
             android:id="@+id/bill_title"
+            style="@style/textContent"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -71,6 +72,7 @@
 
         <TextView
             android:id="@+id/text_bill_introduced"
+            style="@style/infoItemName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -81,6 +83,7 @@
 
         <TextView
             android:id="@+id/bill_introduced_date"
+            style="@style/textContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/default_bill_date"
@@ -90,6 +93,7 @@
 
         <TextView
             android:id="@+id/text_last_action"
+            style="@style/infoItemName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
@@ -100,6 +104,7 @@
 
         <TextView
             android:id="@+id/bill_last_action"
+            style="@style/textContent"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
@@ -113,7 +118,7 @@
             android:layout_height="wrap_content"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/text_last_action">
+            app:layout_constraintTop_toBottomOf="@+id/bill_last_action">
 
             <TextView
                 android:id="@+id/text_bill_summary"
@@ -127,11 +132,9 @@
 
             <TextView
                 android:id="@+id/bill_summary"
+                style="@style/textBlock"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:layout_marginEnd="8dp"
                 android:text="@string/default_bill_summary"
                 app:layout_constraintEnd_toEndOf="@+id/text_bill_summary"
                 app:layout_constraintStart_toStartOf="@+id/text_bill_summary"

@@ -110,6 +110,9 @@ public class Legislator {
             try {
                 bioString = parseXml(stream, "uscongress-bio", "biography");
                 Log.d(TAG, "Biography: " + bioString);
+
+                // Remove '\n' from bioString
+                if (null != bioString) bioString = bioString.replace('\n', ' ');
             } catch (IOException e) {
                 Log.e(TAG, e.toString());
                 return null;
