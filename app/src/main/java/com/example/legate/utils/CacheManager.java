@@ -23,9 +23,7 @@ import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 import javax.net.ssl.HttpsURLConnection;
@@ -36,9 +34,7 @@ public class CacheManager {
 
     private static final String TAG = "CacheManager";
 
-    private boolean isCancelled = false;
     private static File localCache;
-    private List<DownloadTask> downloadTasks = new ArrayList<>();
 
 
     public CacheManager() {
@@ -167,10 +163,13 @@ public class CacheManager {
             int count;
             while ((count = input.read(data)) != -1) {
                 // allow canceling with back button
+                /*
+                boolean isCancelled = false;
                 if (isCancelled) {
                     input.close();
                     return 1;
                 }
+                */
 
                 output.write(data, 0, count);
             }
@@ -374,12 +373,5 @@ public class CacheManager {
         }
 
         return ret;
-    }
-
-    public void cancel() {
-        isCancelled = true;
-        for (DownloadTask task: downloadTasks) {
-            task.cancel(false);
-        }
     }
 }

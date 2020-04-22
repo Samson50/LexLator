@@ -17,13 +17,11 @@ import android.widget.Spinner;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.ViewModelProviders;
 import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import com.example.legate.R;
 import com.example.legate.utils.CacheManager;
-import com.example.legate.utils.ConfigManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,9 +42,6 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
     private static final String CIVIC_API = "https://content.googleapis.com/civicinfo/v2/representatives?";
     private static final String CIVIC_KEY = "AIzaSyBeG0teS-ls3puepwzK89RmuLI_YVRLURQ";
 
-    private ConfigManager configManager;
-
-    private HomeViewModel homeViewModel;
     private ViewGroup contentLayout;
     private ViewGroup progressOverlay;
     private ViewGroup addressLayout;
@@ -65,10 +60,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         Context context = getActivity();
         assert context != null;
-        configManager = new ConfigManager(context.getFilesDir());
 
-        homeViewModel =
-                ViewModelProviders.of(this).get(HomeViewModel.class);
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         progressOverlay = root.findViewById(R.id.progress_overlay);
@@ -131,19 +123,11 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             state = parent.getItemAtPosition(position).toString();
             goStateButton.setVisibility(View.VISIBLE);
             addressLayout.setVisibility(View.VISIBLE);
-
-            if (0 != configManager.update("state", state)) {
-                Log.e(TAG, "Config update failed");
-            }
         }
         else {
             state = null;
             goStateButton.setVisibility(View.GONE);
             addressLayout.setVisibility(View.GONE);
-
-            if (0 != configManager.update("state", state)) {
-                Log.e(TAG, "Config update failed");
-            }
         }
     }
 

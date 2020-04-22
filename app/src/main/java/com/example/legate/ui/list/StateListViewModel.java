@@ -14,6 +14,7 @@ import java.io.FileFilter;
 import java.util.ArrayList;
 import java.util.List;
 
+@SuppressWarnings("WeakerAccess")
 public class StateListViewModel extends ViewModel {
 
     private static final String TAG = "StateListViewModel";

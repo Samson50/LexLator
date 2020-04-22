@@ -32,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 import javax.net.ssl.HttpsURLConnection;
 
 // TODO: Fix code duplication among download calls
+// TODO: Update progress to be more accurate
 public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
     private static final String TAG = "UpdateTask";

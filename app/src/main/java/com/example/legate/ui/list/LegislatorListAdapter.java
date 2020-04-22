@@ -48,6 +48,7 @@ public class LegislatorListAdapter extends RecyclerView.Adapter<LegislatorListAd
         public void onClick(View v) {
             if (null != legislatorPath) {
                 Bundle bundle = new Bundle();
+                // TODO: Pass legislator object, not just path
                 bundle.putString("path", legislatorPath);
                 Navigation.findNavController(v).navigate(R.id.nav_legislator_main, bundle);
             }
