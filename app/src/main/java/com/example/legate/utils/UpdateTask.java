@@ -72,14 +72,6 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         cacheManager = manager;
     }
 
-    private void sleepTest() {
-        try {
-            TimeUnit.SECONDS.sleep(2);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-    }
-
     @Override
     protected void onPreExecute() {
         super.onPreExecute();

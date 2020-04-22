@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -56,7 +57,13 @@ public class LegislatorMain extends Fragment {
         String legislatorPath = null;
         if (null != arguments) legislatorPath = arguments.getString("path");
         if (null != legislatorPath) {
-            legislator = new Legislator(legislatorPath);
+            int updateInterval = 1;
+            if (null != context) {
+                String updateString = PreferenceManager.getDefaultSharedPreferences(context)
+                        .getString("update_interval_preference", "1");
+                updateInterval = Integer.parseInt(updateString);
+            }
+            legislator = new Legislator(legislatorPath, updateInterval);
             legislator.fillLegislatorInfo(legislatorImage, legislatorTitle, legislatorParty,
                     legislatorState, legislatorDistrict, districtLayout);
         }

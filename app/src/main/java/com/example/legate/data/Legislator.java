@@ -30,6 +30,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Calendar;
+import java.util.Date;
 
 
 public class Legislator {
@@ -50,6 +52,7 @@ public class Legislator {
     private JSONArray billsJSON = new JSONArray();
     private JSONObject socialMediaJSON = null;
 
+    private int updateInterval;
     private String title;
     private String state;
     private String party;
@@ -57,6 +60,14 @@ public class Legislator {
     private String bioGuide;
     private String imageUrl;
     private String biography;
+
+    public Legislator(String legislatorPath, int interval) {
+        updateInterval = interval;
+
+        legislatorFile = new File(legislatorPath);
+        if (0 != getLegislatorInfo()) Log.e(TAG, "Failed initial population");
+        finances = new Finances(cacheManager, legislatorFile, interval);
+    }
 
     public Legislator(String legislatorPath) {
         legislatorFile = new File(legislatorPath);
@@ -79,7 +90,7 @@ public class Legislator {
             String bioChar = bioGuide.substring(0, 1);
             String bioUrl = String.format("https://bioguideretro.congress.gov/Static_Files/data/%s/%s.xml", bioChar, bioGuide);
             // <uscongress-bio><biography>That sweet sweet data</biography></uscongress-bio>
-            URL url = null;
+            URL url;
             try {
                 url = new URL(bioUrl);
             } catch (MalformedURLException e) {
@@ -149,7 +160,7 @@ public class Legislator {
     }
 
     private class ImageTask extends AsyncTask<String, Integer, Bitmap> {
-        private static final String TAG = "ImageTask";
+        private static final String TAG = "Legislator - ImageTask";
 
         /**
          *
@@ -163,7 +174,7 @@ public class Legislator {
                 return null;
             }
             if (isCancelled()) return null;
-            Log.d(TAG, String.format("ImageTask starting: %s, %s", (Object[]) strings));
+            Log.d(TAG, String.format("ImageTask starting: %s, %s", strings[0], strings[1]));
 
             String imageName;
             if (strings.length == 3) imageName = strings[2];
@@ -332,6 +343,7 @@ public class Legislator {
         }
     }
 
+    // Information section
     public void fillBiography(TextView bioView) {
         // Check if field already populated
         if (null != biography) {
@@ -341,7 +353,7 @@ public class Legislator {
         }
         // bio.txt exists?
         File bioFile = new File(legislatorFile, "bio.txt");
-        if (bioFile.exists()) {
+        if (bioFile.exists() && upToDate(bioFile)) {
             Log.d(TAG, "Populating biography from cache file");
             String bioString = cacheManager.readFile(bioFile.getAbsolutePath());
             if (!bioString.isEmpty()) {
@@ -379,7 +391,7 @@ public class Legislator {
             Log.d(TAG, "membershipJSON empty, populating");
             File committeesFile = new File(legislatorFile, "committees.json");
 
-            if (committeesFile.exists()) {
+            if (committeesFile.exists() && upToDate(committeesFile)) {
                 String membershipString = cacheManager.readFile(committeesFile.getAbsolutePath());
                 if (membershipString.isEmpty()) getCommittees(committeesFile);
                 else membershipJSON = cacheManager.stringToJSONArray(membershipString);
@@ -389,73 +401,6 @@ public class Legislator {
 
         CommitteesListAdapter adapter = new CommitteesListAdapter(membershipJSON);
         view.setAdapter(adapter);
-    }
-
-    public void fillActions(RecyclerView billsRecycler, RecyclerView votesRecycler) {
-        fillVotes(votesRecycler);
-        fillSponsoredBills(billsRecycler);
-    }
-
-    private void getVotes(File votesFile) {
-        Log.d(TAG, "Getting votes for " + title);
-
-        String chamber = title.substring(0, 1);
-        if (chamber.equals("S")) chamber = "senate";
-        else chamber = "house";
-
-        votesJSON = cacheManager.getVotes(chamber, bioGuide);
-        if (0 != cacheManager.writeFile(votesFile.getAbsolutePath(), votesJSON)) {
-            Log.e(TAG, "Failed to write votes to file");
-        }
-    }
-
-    private void fillVotes(RecyclerView votesView) {
-        Log.d(TAG, "Getting votes...");
-        if (0 == votesJSON.length()) {
-            Log.d(TAG, "votesJSON empty, populating");
-            File votesFile = new File(legislatorFile, "votes.json");
-
-            if (!votesFile.exists()) getVotes(votesFile);
-            else {
-                String votesString = cacheManager.readFile(votesFile.getAbsolutePath());
-                if (!votesString.isEmpty()) votesJSON = cacheManager.stringToJSONArray(votesString);
-                else getVotes(votesFile);
-            }
-        }
-
-        VotesListAdapter adapter = new VotesListAdapter(votesJSON);
-        votesView.setAdapter(adapter);
-    }
-
-    private void getSponsoredBills(File billsFile) {
-        Log.d(TAG, "Getting bills for " + title);
-
-        String chamber = title.substring(0, 1);
-        if (chamber.equals("S")) chamber = "senate";
-        else chamber = "house";
-
-        billsJSON = cacheManager.getSponsoredBills(chamber, bioGuide); //parseCommitteeMembership(currentMembership, votes, null);
-        if (0 != cacheManager.writeFile(billsFile.getAbsolutePath(), billsJSON)) {
-            Log.e(TAG, "Failed to write votes to file");
-        }
-    }
-
-    private void fillSponsoredBills(RecyclerView billsRecycler) {
-        Log.d(TAG, "Getting sponsored bills...");
-        if (0 == billsJSON.length()) {
-            Log.d(TAG, "billsJSON empty, populating");
-            File billsFile = new File(legislatorFile, "bills.json");
-
-            if (!billsFile.exists()) getSponsoredBills(billsFile);
-            else {
-                String billsString = cacheManager.readFile(billsFile.getAbsolutePath());
-                if (!billsString.isEmpty()) billsJSON = cacheManager.stringToJSONArray(billsString);
-                else getSponsoredBills(billsFile);
-            }
-        }
-
-        SponsoredBillsAdapter adapter = new SponsoredBillsAdapter(billsJSON);
-        billsRecycler.setAdapter(adapter);
     }
 
     private void parseCommitteeMembership(JSONObject membership, JSONArray committees, String prefix) {
@@ -506,6 +451,75 @@ public class Legislator {
 
     }
 
+    // Recent Actions section
+    public void fillActions(RecyclerView billsRecycler, RecyclerView votesRecycler) {
+        fillVotes(votesRecycler);
+        fillSponsoredBills(billsRecycler);
+    }
+
+    private void getVotes(File votesFile) {
+        Log.d(TAG, "Getting votes for " + title);
+
+        String chamber = title.substring(0, 1);
+        if (chamber.equals("S")) chamber = "senate";
+        else chamber = "house";
+
+        votesJSON = cacheManager.getVotes(chamber, bioGuide);
+        if (0 != cacheManager.writeFile(votesFile.getAbsolutePath(), votesJSON)) {
+            Log.e(TAG, "Failed to write votes to file");
+        }
+    }
+
+    private void fillVotes(RecyclerView votesView) {
+        Log.d(TAG, "Getting votes...");
+        if (0 == votesJSON.length()) {
+            Log.d(TAG, "votesJSON empty, populating");
+            File votesFile = new File(legislatorFile, "votes.json");
+
+            if (!votesFile.exists() || !upToDate(votesFile)) getVotes(votesFile);
+            else {
+                String votesString = cacheManager.readFile(votesFile.getAbsolutePath());
+                if (!votesString.isEmpty()) votesJSON = cacheManager.stringToJSONArray(votesString);
+                else getVotes(votesFile);
+            }
+        }
+
+        VotesListAdapter adapter = new VotesListAdapter(votesJSON);
+        votesView.setAdapter(adapter);
+    }
+
+    private void getSponsoredBills(File billsFile) {
+        Log.d(TAG, "Getting bills for " + title);
+
+        String chamber = title.substring(0, 1);
+        if (chamber.equals("S")) chamber = "senate";
+        else chamber = "house";
+
+        billsJSON = cacheManager.getSponsoredBills(chamber, bioGuide); //parseCommitteeMembership(currentMembership, votes, null);
+        if (0 != cacheManager.writeFile(billsFile.getAbsolutePath(), billsJSON)) {
+            Log.e(TAG, "Failed to write votes to file");
+        }
+    }
+
+    private void fillSponsoredBills(RecyclerView billsRecycler) {
+        Log.d(TAG, "Getting sponsored bills...");
+        if (0 == billsJSON.length()) {
+            Log.d(TAG, "billsJSON empty, populating");
+            File billsFile = new File(legislatorFile, "bills.json");
+
+            if (!billsFile.exists() || !upToDate(billsFile)) getSponsoredBills(billsFile);
+            else {
+                String billsString = cacheManager.readFile(billsFile.getAbsolutePath());
+                if (!billsString.isEmpty()) billsJSON = cacheManager.stringToJSONArray(billsString);
+                else getSponsoredBills(billsFile);
+            }
+        }
+
+        SponsoredBillsAdapter adapter = new SponsoredBillsAdapter(billsJSON);
+        billsRecycler.setAdapter(adapter);
+    }
+
+    // Contact Information section
     public String getUserName(String platform) {
         try {
             return socialMediaJSON.getString(platform);
@@ -534,7 +548,7 @@ public class Legislator {
         if (null == socialMediaJSON) {
             Log.d(TAG, "socialMediaJSON == null, populating");
             File socialFile = new File(legislatorFile, "social-media.json");
-            if (!socialFile.exists()) getSocialMedia(socialFile);
+            if (!socialFile.exists() || !upToDate(socialFile)) getSocialMedia(socialFile);
             else {
                 String socialString = cacheManager.readFile(socialFile.getAbsolutePath());
                 if (!socialString.isEmpty()) socialMediaJSON = cacheManager.stringToJSON(socialString);
@@ -568,6 +582,20 @@ public class Legislator {
         websiteView.setText(getTermValue("url"));
 
         fillSocialMedia(socialViewGroup);
+    }
+
+    // Utility methods
+    private boolean upToDate(File file) {
+        Date lastModified = new Date(file.lastModified());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, - updateInterval);
+        Date oldestDate = calendar.getTime();
+        if (lastModified.after(oldestDate)) {
+            Log.d(TAG, "Files within date range, no update required, exiting: " + file.getPath());
+            return true;
+        }
+        return false;
     }
 
     public String getPath() {

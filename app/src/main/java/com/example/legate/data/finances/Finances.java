@@ -14,9 +14,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.File;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.Locale;
 
-// TODO: Combine download and fill function so they don't need to be subsequent, separate buttons
+// TODO: Get cycle dynamically
 public class Finances {
     private static final String TAG = "Finances";
     private static final String OS_API_KEY = "ca1f46ceab269d0fe761675e39bdbd09";
@@ -30,8 +32,15 @@ public class Finances {
     private File summaryFile;
     private File topContributorsFile;
     private File topIndustriesFile;
+    private int updateInterval = 1;
 
     private JSONObject financesJSON = new JSONObject();
+
+    public Finances(CacheManager manager, File cache, int interval) {
+        cacheManager = manager;
+        localCache = cache;
+        updateInterval = interval;
+    }
 
     public Finances(CacheManager manager, File cache) {
         cacheManager = manager;
@@ -51,13 +60,29 @@ public class Finances {
         String topIndustriesUrl = String.format(FINANCES_URL, "candIndustry", openSecretsId, cycle, OS_API_KEY);
         String topIndustriesPath = topIndustriesFile.getAbsolutePath();
 
-        if (!summaryFile.exists()) cacheManager.downloadFile(summaryUrl, summaryPath);
-        if (!topContributorsFile.exists()) cacheManager.downloadFile(topContributorsUrl, topContributorsPath);
-        if (!topIndustriesFile.exists()) cacheManager.downloadFile(topIndustriesUrl, topIndustriesPath);
+        if (!summaryFile.exists() || !upToDate(summaryFile))
+            cacheManager.downloadFile(summaryUrl, summaryPath);
+        if (!topContributorsFile.exists() || !upToDate(topContributorsFile))
+            cacheManager.downloadFile(topContributorsUrl, topContributorsPath);
+        if (!topIndustriesFile.exists() || !upToDate(topIndustriesFile))
+            cacheManager.downloadFile(topIndustriesUrl, topIndustriesPath);
+    }
+
+    private boolean upToDate(File file) {
+        Date lastModified = new Date(file.lastModified());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.DATE, - updateInterval);
+        Date oldestDate = calendar.getTime();
+        if (lastModified.after(oldestDate)) {
+            Log.d(TAG, "Files within date range, no update required, exiting: " + file.getPath());
+            return true;
+        }
+        return false;
     }
 
     public void downloadFinances(String openSecretsId, String cycle) {
-        if (filesExist()) return;
+        if (filesExist() && filesUpToDate()) return;
         updateFinances(openSecretsId, cycle);
     }
 
@@ -77,6 +102,10 @@ public class Finances {
         if (null == topIndustriesFile) topIndustriesFile = new File(localCache, "finances-industries.json");
 
         return (summaryFile.exists() && topContributorsFile.exists() && topIndustriesFile.exists());
+    }
+
+    private boolean filesUpToDate() {
+        return (upToDate(summaryFile) && upToDate(topContributorsFile) && upToDate(topIndustriesFile));
     }
 
     private JSONObject getJsonFromFile(File file) {
