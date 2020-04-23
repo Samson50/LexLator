@@ -18,6 +18,7 @@
 
     <LinearLayout
         android:id="@+id/layout_contribution_content"
+        style="@style/contentLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:orientation="vertical"

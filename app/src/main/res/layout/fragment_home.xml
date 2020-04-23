@@ -99,7 +99,7 @@
                 android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toBottomOf="@+id/district_spinner" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/address_layout"
@@ -214,6 +214,34 @@
                     app:layout_constraintStart_toStartOf="@+id/edit_city"
                     app:layout_constraintTop_toBottomOf="@+id/edit_city" />
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <TextView
+                android:id="@+id/text_select_district"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@color/collapsibleTextColor"
+                android:text="@string/text_select_district"
+                android:textColor="@color/collapsibleBackground"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <Spinner
+                android:id="@+id/district_spinner"
+                android:layout_width="0dp"
+                android:layout_height="25dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/layout_spinner_border"
+                app:layout_constraintEnd_toEndOf="@+id/text_select_district"
+                app:layout_constraintStart_toStartOf="@+id/text_select_district"
+                app:layout_constraintTop_toBottomOf="@+id/text_select_district" />
         </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.constraintlayout.widget.ConstraintLayout>

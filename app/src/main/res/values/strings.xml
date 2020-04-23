@@ -9,10 +9,8 @@
     <string name="action_settings">Settings</string>
 
     <string name="menu_home">Home</string>
-    <string name="menu_gallery">Gallery</string>
-    <string name="menu_slideshow">Slideshow</string>
 
-    <string name="state_list">State List</string>
+    <string name="state_list">Your Legislators</string>
 
     <string name="congress">Congress</string>
     <string name="senate">Senate</string>
@@ -20,13 +18,14 @@
     <string name="bills">Bills</string>
 
     <string name="state">Enter your state</string>
+    <string name="text_select_district">Select your district</string>
     <string name="text_find_district">Find your district</string>
     <string name="text_address">Address</string>
     <string name="text_city">City</string>
     <string name="text_zip">Zip Code</string>
 
     <string name="go_district">Find My District</string>
-    <string name="go_state">Go to Legislators</string>
+    <string name="go_state">Find My Legislators</string>
 
     <string-array name="states_array">
         <item>Select state…</item>
