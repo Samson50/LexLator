@@ -101,22 +101,28 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
         Log.d(TAG, "Downloading files");
 
+        progressText = "Downloading Legislator Information";
+
+        // committee membership
         String membershipPath = localCache.getAbsolutePath() + "/committee-membership-current.json";
         if (0 != downloadFile(MEMBERSHIP_URL, membershipPath)) {
             Log.e(TAG, "Failed to download: " + MEMBERSHIP_URL);
         }
 
+        // current committees
         // committees-current.json, committee-membership-current.json
         String committeesPath = localCache.getAbsolutePath() + "/committees-current.json";
         if (0 != downloadFile(COMMITTEES_URL, committeesPath)) {
             Log.e(TAG, "Failed to download: " + COMMITTEES_URL);
         }
 
+        // social media
         String socialMediaPath = localCache.getAbsolutePath() + "/legislators-social-media.json";
         if (0 != downloadFile(SOCIAL_MEDIA_URL, socialMediaPath)) {
             Log.e(TAG, "Failed to download: " + SOCIAL_MEDIA_URL);
         }
 
+        // current legislators
         String legislatorsPath = localCache.getAbsolutePath() + "/legislators-current.json";
         if (0 != downloadFile(LEGISLATORS_URL, legislatorsPath)) {
             Log.e(TAG, "Failed to download: " + LEGISLATORS_URL);
@@ -125,10 +131,14 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
             populateStates(legislatorsFile);
         }
 
+        // download votes
+        progressText = "Downloading Votes";
         if (0 != downloadVotes()) {
             Log.e(TAG, "Failed to download votes");
         }
 
+        // download bills
+        progressText = "Downloading Bills";
         if (0 != downloadBills()) {
             Log.e(TAG, "Failed to download bills");
         }
@@ -170,7 +180,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
     private int downloadFile(String fileUrl, String filePath, String apiArg, String apiKey) {
         File downloadFile = new File(filePath);
-        progressText = "Downloading " + downloadFile.getName();
+        //progressText = "Downloading " + downloadFile.getName();
         Date lastModified;
 
         if (!downloadFile.exists()) lastModified = null;
@@ -254,14 +264,14 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 }
                 total += count;
                 // publishing the progress....
-                if (fileLength > 0) {
+                //if (fileLength > 0) {
                     // only if total length is known
-                    int progress = (int) (total * 100 / fileLength);
-                    publishProgress(progress);
-                }
-                else {
-                    publishProgress(-1);
-                }
+                    //int progress = (int) (total * 100 / fileLength);
+                    //publishProgress(progress);
+                //}
+                //else {
+                    //publishProgress(-1);
+                //}
                 output.write(data, 0, count);
             }
             Log.d(TAG, "File length: " + fileLength);
@@ -324,7 +334,6 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
     }
 
     private int populateLegislators(File statesDir, JSONArray legislators) throws JSONException {
-        progressText = "Populating local cache...";
         int total = legislators.length();
 
         for (int i = 0; i < total; i++){
@@ -447,6 +456,17 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         return populateVotes(votesFile, houseVotesPath, senateVotesPath);
     }
 
+    private int populateVotes(File votesFile, String houseVotesPath, String senateVotesPath) {
+
+        String old = progressText;
+        progressText = progressText + " - House";
+        int res = populateChamberVotes("house", votesFile, houseVotesPath);
+        progressText = old + " - Senate";
+        int ras = populateChamberVotes("senate", votesFile, senateVotesPath);
+
+        return res + ras;
+    }
+
     private int populateChamberVotes(String chamber, File votesFile, String chamberVotesPath) {
         File chamberVotesDir = new File(votesFile, chamber);
         Log.d(TAG, "Populating chamber votes from file: " + chamberVotesPath);
@@ -463,6 +483,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 // File format: {chamber}-{congress #}-{session #}-{roll #} = C-123-1-12345
                 try {
                     JSONArray votesArray = chamberJson.getJSONObject("results").getJSONArray("votes");
+                    int totalVotes = votesArray.length();
                     for (int i = 0; i < votesArray.length(); i++) {
                         Log.d(TAG, String.format(Locale.US, "Populating vote %d for %s", i, chamber));
 
@@ -480,6 +501,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                         if (0 != downloadFile(voteUrl, outputPath, "X-API-Key", PRO_API_KEY))
                             Log.e(TAG, "Failed to download: " + voteUrl);
 
+                        publishProgress(i * 100 / totalVotes);
                     }
                 } catch (JSONException e) {
                     Log.e(TAG, "populateChamberVotes(...) JSON error: " + e.toString());
@@ -497,14 +519,6 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         }
 
         return 0;
-    }
-
-    private int populateVotes(File votesFile, String houseVotesPath, String senateVotesPath) {
-
-        int res = populateChamberVotes("house", votesFile, houseVotesPath);
-        int ras = populateChamberVotes("senate", votesFile, senateVotesPath);
-
-        return res + ras;
     }
 
     private int downloadBills() {
@@ -568,6 +582,17 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         return populateBills(billsFile, houseBillsPath, senateBillsPath);
     }
 
+    private int populateBills(File billsFile, String houseBillsString, String senateBillsString) {
+
+        String old = progressText;
+        progressText = old + " - House";
+        int res = populateChamberBills("house", billsFile, houseBillsString);
+        progressText = old + " - Senate";
+        int ras = populateChamberBills("senate", billsFile, senateBillsString);
+
+        return res + ras;
+    }
+
     private int populateChamberBills(String chamber, File billsFile, String chamberBillsPath) {
         File chamberBillDir = new File(billsFile, chamber);
         Log.d(TAG, "Populating chamber bills from file: " + chamberBillsPath);
@@ -584,6 +609,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 // File format: {chamber}{bill #}-{congress} = ch1234-123
                 try {
                     JSONArray resultsArray = chamberJson.getJSONArray("results");
+                    int totalBills = resultsArray.length();
                     for (int j = 0; j < resultsArray.length(); j++) {
                         JSONObject chamberCongressJson = resultsArray.getJSONObject(j);
                         JSONArray billsArray = chamberCongressJson.getJSONArray("bills");
@@ -603,6 +629,8 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
                             if (0 != downloadFile(billUrl, outputPath, "X-API-Key", PRO_API_KEY))
                                 Log.e(TAG, "Failed to download: " + billUrl);
+
+                            publishProgress(i * 100 / totalBills);
                         }
                     }
                 } catch (JSONException e) {
@@ -621,13 +649,6 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         }
 
         return 0;
-    }
-
-    private int populateBills(File billsFile, String houseBillsString, String senateBillsString) {
-        int res = populateChamberBills("house", billsFile, houseBillsString);
-        int ras = populateChamberBills("senate", billsFile, senateBillsString);
-
-        return res + ras;
     }
 
     private String getLegislatorDir(JSONObject legislator, JSONObject currentTerm) throws JSONException {
