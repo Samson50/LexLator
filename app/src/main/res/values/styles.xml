@@ -54,14 +54,27 @@
         <item name="android:textSize">20sp</item>
     </style>
 
-    <style name="infoItemName">
-        <item name="android:background">@color/collapsibleTextColor</item>
-        <item name="android:textColor">@color/collapsibleBackground</item>
-        <item name="android:textSize">14sp</item>
+    <style name="infoStyle">
         <item name="android:textStyle">bold</item>
         <item name="android:paddingStart">8dp</item>
         <item name="android:paddingEnd">0dp</item>
+        <item name="android:background">@color/collapsibleTextColor</item>
+        <item name="android:textColor">@color/collapsibleBackground</item>
+    </style>
+
+    <style name="infoItemName" parent="infoStyle">
+        <item name="android:textSize">14sp</item>
         <item name="android:layout_width">60dp</item>
+    </style>
+
+    <style name="infoHeader" parent="infoStyle">
+        <item name="android:textSize">20sp</item>
+        <item name="android:background">@drawable/layout_info_background</item>
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginStart">8dp</item>
+        <item name="android:layout_marginTop">8dp</item>
+        <item name="android:layout_marginEnd">8dp</item>
     </style>
 
     <style name="textContent">

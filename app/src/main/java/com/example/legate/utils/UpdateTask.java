@@ -105,26 +105,26 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
         // committee membership
         String membershipPath = localCache.getAbsolutePath() + "/committee-membership-current.json";
-        if (0 != downloadFile(MEMBERSHIP_URL, membershipPath)) {
+        if (0 != cacheManager.downloadFile(MEMBERSHIP_URL, membershipPath)) {
             Log.e(TAG, "Failed to download: " + MEMBERSHIP_URL);
         }
 
         // current committees
         // committees-current.json, committee-membership-current.json
         String committeesPath = localCache.getAbsolutePath() + "/committees-current.json";
-        if (0 != downloadFile(COMMITTEES_URL, committeesPath)) {
+        if (0 != cacheManager.downloadFile(COMMITTEES_URL, committeesPath)) {
             Log.e(TAG, "Failed to download: " + COMMITTEES_URL);
         }
 
         // social media
         String socialMediaPath = localCache.getAbsolutePath() + "/legislators-social-media.json";
-        if (0 != downloadFile(SOCIAL_MEDIA_URL, socialMediaPath)) {
+        if (0 != cacheManager.downloadFile(SOCIAL_MEDIA_URL, socialMediaPath)) {
             Log.e(TAG, "Failed to download: " + SOCIAL_MEDIA_URL);
         }
 
         // current legislators
         String legislatorsPath = localCache.getAbsolutePath() + "/legislators-current.json";
-        if (0 != downloadFile(LEGISLATORS_URL, legislatorsPath)) {
+        if (0 != cacheManager.downloadFile(LEGISLATORS_URL, legislatorsPath)) {
             Log.e(TAG, "Failed to download: " + LEGISLATORS_URL);
         }
         else {
@@ -176,128 +176,6 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         contentLayout.setVisibility(View.VISIBLE);
 
         mWakeLock.release();
-    }
-
-    private int downloadFile(String fileUrl, String filePath, String apiArg, String apiKey) {
-        File downloadFile = new File(filePath);
-        //progressText = "Downloading " + downloadFile.getName();
-        Date lastModified;
-
-        if (!downloadFile.exists()) lastModified = null;
-        else lastModified = new Date(downloadFile.lastModified());
-
-        return downloadFile(fileUrl, filePath, apiArg, apiKey, lastModified);
-    }
-
-    private int downloadFile(String fileUrl, String filePath, String apiArg, String apiKey, Date cacheLastModified) {
-        InputStream input = null;
-        OutputStream output = null;
-        HttpsURLConnection connection = null;
-        try {
-            URL url = new URL(fileUrl);
-
-            connection = (HttpsURLConnection) url.openConnection();
-            if (null != apiKey && null != apiArg) {
-                Log.d(TAG, "Adding api key to request: " + apiArg + ": " + apiKey);
-                // connection.setRequestProperty("X-API-Key", apiKey);
-                connection.setRequestProperty(apiArg, apiKey);
-            }
-            connection.setConnectTimeout(5000);
-            connection.connect();
-
-            Log.d(TAG, "Headers: \n" + connection.getHeaderFields());
-
-            // expect HTTP 200 OK, so we don't mistakenly save error report
-            // instead of the file
-            if (connection.getResponseCode() != HttpsURLConnection.HTTP_OK) {
-                Log.e(TAG, "Server returned HTTP " + connection.getResponseCode()
-                        + " " + connection.getResponseMessage()
-                );
-                return 1;
-            }
-            Log.d(TAG, "Connection established");
-
-            // Get the last-modified header and compare with last_modified date if not null
-            if (null != cacheLastModified) {
-                String urlModified = connection.getHeaderField("last-modified");
-                if (null != urlModified) {
-                    // Example date: Thu, 02 Apr 2020 11:18:39 GMT
-                    Log.d(TAG, "Raw URL modified string: " + urlModified);
-                    SimpleDateFormat dateFormat = new SimpleDateFormat("EEE, dd MMM yyyy HH:mm:ss z", Locale.US);
-                    Date urlModifiedDate = dateFormat.parse(urlModified);
-                    assert urlModifiedDate != null;
-                    Log.d(TAG, "URL Updated: " + urlModifiedDate.toString());
-                    if (urlModifiedDate.before(cacheLastModified)) {
-                        Log.d(TAG, "Cache file up to date, exiting download");
-                        return 0;
-                    }
-                }
-                else Log.d(TAG, "Failed to get last-modified form header, continuing");
-            }
-            else Log.d(TAG, "Cache last modified date == null, continuing");
-
-            // this will be useful to display download percentage
-            // might be -1: server did not report the length
-            int fileLength = connection.getContentLength();
-            // If server did not report the length, try to get it from the header
-            if (-1 == fileLength) {
-                String headerFileLength = connection.getHeaderField("content-length");
-                if (null != headerFileLength) {
-                    Log.d(TAG, "Raw file length string from header: " + headerFileLength);
-                    fileLength = Integer.parseInt(headerFileLength);
-                }
-            }
-
-            // download the file
-            input = connection.getInputStream();
-            Log.d(TAG, "Downloading file to: " + filePath);
-            output = new FileOutputStream(filePath);
-
-            byte[] data = new byte[4096];
-            long total = 0;
-            int count;
-            while ((count = input.read(data)) != -1) {
-                // allow canceling with back button
-                if (isCancelled()) {
-                    input.close();
-                    return 1;
-                }
-                total += count;
-                // publishing the progress....
-                //if (fileLength > 0) {
-                    // only if total length is known
-                    //int progress = (int) (total * 100 / fileLength);
-                    //publishProgress(progress);
-                //}
-                //else {
-                    //publishProgress(-1);
-                //}
-                output.write(data, 0, count);
-            }
-            Log.d(TAG, "File length: " + fileLength);
-            Log.d(TAG, "Bytes downloaded: " + total);
-        } catch (Exception e) {
-            Log.e(TAG, e.toString());
-            return 1;
-        } finally {
-            Log.d(TAG, "Closing HTTPS connection and output stream");
-            try {
-                if (output != null)
-                    output.close();
-                if (input != null)
-                    input.close();
-            } catch (IOException e) {
-                Log.e(TAG, e.toString());
-            }
-
-            if (connection != null)
-                connection.disconnect();
-        }
-        return 0;
-    }
-
-    private int downloadFile(String fileUrl, String filePath) {
-        return downloadFile(fileUrl, filePath, null, null);
     }
 
     private void populateStates(File legislatorsFile) {
@@ -440,7 +318,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 VOTES_URL, "house"//, formatter.format(startDate), formatter.format(endDate)
         );
         String apiArg = "X-API-Key";
-        if (0 != downloadFile(houseVotesUrl, houseVotesPath, apiArg, PRO_API_KEY)) {
+        if (0 != cacheManager.downloadFile(houseVotesUrl, houseVotesPath, apiArg, PRO_API_KEY)) {
             Log.e(TAG, "Failed to download: " + houseVotesUrl);
             return 1;
         }
@@ -448,7 +326,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         String senateVotesUrl = String.format(
                 VOTES_URL, "senate"//, formatter.format(startDate), formatter.format(endDate)
         );
-        if (0 != downloadFile(senateVotesUrl, senateVotesPath, apiArg, PRO_API_KEY)) {
+        if (0 != cacheManager.downloadFile(senateVotesUrl, senateVotesPath, apiArg, PRO_API_KEY)) {
             Log.e(TAG, "Failed to download: " + senateVotesUrl);
             return 1;
         }
@@ -498,7 +376,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
                         String outputPath = chamberVotesDir.getAbsolutePath() + "/" + voteName;
 
-                        if (0 != downloadFile(voteUrl, outputPath, "X-API-Key", PRO_API_KEY))
+                        if (0 != cacheManager.downloadFile(voteUrl, outputPath, "X-API-Key", PRO_API_KEY))
                             Log.e(TAG, "Failed to download: " + voteUrl);
 
                         publishProgress(i * 100 / totalVotes);
@@ -566,7 +444,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 BILLS_URL, congress, "house", billType//, formatter.format(startDate), formatter.format(endDate)
         );
         String apiArg = "X-API-Key";
-        if (0 != downloadFile(houseBillsUrl, houseBillsPath, apiArg, PRO_API_KEY)) {
+        if (0 != cacheManager.downloadFile(houseBillsUrl, houseBillsPath, apiArg, PRO_API_KEY)) {
             Log.e(TAG, "Failed to download: " + houseBillsUrl);
             return 1;
         }
@@ -574,7 +452,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         String senateBillsUrl = String.format(
                 BILLS_URL, congress, "senate", billType//, formatter.format(startDate), formatter.format(endDate)
         );
-        if (0 != downloadFile(senateBillsUrl, senateBillsPath, apiArg, PRO_API_KEY)) {
+        if (0 != cacheManager.downloadFile(senateBillsUrl, senateBillsPath, apiArg, PRO_API_KEY)) {
             Log.e(TAG, "Failed to download: " + senateBillsUrl);
             return 1;
         }
@@ -627,7 +505,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
                             String outputPath = chamberBillDir.getAbsolutePath() + "/" + billName;
 
-                            if (0 != downloadFile(billUrl, outputPath, "X-API-Key", PRO_API_KEY))
+                            if (0 != cacheManager.downloadFile(billUrl, outputPath, "X-API-Key", PRO_API_KEY))
                                 Log.e(TAG, "Failed to download: " + billUrl);
 
                             publishProgress(i * 100 / totalBills);

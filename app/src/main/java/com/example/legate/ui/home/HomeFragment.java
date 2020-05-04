@@ -21,6 +21,7 @@ import androidx.navigation.Navigation;
 import androidx.preference.PreferenceManager;
 
 import com.example.legate.R;
+import com.example.legate.utils.AlertFragment;
 import com.example.legate.utils.CacheManager;
 import com.example.legate.utils.StateHelper;
 
@@ -271,6 +272,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                     DialogFragment alert = new AlertFragment(
                             "Street address and city required to find district."
                     );
+                    assert getFragmentManager() != null;
                     alert.show(getFragmentManager(), "address-failure");
                 }
             }
@@ -387,6 +389,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
                 DialogFragment alert = new AlertFragment(
                         "We could not find your district with the address provided."
                 );
+                assert getFragmentManager() != null;
                 alert.show(getFragmentManager(), "address-failure");
                 return;
             }

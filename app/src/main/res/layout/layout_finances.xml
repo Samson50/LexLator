@@ -34,6 +34,15 @@
             android:layout_weight="1"
             android:text="@string/finances_disclaimer"
             android:textSize="20sp" />
+
+        <ImageView
+            android:id="@+id/finances_disclaimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:contentDescription="@string/default_description"
+            app:srcCompat="@drawable/ic_info_24" />
     </LinearLayout>
 
     <TextView
@@ -50,9 +59,9 @@
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/summary_constraint"
+        style="@style/contentLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="@+id/summary_text"
         app:layout_constraintStart_toStartOf="@+id/summary_text"
         app:layout_constraintTop_toBottomOf="@+id/summary_text">
@@ -61,6 +70,8 @@
             android:id="@+id/text_total"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
             android:text="@string/text_total"
             android:textStyle="bold"
             app:layout_constraintStart_toStartOf="parent"

@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 import androidx.preference.PreferenceManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.legate.R;
 import com.example.legate.data.Legislator;
+import com.example.legate.utils.AlertFragment;
 import com.example.legate.utils.CollapseListener;
 
 public class LegislatorMain extends Fragment {
@@ -71,6 +73,14 @@ public class LegislatorMain extends Fragment {
 
         // Initialize financial views
         addCollapse((TextView) root.findViewById(R.id.finances_text), root.findViewById(R.id.financial_information));
+
+        ImageView infoIcon = root.findViewById(R.id.finances_disclaimer);
+        infoIcon.setOnClickListener(new AlertListener());
+
+        View linkView = root.findViewById(R.id.open_secrets_text);
+        linkView.setOnClickListener(new LinkListener(context, "https://www.opensecrets.org/"));
+        View openIcon = root.findViewById(R.id.open_secrets_icon);
+        openIcon.setOnClickListener(new LinkListener(context, "https://www.opensecrets.org/"));
 
         final ViewGroup summaryView = root.findViewById(R.id.summary_constraint);
         addCollapse((TextView) root.findViewById(R.id.summary_text), summaryView);
@@ -127,33 +137,48 @@ public class LegislatorMain extends Fragment {
 
         ImageView twitterIcon = root.findViewById(R.id.icon_twitter);
         String twitterLink = TWITTER_URL + legislator.getUserName("twitter");
-        SocialListener twitterListener = new SocialListener(context, twitterLink);
+        LinkListener twitterListener = new LinkListener(context, twitterLink);
         twitterIcon.setOnClickListener(twitterListener);
 
         ImageView facebookIcon = root.findViewById(R.id.icon_facebook);
         String facebookLink = FACEBOOK_URL + legislator.getUserName("facebook");
-        SocialListener facebookListener = new SocialListener(context, facebookLink);
+        LinkListener facebookListener = new LinkListener(context, facebookLink);
         facebookIcon.setOnClickListener(facebookListener);
 
         ImageView instagramIcon = root.findViewById(R.id.icon_instagram);
         String instagramLink = INSTAGRAM_URL + legislator.getUserName("instagram");
-        SocialListener instagramListener = new SocialListener(context, instagramLink);
+        LinkListener instagramListener = new LinkListener(context, instagramLink);
         instagramIcon.setOnClickListener(instagramListener);
 
         ImageView youtubeIcon = root.findViewById(R.id.icon_youtube);
         String youtubeLink = YOUTUBE_URL + legislator.getUserName("youtube");
-        SocialListener youtubeListener = new SocialListener(context, youtubeLink);
+        LinkListener youtubeListener = new LinkListener(context, youtubeLink);
         youtubeIcon.setOnClickListener(youtubeListener);
 
         return root;
     }
 
-    private static class SocialListener implements View.OnClickListener {
+    private class AlertListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+            DialogFragment alert = new AlertFragment(
+                    "The organizations themselves did not donate, rather the money " +
+                            "came from the organizations' PACs, their individual members or " +
+                            "employees or owners, and those individuals' immediate families. " +
+                            "Organization totals include subsidiaries and affiliates. "
+            );
+            assert getFragmentManager() != null;
+            alert.show(getFragmentManager(), "address-failure");
+        }
+    }
+
+    private static class LinkListener implements View.OnClickListener {
 
         private String socialUrl;
         private Context context;
 
-        SocialListener(Context c, String url) {
+        LinkListener(Context c, String url) {
             context = c;
             socialUrl = url;
         }

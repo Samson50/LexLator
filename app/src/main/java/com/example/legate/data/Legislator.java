@@ -190,7 +190,7 @@ public class Legislator {
             if (!imageFile.exists()) {
                 Log.d(TAG, "image.jpg not found, downloading through CacheManager");
                 // Use CacheManager to download file
-                if (0 != cacheManager.downloadFile(imageUrl, imageFile.getAbsolutePath(), null)) {
+                if (0 != cacheManager.downloadFile(imageUrl, imageFile.getAbsolutePath())) {
                     Log.e(TAG, "Failed to download image file, using default");
                     return null;
                 }

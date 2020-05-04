@@ -7,7 +7,7 @@
 
     <TextView
         android:id="@+id/legislator_title"
-        style="@style/collapsibleHeader.subOne"
+        style="@style/infoHeader"
         android:text="@string/default_legislator_title"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

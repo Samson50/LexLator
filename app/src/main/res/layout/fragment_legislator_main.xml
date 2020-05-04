@@ -42,7 +42,7 @@
                 layout="@layout/layout_finances"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="@+id/finances_text"
                 app:layout_constraintStart_toStartOf="@+id/finances_text"
                 app:layout_constraintTop_toBottomOf="@+id/finances_text" />
@@ -260,8 +260,14 @@
 
                 <TextView
                     android:id="@+id/social_media_text"
-                    style="@style/collapsibleHeader.subTwo"
+                    style="@style/infoItemName"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
                     android:text="@string/social_media_text"
+                    android:textSize="18sp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/legislator_website" />
@@ -270,6 +276,7 @@
                     android:id="@+id/social_media_layout"
                     android:layout_width="0dp"
                     android:layout_height="60dp"
+                    android:layout_marginTop="8dp"
                     android:orientation="horizontal"
                     app:layout_constraintEnd_toEndOf="@+id/social_media_text"
                     app:layout_constraintStart_toStartOf="@+id/social_media_text"

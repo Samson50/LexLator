@@ -1,4 +1,4 @@
-package com.example.legate.ui.home;
+package com.example.legate.utils;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
