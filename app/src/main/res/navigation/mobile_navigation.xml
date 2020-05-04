@@ -7,7 +7,7 @@
 
     <fragment
         android:id="@+id/nav_home"
-        android:name="com.example.legate.ui.home.HomeFragment"
+        android:name="com.decent.lexlator.ui.home.HomeFragment"
         android:label="@string/menu_home"
         tools:layout="@layout/fragment_home">
 
@@ -17,7 +17,7 @@
     </fragment>
     <fragment
         android:id="@+id/nav_state_list"
-        android:name="com.example.legate.ui.list.StateListFragment"
+        android:name="com.decent.lexlator.ui.list.StateListFragment"
         android:label="@string/state_list"
         tools:layout="@layout/fragment_state_list">
         <action
@@ -34,7 +34,7 @@
 
     <fragment
         android:id="@+id/nav_legislator_main"
-        android:name="com.example.legate.ui.legislator.LegislatorMain"
+        android:name="com.decent.lexlator.ui.legislator.LegislatorMain"
         android:label="Legislator Information"
         tools:layout="@layout/fragment_legislator_main" >
         <action
@@ -47,14 +47,14 @@
 
     <fragment
         android:id="@+id/settingsFragment"
-        android:name="com.example.legate.SettingsFragment"
+        android:name="com.decent.lexlator.SettingsFragment"
         android:label="Settings" />
 
     <action android:id="@+id/open_settings"
         app:destination="@id/settingsFragment"/>
     <fragment
         android:id="@+id/nav_about"
-        android:name="com.example.legate.ui.about.AboutFragment"
+        android:name="com.decent.lexlator.ui.about.AboutFragment"
         tools:layout="@layout/fragment_about"
         android:label="About this application" />
 </navigation>
