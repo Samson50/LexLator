@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.legate.R;
 import com.example.legate.data.Legislator;
+import com.example.legate.utils.CollapseListener;
 
 public class LegislatorMain extends Fragment {
 
@@ -172,18 +173,5 @@ public class LegislatorMain extends Fragment {
         clicker.setOnClickListener(collapseListener);
     }
 
-    private static class CollapseListener implements View.OnClickListener {
 
-        View collapsibleView;
-
-        CollapseListener(View view) {
-            collapsibleView = view;
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (View.VISIBLE == collapsibleView.getVisibility()) collapsibleView.setVisibility(View.GONE);
-            else collapsibleView.setVisibility(View.VISIBLE);
-        }
-    }
 }

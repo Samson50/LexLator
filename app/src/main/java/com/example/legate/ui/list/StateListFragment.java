@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.legate.R;
 import com.example.legate.data.Legislator;
+import com.example.legate.utils.CollapseListener;
 
 import java.util.List;
 
@@ -113,20 +114,5 @@ public class StateListFragment extends Fragment {
         super.onPause();
         representativesAdapter.cancel();
         senatorsAdapter.cancel();
-    }
-
-    private static class CollapseListener implements View.OnClickListener {
-
-        View recyclerView;
-
-        CollapseListener(View view) {
-            recyclerView = view;
-        }
-
-        @Override
-        public void onClick(View v) {
-            if (View.VISIBLE == recyclerView.getVisibility()) recyclerView.setVisibility(View.GONE);
-            else recyclerView.setVisibility(View.VISIBLE);
-        }
     }
 }
