@@ -50,7 +50,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
     private Context context;
     private ViewGroup contentLayout;
-    private ViewGroup progressOverlay;
+    private ViewGroup progressLayout;
     private ViewGroup actionLayout;
     private Spinner districtSpinner;
     private ArrayList<String> districtList = new ArrayList<>();
@@ -73,7 +73,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
 
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
-        progressOverlay = root.findViewById(R.id.progress_overlay);
+        progressLayout = root.findViewById(R.id.include);
         contentLayout = root.findViewById(R.id.home_content_layout);
 
         // Initialize State selection drop-down menu
@@ -124,9 +124,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         if (!updated) {
             updated = true;
             CacheManager cacheManager = new CacheManager();
-            if (0 != cacheManager.updateLocalCache(context, progressOverlay, contentLayout))
+            if (0 != cacheManager.updateLocalCache(context, progressLayout, contentLayout))
                 Log.e(TAG, "Failed to update cache.");
         }
+
         return root;
     }
 
@@ -298,9 +299,10 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         @Override
         protected void onPreExecute() {
             contentLayout.setVisibility(View.GONE);
-            progressOverlay.setVisibility(View.VISIBLE);
+            progressLayout.setVisibility(View.VISIBLE);
         }
 
+        // TODO: Use cache manager
         @Override
         protected String doInBackground(String... strings) {
             if (strings.length < 1) {
@@ -379,7 +381,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
             }
 
             // Remove overlay
-            progressOverlay.setVisibility(View.GONE);
+            progressLayout.setVisibility(View.GONE);
             contentLayout.setVisibility(View.VISIBLE);
 
             Log.d(TAG, "District string: " + districtString);

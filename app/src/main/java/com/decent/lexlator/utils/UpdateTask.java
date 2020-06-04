@@ -43,7 +43,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
 
     private PowerManager.WakeLock mWakeLock;
     private Context context;
-    private ViewGroup progressOverlay;
+    private ViewGroup progressLayout;
     private ViewGroup contentLayout;
     private TextView progressTextView;
     private String progressText = "Updating...";
@@ -52,14 +52,14 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
     private CacheManager cacheManager;
     private File localCache;
 
-    UpdateTask(Context parentContext, ViewGroup overlay, ViewGroup content, CacheManager manager) {
+    UpdateTask(Context parentContext, ViewGroup progress, ViewGroup content, CacheManager manager) {
         context = parentContext;
         String updateString = PreferenceManager.getDefaultSharedPreferences(context).getString("update_interval_preference", "1");
         updateInterval = Integer.parseInt(updateString);
-        progressOverlay = overlay;
+        progressLayout = progress;
         contentLayout = content;
-        progressBar = progressOverlay.findViewById(R.id.update_progress_bar);
-        progressTextView = progressOverlay.findViewById(R.id.progress_text);
+        progressBar = progressLayout.findViewById(R.id.update_progress_bar);
+        progressTextView = progressLayout.findViewById(R.id.progress_text);
         cacheManager = manager;
     }
 
@@ -74,13 +74,13 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 getClass().getName());
         mWakeLock.acquire(15000);
 
-        contentLayout.setVisibility(View.GONE);
+        //contentLayout.setVisibility(View.GONE);
 
         //AlphaAnimation inAnimation = new AlphaAnimation(0f, 1f);
         //inAnimation.setDuration(ANIMATION_DURATION);
         //progressOverlay.setAnimation(inAnimation);
 
-        progressOverlay.setVisibility(View.VISIBLE);
+        progressLayout.setVisibility(View.VISIBLE);
     }
 
     @Override
@@ -162,9 +162,9 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         //outAnimation.setDuration(ANIMATION_DURATION);
         //progressOverlay.setAnimation(outAnimation);
 
-        progressOverlay.setVisibility(View.GONE);
+        progressLayout.setVisibility(View.GONE);
 
-        contentLayout.setVisibility(View.VISIBLE);
+        //contentLayout.setVisibility(View.VISIBLE);
 
         mWakeLock.release();
     }
@@ -310,7 +310,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         );
         String apiArg = "X-API-Key";
         if (0 != cacheManager.downloadFile(houseVotesUrl, houseVotesPath, apiArg, PRO_API_KEY)) {
-            Log.e(TAG, "Failed to download: " + houseVotesUrl);
+            //Log.e(TAG, "Failed to download: " + houseVotesUrl);
             return 1;
         }
 
@@ -318,7 +318,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 VOTES_URL, "senate"//, formatter.format(startDate), formatter.format(endDate)
         );
         if (0 != cacheManager.downloadFile(senateVotesUrl, senateVotesPath, apiArg, PRO_API_KEY)) {
-            Log.e(TAG, "Failed to download: " + senateVotesUrl);
+            //Log.e(TAG, "Failed to download: " + senateVotesUrl);
             return 1;
         }
 
@@ -368,7 +368,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                         String outputPath = chamberVotesDir.getAbsolutePath() + "/" + voteName;
 
                         if (0 != cacheManager.downloadFile(voteUrl, outputPath, "X-API-Key", PRO_API_KEY))
-                            Log.e(TAG, "Failed to download: " + voteUrl);
+                            //Log.e(TAG, "Failed to download: " + voteUrl);
 
                         publishProgress(i * 100 / totalVotes);
                     }
@@ -436,7 +436,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
         );
         String apiArg = "X-API-Key";
         if (0 != cacheManager.downloadFile(houseBillsUrl, houseBillsPath, apiArg, PRO_API_KEY)) {
-            Log.e(TAG, "Failed to download: " + houseBillsUrl);
+            //Log.e(TAG, "Failed to download: " + houseBillsUrl);
             return 1;
         }
 
@@ -444,7 +444,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                 BILLS_URL, congress, "senate", billType//, formatter.format(startDate), formatter.format(endDate)
         );
         if (0 != cacheManager.downloadFile(senateBillsUrl, senateBillsPath, apiArg, PRO_API_KEY)) {
-            Log.e(TAG, "Failed to download: " + senateBillsUrl);
+            //Log.e(TAG, "Failed to download: " + senateBillsUrl);
             return 1;
         }
 
@@ -497,7 +497,7 @@ public class UpdateTask extends AsyncTask<String, Integer, Void> {
                             String outputPath = chamberBillDir.getAbsolutePath() + "/" + billName;
 
                             if (0 != cacheManager.downloadFile(billUrl, outputPath, "X-API-Key", PRO_API_KEY))
-                                Log.e(TAG, "Failed to download: " + billUrl);
+                                //Log.e(TAG, "Failed to download: " + billUrl);
 
                             publishProgress(i * 100 / totalBills);
                         }
