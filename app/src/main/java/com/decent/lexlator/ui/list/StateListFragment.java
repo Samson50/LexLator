@@ -102,9 +102,13 @@ public class StateListFragment extends Fragment {
 
         // Set-up collapsible property from text views
         TextView senatorsText = root.findViewById(R.id.text_senators);
-        senatorsText.setOnClickListener(new CollapseListener(senatorsRecyclerView));
+        senatorsText.setOnClickListener(new CollapseListener(
+                root.findViewById(R.id.senators_constraint)
+        ));
         TextView representativesText = root.findViewById(R.id.text_representatives);
-        representativesText.setOnClickListener(new CollapseListener(representativesRecyclerView));
+        representativesText.setOnClickListener(new CollapseListener(
+                root.findViewById(R.id.representatives_constraint)
+        ));
 
         return root;
     }

@@ -49,35 +49,51 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/senatorsRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="0dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_senators" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/senators_constraint"
+                style="@style/contentLayout"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                app:layout_constraintEnd_toEndOf="@+id/text_senators"
+                app:layout_constraintStart_toStartOf="@+id/text_senators"
+                app:layout_constraintTop_toBottomOf="@+id/text_senators">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/senatorsRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/text_representatives"
                 style="@style/collapsibleHeader.main"
                 android:text="@string/representatives"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.0"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/senatorsRecyclerView" />
+                app:layout_constraintTop_toBottomOf="@+id/senators_constraint" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/representativesRecyclerView"
-                android:layout_width="match_parent"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/representatives_constraint"
+                style="@style/contentLayout"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:visibility="visible"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/text_representatives" />
+                app:layout_constraintEnd_toEndOf="@+id/text_representatives"
+                app:layout_constraintStart_toStartOf="@+id/text_representatives"
+                app:layout_constraintTop_toBottomOf="@+id/text_representatives">
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/representativesRecyclerView"
+                    android:layout_width="match_parent"
+                    android:layout_height="0dp"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
