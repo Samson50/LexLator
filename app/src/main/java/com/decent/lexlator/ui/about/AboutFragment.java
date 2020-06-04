@@ -22,7 +22,7 @@ public class AboutFragment extends Fragment {
 
         addCollapse(
                 root.findViewById(R.id.text_data),
-                root.findViewById(R.id.content_data)
+                root.findViewById(R.id.sources_constraint)
         );
         addCollapse(
                 root.findViewById(R.id.text_leg_info),

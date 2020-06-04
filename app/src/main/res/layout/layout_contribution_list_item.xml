@@ -10,7 +10,7 @@
         style="@style/collapsibleHeader.subTwo"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="4dp"
         android:text="@string/default_contributor_name"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -21,7 +21,9 @@
         style="@style/contentLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
         android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/contributor_name"
         app:layout_constraintStart_toStartOf="@+id/contributor_name"
         app:layout_constraintTop_toBottomOf="@+id/contributor_name">
@@ -35,35 +37,35 @@
             <TextView
                 android:id="@+id/text_total_value"
                 style="@style/infoItemName"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
                 android:text="@string/text_total_value"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/text_individuals"
                 style="@style/infoItemName"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
                 android:text="@string/text_individuals"
                 android:textStyle="bold" />
 
             <TextView
                 android:id="@+id/text_pac"
                 style="@style/infoItemName"
-                android:paddingStart="0dp"
-                android:paddingEnd="0dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:paddingStart="0dp"
+                android:paddingEnd="0dp"
                 android:text="@string/text_pac"
                 android:textAlignment="center"
                 android:textStyle="bold" />

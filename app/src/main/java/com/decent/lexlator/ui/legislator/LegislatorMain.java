@@ -112,7 +112,7 @@ public class LegislatorMain extends Fragment {
         legislator.fillCommittees(committeesRecycler);
 
         // Initialize Action views
-        addCollapse((TextView) root.findViewById(R.id.recent_actions_text), root.findViewById(R.id.activities_constraint));
+        addCollapse((TextView) root.findViewById(R.id.recent_actions_text), root.findViewById(R.id.actions_constraint));
 
         final RecyclerView billsRecycler = root.findViewById(R.id.sponsored_bills_recycler);
         RecyclerView.LayoutManager billsManager = new LinearLayoutManager(context);

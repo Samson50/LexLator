@@ -74,6 +74,7 @@ public class HomeFragment extends Fragment implements AdapterView.OnItemSelected
         View root = inflater.inflate(R.layout.fragment_home, container, false);
 
         progressLayout = root.findViewById(R.id.include);
+        progressLayout.setVisibility(View.GONE);
         contentLayout = root.findViewById(R.id.home_content_layout);
 
         // Initialize State selection drop-down menu

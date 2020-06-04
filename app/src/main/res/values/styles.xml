@@ -44,7 +44,7 @@
     <style name="contentLayout">
         <item name="android:background">@drawable/layout_content_border</item>
         <item name="android:paddingTop">0dp</item>
-        <item name="android:paddingBottom">14dp</item>
+        <item name="android:paddingBottom">6dp</item>
     </style>
 
     <style name="multipartHeader">
@@ -81,6 +81,11 @@
         <item name="android:textSize">14sp</item>
         <item name="android:textColor">@color/blockTextColor</item>
         <item name="android:textIsSelectable">true</item>
+    </style>
+
+    <style name="textBold" parent="textContent">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textStyle">bold</item>
     </style>
 
     <style name="textBlock" parent="textContent">

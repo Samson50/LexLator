@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/finances_constraint"
     style="@style/contentLayout"
     android:layout_width="match_parent"
@@ -137,8 +138,10 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
             android:text="@string/text_debt"
             android:textStyle="bold"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="@+id/text_cash"
             app:layout_constraintStart_toStartOf="@+id/text_cash"
             app:layout_constraintTop_toBottomOf="@+id/text_cash" />
@@ -170,6 +173,7 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/top_contributors_recycler"
+        style="@style/contentLayout"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:visibility="visible"
@@ -177,27 +181,36 @@
         app:layout_constraintStart_toStartOf="@+id/top_contributors_text"
         app:layout_constraintTop_toBottomOf="@+id/top_contributors_text" />
 
-    <TextView
-        android:id="@+id/top_industries_text"
-        style="@style/collapsibleHeader.subOne"
-        android:layout_width="0dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/industries_constraint"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:layout_marginEnd="8dp"
-        android:text="@string/text_top_industries"
-        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/top_contributors_recycler" />
+        app:layout_constraintTop_toBottomOf="@+id/top_contributors_recycler">
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/top_industries_recycler"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:visibility="visible"
-        app:layout_constraintEnd_toEndOf="@+id/top_industries_text"
-        app:layout_constraintStart_toStartOf="@+id/top_industries_text"
-        app:layout_constraintTop_toBottomOf="@+id/top_industries_text" />
+        <TextView
+            android:id="@+id/top_industries_text"
+            style="@style/collapsibleHeader.subOne"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="@string/text_top_industries"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/top_industries_recycler"
+            style="@style/contentLayout"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:visibility="visible"
+            app:layout_constraintEnd_toEndOf="@+id/top_industries_text"
+            app:layout_constraintStart_toStartOf="@+id/top_industries_text"
+            app:layout_constraintTop_toBottomOf="@+id/top_industries_text" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -65,43 +65,64 @@
                 app:layout_constraintTop_toBottomOf="@+id/information_text"
                 tools:visibility="gone">
 
-                <TextView
-                    android:id="@+id/bio_text"
-                    style="@style/collapsibleHeader.subOne"
-                    android:text="@string/bio_text"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/bio_constraint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <TextView
-                    android:id="@+id/legislator_bio"
-                    style="@style/textBlock"
+                    <TextView
+                        android:id="@+id/bio_text"
+                        style="@style/collapsibleHeader.subOne"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="@string/bio_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/legislator_bio"
+                        style="@style/textBlock"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/bio_text"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/bio_text"
+                        app:layout_constraintStart_toStartOf="@+id/bio_text"
+                        app:layout_constraintTop_toBottomOf="@+id/bio_text" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/constraintLayout"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:text="@string/bio_text"
-                    android:visibility="gone"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/bio_text" />
+                    app:layout_constraintTop_toBottomOf="@+id/bio_constraint">
 
-                <TextView
-                    android:id="@+id/committees_text"
-                    style="@style/collapsibleHeader.subOne"
-                    android:text="@string/committees_text"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/legislator_bio" />
+                    <TextView
+                        android:id="@+id/committees_text"
+                        style="@style/collapsibleHeader.subOne"
+                        android:text="@string/committees_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/committees_recycler"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="@+id/committees_text"
-                    app:layout_constraintStart_toStartOf="@+id/committees_text"
-                    app:layout_constraintTop_toBottomOf="@+id/committees_text" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/committees_recycler"
+                        style="@style/contentLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/committees_text"
+                        app:layout_constraintStart_toStartOf="@+id/committees_text"
+                        app:layout_constraintTop_toBottomOf="@+id/committees_text" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -113,52 +134,75 @@
                 app:layout_constraintTop_toBottomOf="@+id/information_constraint" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/activities_constraint"
+                android:id="@+id/actions_constraint"
                 style="@style/contentLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@+id/recent_actions_text"
                 app:layout_constraintStart_toStartOf="@+id/recent_actions_text"
-                app:layout_constraintTop_toBottomOf="@+id/recent_actions_text"
-                tools:visibility="gone">
+                app:layout_constraintTop_toBottomOf="@+id/recent_actions_text">
 
-                <TextView
-                    android:id="@+id/sponsored_bills_text"
-                    style="@style/collapsibleHeader.subOne"
-                    android:text="@string/sponsored_bills_text"
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/bills_constraint"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/sponsored_bills_recycler"
+                    <TextView
+                        android:id="@+id/sponsored_bills_text"
+                        style="@style/collapsibleHeader.subOne"
+                        android:layout_width="match_parent"
+                        android:text="@string/sponsored_bills_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/sponsored_bills_recycler"
+                        style="@style/contentLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintEnd_toEndOf="@+id/sponsored_bills_text"
+                        app:layout_constraintStart_toStartOf="@+id/sponsored_bills_text"
+                        app:layout_constraintTop_toBottomOf="@+id/sponsored_bills_text"
+                        tools:visibility="gone">
+
+                    </androidx.recyclerview.widget.RecyclerView>
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/votes_constraint"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/sponsored_bills_text"
-                    tools:visibility="gone" />
+                    app:layout_constraintTop_toBottomOf="@+id/bills_constraint">
 
-                <TextView
-                    android:id="@+id/votes_text"
-                    style="@style/collapsibleHeader.subOne"
-                    android:text="@string/votes_text"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/sponsored_bills_recycler" />
+                    <TextView
+                        android:id="@+id/votes_text"
+                        style="@style/collapsibleHeader.subOne"
+                        android:layout_width="match_parent"
+                        android:text="@string/votes_text"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/votes_recycler"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:visibility="gone"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/votes_text" />
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/votes_recycler"
+                        style="@style/contentLayout"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/votes_text"
+                        app:layout_constraintStart_toStartOf="@+id/votes_text"
+                        app:layout_constraintTop_toBottomOf="@+id/votes_text" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -167,7 +211,7 @@
                 android:text="@string/contact_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/activities_constraint" />
+                app:layout_constraintTop_toBottomOf="@+id/actions_constraint" />
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/contact_constraint"
@@ -277,7 +321,9 @@
                     android:layout_width="0dp"
                     android:layout_height="60dp"
                     android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp"
                     android:orientation="horizontal"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="@+id/social_media_text"
                     app:layout_constraintStart_toStartOf="@+id/social_media_text"
                     app:layout_constraintTop_toBottomOf="@+id/social_media_text">

@@ -118,10 +118,17 @@ public class Legislator {
                 return null;
             }
 
-            // Write content to local file (bio.txt)
-            String legislatorPath = strings[1];
-            String bioPath = legislatorPath + "/bio.txt";
-            cacheManager.writeFile(bioPath, bioString);
+            if (null != bioString) {
+                // Format bioString
+                bioString = bioString.trim();
+                String first = bioString.substring(0,1);
+                bioString = bioString.replaceFirst(first, first.toUpperCase());
+                bioString = "\t" + bioString;
+                // Write content to local file (bio.txt)
+                String legislatorPath = strings[1];
+                String bioPath = legislatorPath + "/bio.txt";
+                cacheManager.writeFile(bioPath, bioString);
+            }
 
             return bioString;
         }
@@ -351,7 +358,7 @@ public class Legislator {
         // Check if field already populated
         if (null != biography) {
             Log.d(TAG, "Populating biography from class variable");
-            bioView.setText(biography);
+            bioView.setText(biography.trim());
             return;
         }
         // bio.txt exists?
@@ -361,7 +368,7 @@ public class Legislator {
             String bioString = cacheManager.readFile(bioFile.getAbsolutePath());
             if (!bioString.isEmpty()) {
                 biography = bioString;
-                bioView.setText(biography);
+                bioView.setText(biography.trim());
                 return;
             }
         }

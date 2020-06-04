@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
@@ -18,18 +19,6 @@
             android:layout_height="wrap_content">
 
             <TextView
-                android:id="@+id/content_data"
-                style="@style/textBlock"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/data_description"
-                app:layout_constraintEnd_toEndOf="@+id/text_data"
-                app:layout_constraintStart_toStartOf="@+id/text_data"
-                app:layout_constraintTop_toBottomOf="@+id/text_data" />
-
-            <TextView
                 android:id="@+id/text_data"
                 style="@style/collapsibleHeader.main"
                 android:text="@string/text_data_sources"
@@ -37,86 +26,118 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/text_leg_info"
-                style="@style/collapsibleHeader.subOne"
-                android:text="@string/text_legislator_data"
-                app:layout_constraintEnd_toEndOf="@+id/text_data"
-                app:layout_constraintStart_toStartOf="@+id/text_data"
-                app:layout_constraintTop_toBottomOf="@+id/content_data" />
-
-            <TextView
-                android:id="@+id/content_leg_info"
-                style="@style/textBlock"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/sources_constraint"
+                style="@style/contentLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/legislator_source"
-                app:layout_constraintEnd_toEndOf="@+id/text_leg_info"
-                app:layout_constraintStart_toStartOf="@+id/text_leg_info"
-                app:layout_constraintTop_toBottomOf="@+id/text_leg_info" />
-
-            <TextView
-                android:id="@+id/text_bills_votes"
-                style="@style/collapsibleHeader.subOne"
-                android:text="@string/text_legislative_data"
                 app:layout_constraintEnd_toEndOf="@+id/text_data"
                 app:layout_constraintStart_toStartOf="@+id/text_data"
-                app:layout_constraintTop_toBottomOf="@+id/content_leg_info" />
+                app:layout_constraintTop_toBottomOf="@+id/text_data">
 
-            <TextView
-                android:id="@+id/content_bills_votes"
-                style="@style/textBlock"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/legislative_source"
-                app:layout_constraintEnd_toEndOf="@+id/text_bills_votes"
-                app:layout_constraintStart_toStartOf="@+id/text_bills_votes"
-                app:layout_constraintTop_toBottomOf="@+id/text_bills_votes" />
+                <TextView
+                    android:id="@+id/content_data"
+                    style="@style/textBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="8dp"
+                    android:text="@string/data_description"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-            <TextView
-                android:id="@+id/text_finance_info"
-                style="@style/collapsibleHeader.subOne"
-                android:text="@string/text_financial_data"
-                app:layout_constraintEnd_toEndOf="@+id/text_data"
-                app:layout_constraintStart_toStartOf="@+id/text_data"
-                app:layout_constraintTop_toBottomOf="@+id/content_bills_votes" />
+                <TextView
+                    android:id="@+id/text_leg_info"
+                    style="@style/collapsibleHeader.subOne"
+                    android:text="@string/text_legislator_data"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/content_data" />
 
-            <TextView
-                android:id="@+id/content_finance_info"
-                style="@style/textBlock"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/financial_source"
-                android:visibility="visible"
-                app:layout_constraintEnd_toEndOf="@+id/text_finance_info"
-                app:layout_constraintStart_toStartOf="@+id/text_finance_info"
-                app:layout_constraintTop_toBottomOf="@+id/text_finance_info" />
+                <TextView
+                    android:id="@+id/content_leg_info"
+                    style="@style/textBlock"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:autoLink="all"
+                    android:text="@string/legislator_source"
+                    app:layout_constraintEnd_toEndOf="@+id/text_leg_info"
+                    app:layout_constraintStart_toStartOf="@+id/text_leg_info"
+                    app:layout_constraintTop_toBottomOf="@+id/text_leg_info"
+                    tools:visibility="visible" />
 
-            <TextView
-                android:id="@+id/text_other"
-                style="@style/collapsibleHeader.subOne"
-                android:text="@string/text_other_data"
-                app:layout_constraintEnd_toEndOf="@+id/text_data"
-                app:layout_constraintStart_toStartOf="@+id/text_data"
-                app:layout_constraintTop_toBottomOf="@+id/content_finance_info" />
+                <TextView
+                    android:id="@+id/text_bills_votes"
+                    style="@style/collapsibleHeader.subOne"
+                    android:text="@string/text_legislative_data"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/content_leg_info" />
 
-            <TextView
-                android:id="@+id/content_other"
-                style="@style/textBlock"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="8dp"
-                android:layout_marginEnd="8dp"
-                android:text="@string/other_source"
-                app:layout_constraintEnd_toEndOf="@+id/text_other"
-                app:layout_constraintStart_toStartOf="@+id/text_other"
-                app:layout_constraintTop_toBottomOf="@+id/text_other" />
+                <TextView
+                    android:id="@+id/content_bills_votes"
+                    style="@style/textBlock"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/legislative_source"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="@+id/text_bills_votes"
+                    app:layout_constraintStart_toStartOf="@+id/text_bills_votes"
+                    app:layout_constraintTop_toBottomOf="@+id/text_bills_votes" />
+
+                <TextView
+                    android:id="@+id/text_finance_info"
+                    style="@style/collapsibleHeader.subOne"
+                    android:text="@string/text_financial_data"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/content_bills_votes" />
+
+                <TextView
+                    android:id="@+id/content_finance_info"
+                    style="@style/textBlock"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:autoLink="web"
+                    android:text="@string/financial_source"
+                    android:visibility="visible"
+                    app:layout_constraintEnd_toEndOf="@+id/text_finance_info"
+                    app:layout_constraintStart_toStartOf="@+id/text_finance_info"
+                    app:layout_constraintTop_toBottomOf="@+id/text_finance_info" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:id="@+id/other_constraint"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="8dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/content_finance_info">
+
+                    <TextView
+                        android:id="@+id/text_other"
+                        style="@style/collapsibleHeader.subOne"
+                        android:text="@string/text_other_data"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:id="@+id/content_other"
+                        style="@style/textBlock"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:text="@string/other_source"
+                        app:layout_constraintEnd_toEndOf="@+id/text_other"
+                        app:layout_constraintStart_toStartOf="@+id/text_other"
+                        app:layout_constraintTop_toBottomOf="@+id/text_other" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

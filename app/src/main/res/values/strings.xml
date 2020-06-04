@@ -164,14 +164,15 @@
     <string name="text_about">About</string>
     <string name="text_data_sources">Data Sources</string>
     <string name="data_description">
-        \tAll of the data presented in the application is pulled from other projects. This
+        \tAll of the data presented in this application is pulled from other projects. This
         application does not generate any original content.
     </string>
     <string name="text_legislator_data">Legislator Information</string>
     <string name="legislator_source">
         \tInformation on Members of Congress, including current members, committees, contact
-        information, and social media is pulled from the congress-legislators-project(add link).
-        The congress-legislators-project is a community repository originally developed by the team
+        information, and social media is pulled from the
+        <a href="https://github.com/unitedstates/congress-legislators">congress-legislators project</a>.
+        The congress-legislators project is a community repository originally developed by the team
         behind GovTrack.us and now maintained by a large community of volunteers.
         \n\n\tImages and biographies for Members of Congress are pulled from The Congressional
         Biographical Directory at http://bioguide.congress.gov/
