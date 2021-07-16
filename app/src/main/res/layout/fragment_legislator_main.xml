@@ -10,6 +10,7 @@
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -29,9 +30,9 @@
 
             <TextView
                 android:id="@+id/finances_text"
+                style="@style/collapsibleHeader.main"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                style="@style/collapsibleHeader.main"
                 android:text="@string/finances_text"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -208,7 +209,9 @@
             <TextView
                 android:id="@+id/contact_text"
                 style="@style/collapsibleHeader.main"
+                android:layout_marginBottom="10dp"
                 android:text="@string/contact_text"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/actions_constraint" />
@@ -218,7 +221,9 @@
                 style="@style/contentLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
                 android:visibility="gone"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="@+id/contact_text"
                 app:layout_constraintStart_toStartOf="@+id/contact_text"
                 app:layout_constraintTop_toBottomOf="@+id/contact_text">

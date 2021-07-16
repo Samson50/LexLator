@@ -22,10 +22,12 @@ android {
             shrinkResources true
             debuggable false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.debug
         }
         debug {
             applicationIdSuffix ".debug"
             debuggable true
+            signingConfig signingConfigs.debug
         }
     }
 
