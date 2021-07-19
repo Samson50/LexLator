@@ -22,6 +22,7 @@ import com.decent.lexlator.R;
 import com.decent.lexlator.data.Legislator;
 import com.decent.lexlator.utils.AlertFragment;
 import com.decent.lexlator.utils.CollapseListener;
+import com.decent.lexlator.utils.ScrollCollapseListener;
 
 public class LegislatorMain extends Fragment {
 
@@ -127,7 +128,7 @@ public class LegislatorMain extends Fragment {
         legislator.fillActions(billsRecycler, votesRecycler);
 
         // Initialize Contact Information views
-        addCollapse((TextView) root.findViewById(R.id.contact_text), root.findViewById(R.id.contact_constraint));
+        addScrollCollapse((TextView) root.findViewById(R.id.contact_text), root.findViewById(R.id.contact_constraint));
 
         TextView addressView = root.findViewById(R.id.legislator_address);
         TextView phoneView = root.findViewById(R.id.legislator_phone);
@@ -196,6 +197,12 @@ public class LegislatorMain extends Fragment {
         hider.setVisibility(View.GONE);
         CollapseListener collapseListener = new CollapseListener(hider);
         clicker.setOnClickListener(collapseListener);
+    }
+
+    private void addScrollCollapse(TextView clicker, View hider) {
+        hider.setVisibility(View.GONE);
+        ScrollCollapseListener scrollCollapseListener = new ScrollCollapseListener(hider);
+        clicker.setOnClickListener(scrollCollapseListener);
     }
 
 

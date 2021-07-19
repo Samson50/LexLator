@@ -43,7 +43,7 @@
                 layout="@layout/layout_finances"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:visibility="visible"
+                android:visibility="gone"
                 app:layout_constraintEnd_toEndOf="@+id/finances_text"
                 app:layout_constraintStart_toStartOf="@+id/finances_text"
                 app:layout_constraintTop_toBottomOf="@+id/finances_text" />
@@ -61,6 +61,7 @@
                 style="@style/contentLayout"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:visibility="visible"
                 app:layout_constraintEnd_toEndOf="@+id/information_text"
                 app:layout_constraintStart_toStartOf="@+id/information_text"
                 app:layout_constraintTop_toBottomOf="@+id/information_text"
@@ -209,9 +210,7 @@
             <TextView
                 android:id="@+id/contact_text"
                 style="@style/collapsibleHeader.main"
-                android:layout_marginBottom="10dp"
                 android:text="@string/contact_text"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/actions_constraint" />
@@ -370,6 +369,14 @@
                         android:visibility="gone" />
                 </LinearLayout>
             </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/contact_buffer"
+                android:layout_width="match_parent"
+                android:layout_height="10dp"
+                app:layout_constraintTop_toBottomOf="@+id/contact_constraint"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"/>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
